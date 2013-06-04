@@ -116,7 +116,7 @@ class Population:
         return "Generic population of {0:1.0e} individuals.".format(self.N)
 
 if __name__ == "__main__":
-    # Test code
+    # Test code.
     a = Population(1000,100,0.1)
 
     print(a)
