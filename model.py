@@ -36,7 +36,7 @@ class Model:
 
 """
     
-    def __init__(self, fcts,param):
+    def __init__(self, fcts,param,tracked_values=None):
         """ Model object constructor"""
         
         # Attach the modeling methods specified in the fcts dict to the model object. 
@@ -55,24 +55,43 @@ class Model:
         # Other parameters can be accessed by self.param["name"]
         self.param = param
 
+        # Creating a tracking dict. with an entry by tracked value.
+        self.traces = []
+        self.tracked = tracked_values
+        
     def step(self):
         """Runs one generation of the model
 
-Use :class:`Population`.play to run it for more generations"""
+        Use :class:`Population`.play to run it for more generations"""
         self.dispersion()
         self.attach()
         for n,i in enumerate(self.population.phenotype):
             self.population.payoff[n] = self.fpayoff(n)
         self.birthanddeath()
 
+
+
     def play(self,nb_generations):
         """Initialisation and call of the main loop"""
         print("Playing for {0} generations".format(nb_generations))
+        
+        #Initialisation
         self.initialisation()
+
+        #Create a new trace dict with a list by tracked values.
+        self.traces.append({})
+        for t in self.tracked:
+            self.traces[-1][t] = []
+
+
+        #Generation loop
         for g in range(nb_generations):
             print("{0}/{1}".format(g+1,nb_generations))
             self.step()
-            
+            # Add the values of tracked variable to the trace.
+            for t in self.tracked:
+                self.traces[-1][t].append(reduce(getattr,t.split("."),self))
+    
 
     def __str__(self):
         s = "Generic model.\n"
@@ -101,11 +120,11 @@ if __name__ == "__main__":
              "pa":0.1,
              "mu":0.001}
 
-    a = Model(fcts,param)
+    a = Model(fcts,param,["population.N"])
     print("\n Model:")
     print(a)
     print("\n Population:")
     print(a.population)
     print("\n Run:")
     a.play(5)
-
+    print(a.traces)
