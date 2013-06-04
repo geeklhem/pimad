@@ -36,16 +36,16 @@ class Model:
         self.birthanddeath()
 
     def play(self,nb_generations):
-        print("Playing for {} generations".format(nb_generations))
+        print("Playing for {0} generations".format(nb_generations))
         self.initialisation()
         for g in range(nb_generations):
-            print("{}/{}".format(g+1,nb_generations))
+            print("{0}/{1}".format(g+1,nb_generations))
             self.step()
             
 
     def __str__(self):
         s = "Generic model.\n"
-        s += "Benefit b =  {}, cost c = {}".format(self.b,self.c)
+        s += "Benefit b =  {0}, cost c = {1}".format(self.b,self.c)
         return s
 
     def __repr__(self):

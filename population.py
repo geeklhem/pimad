@@ -110,13 +110,13 @@ class Population:
 
     def __str__(self):
         s = "Generic population: \n"
-        s += "Population size: {:1.0e}\n".format(self.N)
-        s += "Patch size: {}\n".format(self.T)
-        s += "Resident phenotype : {} and genotype : {}\n".format(self.resident_phenotype,self.resident_genotype)
+        s += "Population size: {0:1.0e}\n".format(self.N)
+        s += "Patch size: {0}\n".format(self.T)
+        s += "Resident phenotype : {0} and genotype : {1}\n".format(self.resident_phenotype,self.resident_genotype)
         return s
 
     def __repr__(self):
-        return "Generic population of {:1.0e} individuals.".format(self.N)
+        return "Generic population of {0:1.0e} individuals.".format(self.N)
 
 if __name__ == "__main__":
     # Test code
