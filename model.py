@@ -47,7 +47,7 @@ class Model:
         self.initialisation = types.MethodType(reduce(getattr,fcts["initialisation"].split("."),comp),self)
 
         # Create a "Population" object with parameters given by the param dict. (and Z=1)
-        self.pop = population.Population(param["N"],param["T"],1)
+        self.population = population.Population(param["N"],param["T"],1)
         
         # b and c are copied into the model namespace in order to access them with self.b 
         self.b = param["b"]
@@ -61,8 +61,8 @@ class Model:
 Use :class:`Population`.play to run it for more generations"""
         self.dispersion()
         self.attach()
-        for n,i in enumerate(self.pop.phenotype):
-            self.pop.payoff[n] = self.fpayoff(n)
+        for n,i in enumerate(self.population.phenotype):
+            self.population.payoff[n] = self.fpayoff(n)
         self.birthanddeath()
 
     def play(self,nb_generations):
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     print("\n Model:")
     print(a)
     print("\n Population:")
-    print(a.pop)
+    print(a.population)
     print("\n Run:")
     a.play(5)
 

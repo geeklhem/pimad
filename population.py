@@ -27,7 +27,7 @@ class Population:
     :class:`Population`.phenotype          Individual phenotype (N np.array float)        
     :class:`Population`.genotype           Individual genotype (N np.array float)
     :class:`Population`.payoff             Individual payoff (N np.array float)
-    :class:`Population`.group              Individual "is in a group ?" (N np.array bool)
+    :class:`Population`.repartition        Individual "is in a group ?" (N np.array bool)
     ====================================== ===============================================
 
     """
@@ -43,14 +43,14 @@ class Population:
         self.T = T
         self.genotype = numpy.array([G]*N, dtype=numpy.float)
         self.phenotype = numpy.array([Z]*N, dtype=numpy.float)
-        self.group = numpy.array([1]*N)
+        self.repartition = numpy.array([1]*N)
         self.payoff = numpy.array([0]*N)
         self.update()
 
     def _compute_groupsize(self):
         """Create the groupsize array."""
         self.group_size = numpy.array([0] * (self.N/self.T),dtype=numpy.int) 
-        for n,i in enumerate(self.group):
+        for n,i in enumerate(self.repartition):
             self.group_size[n/self.T] += i
 
     def update(self):
@@ -59,10 +59,7 @@ class Population:
 
     def flush(self):
         """ Shuffle individuals arrays and reset the group/payoff arrays."""
-        np.random.shuffle(self.genotype)
-        np.random.shuffle(self.phenotype)
-	# TO DO : Keep the two values together columnwise.
-        self.group = numpy.array([0]*N)
+        self.repartition = numpy.array([0]*N)
         self.payoff = numpy.array([0]*N)
         
     def group_number(self,i):
@@ -72,7 +69,7 @@ class Population:
         :type i: int 
         :return: int -- group number or 0 if alone."""
         
-        if self.group[i]:
+        if self.repartition[i]:
             return (i/self.T)+1
         else:
             return 0
@@ -102,7 +99,7 @@ class Population:
         density = [0]*(self.T+1)
         for n,i in enumerate(self.phenotype):
             if i == z:
-                if self.group[n]:
+                if self.repartition[n]:
                     density[self.group_size[i/self.T]] += 1
                 else:
                     density[0] += 1
