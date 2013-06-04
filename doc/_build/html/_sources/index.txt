@@ -8,9 +8,7 @@ Welcome to Pimad's documentation!
 
  PIMAD : Pimad is modeling adaptive dynamics 
 
-
-The population module :ref:`population`
-
+* :ref:`modindex`
 
 .. toctree::
    :maxdepth: 2
