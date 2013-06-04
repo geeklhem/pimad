@@ -42,7 +42,7 @@ class Population:
         else:
             self.resident_genotype  = 0.0
         self.T = T
-	self.patch_du = numpy-array([0]*N)
+	self.patch_du = numpy.array([0]*N)
         self.genotype = numpy.array([G]*N, dtype=numpy.float)
         self.phenotype = numpy.array([Z]*N, dtype=numpy.float)
         self.repartition = numpy.array([0]*N)
