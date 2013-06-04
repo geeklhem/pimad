@@ -14,7 +14,7 @@ class Model:
 
 """
     
-    def __init__(self, fcts):
+    def __init__(self, fcts,param):
         """ Model constructor"""
         reduce(getattr,"test.attach".split("."),comp)
         self.attach = types.MethodType(reduce(getattr,fcts["attach"].split("."),comp),self)
@@ -23,7 +23,10 @@ class Model:
         self.dispersion = types.MethodType(reduce(getattr,fcts["dispersion"].split("."), comp),self)
         self.initialisation = types.MethodType(reduce(getattr,fcts["initialisation"].split("."),comp),self)
 
-        self.pop = population.Population(100,10,0.1)
+        self.pop = population.Population(param["N"],param["T"],1)
+        self.b = param["b"]
+        self.c = param["c"]
+        self.param = param
 
     def step(self):
         self.dispersion()
@@ -41,7 +44,8 @@ class Model:
             
 
     def __str__(self):
-        s = "Generic model."
+        s = "Generic model.\n"
+        s += "Benefit b =  {}, cost c = {}".format(self.b,self.c)
         return s
 
     def __repr__(self):
@@ -56,7 +60,15 @@ if __name__ == "__main__":
             "dispersion":"test.dispersion",
             "initialisation":"test.init"}
 
-    a = Model(fcts)
+    param = {"N":100000,
+             "T":1000,
+             "b":3,
+             "c":1,
+             "ps":0.3,
+             "pa":0.1,
+             "mu":0.001}
+
+    a = Model(fcts,param)
     print("\n Model:")
     print(a)
     print("\n Population:")
