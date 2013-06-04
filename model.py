@@ -3,49 +3,32 @@
 """Class to represent poulations data."""
 # Import built-in modules
 import numpy
-import types
 
 # Import custom modules
 import population
-import component as comp #Load all files in /component folders as "comp.filename" 
-
 
 class Model:
     """ A generic class that contains a model
 
-:param fcts: modelisation methods to use.
-:param fcts: Parameters of the model. Must contain at least N, T (for :class:`Population` initialisation) and c et b (cost and benfits). 
-:type fcts: dict
-:type param: dict
+    :param param: Parameters of the model. Must contain at least N, T (for :class:`Population` initialisation) and c et b (cost and benfits).
+    :param tracked_values: Values to track at each re 
+    :type param: dict
+    :type tracked_values: list
 
-**Exemple of dicts**::
+    **Example:**::
 
-    fcts = {"attach": 'test.attach',
-            "birthanddeath":"test.bad",
-            "fpayoff":"test.payoff",
-            "dispersion":"test.dispersion",
-            "initialisation":"test.init"}
-
-    param = {"N":100000,
-             "T":1000,
-             "b":3,
-             "c":1,
-             "ps":0.3,
-             "pa":0.1,
-             "mu":0.001}
+        param = {"N":100000,
+                 "T":1000,
+                 "b":3,
+                 "c":1,
+                 "ps":0.3,
+                 "pa":0.1,
+                 "mu":0.001}
 
 """
     
-    def __init__(self, fcts,param,tracked_values=None):
+    def __init__(self,param,tracked_values=[]):
         """ Model object constructor"""
-        
-        # Attach the modeling methods specified in the fcts dict to the model object. 
-        self.attach = types.MethodType(reduce(getattr,fcts["attach"].split("."),comp),self)
-        self.birthanddeath = types.MethodType(reduce(getattr,fcts["birthanddeath"].split("."),comp),self)
-        self.fpayoff = types.MethodType(reduce(getattr,fcts["fpayoff"].split("."),comp),self)
-        self.dispersion = types.MethodType(reduce(getattr,fcts["dispersion"].split("."), comp),self)
-        self.initialisation = types.MethodType(reduce(getattr,fcts["initialisation"].split("."),comp),self)
-
         # Create a "Population" object with parameters given by the param dict. (and Z=1)
         self.population = population.Population(param["N"],param["T"],1)
         
@@ -61,28 +44,20 @@ class Model:
         
     def step(self):
         """Runs one generation of the model
-
-        Use :class:`Population`.play to run it for more generations"""
-        self.dispersion()
-        self.attach()
-        for n,i in enumerate(self.population.phenotype):
-            self.population.payoff[n] = self.fpayoff(n)
-        self.birthanddeath()
-
+        
+        Must be overrided by the class herited from model.
+        Called by :class:`Population`.play at each generation """
+        pass
 
 
     def play(self,nb_generations):
         """Initialisation and call of the main loop"""
         print("Playing for {0} generations".format(nb_generations))
-        
-        #Initialisation
-        self.initialisation()
 
         #Create a new trace dict with a list by tracked values.
         self.traces.append({})
         for t in self.tracked:
             self.traces[-1][t] = []
-
 
         #Generation loop
         for g in range(nb_generations):
@@ -106,11 +81,6 @@ class Model:
 ###############
 # It will only run if the file is directly executed (>>python model.py)
 if __name__ == "__main__":
-    fcts = {"attach": 'test.attach',
-            "birthanddeath":"test.bad",
-            "fpayoff":"test.payoff",
-            "dispersion":"test.dispersion",
-            "initialisation":"test.init"}
 
     param = {"N":100000,
              "T":1000,
@@ -120,7 +90,10 @@ if __name__ == "__main__":
              "pa":0.1,
              "mu":0.001}
 
-    a = Model(fcts,param,["population.N"])
+    tracked_values = ["population.N"]
+
+    a = Model(param, tracked_values)
+
     print("\n Model:")
     print(a)
     print("\n Population:")
