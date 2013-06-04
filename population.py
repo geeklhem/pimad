@@ -45,7 +45,7 @@ class Population:
 	self.patch_du = numpy-array([0]*N)
         self.genotype = numpy.array([G]*N, dtype=numpy.float)
         self.phenotype = numpy.array([Z]*N, dtype=numpy.float)
-        self.repartition = numpy.array([1]*N)
+        self.repartition = numpy.array([0]*N)
         self.payoff = numpy.array([0]*N)
         self.update()
 
