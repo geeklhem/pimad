@@ -32,6 +32,14 @@ class Model:
             self.pop.payoff[n] = self.fpayoff(n)
         self.birthanddeath()
 
+    def play(self,nb_generations):
+        print("Playing for {} generations".format(nb_generations))
+        self.initialisation()
+        for g in range(nb_generations):
+            print("{}/{}".format(g+1,nb_generations))
+            self.step()
+            
+
     def __str__(self):
         s = "Generic model."
         return s
@@ -49,6 +57,10 @@ if __name__ == "__main__":
             "initialisation":"test.init"}
 
     a = Model(fcts)
+    print("\n Model:")
     print(a)
+    print("\n Population:")
     print(a.pop)
-    a.step()
+    print("\n Run:")
+    a.play(5)
+
