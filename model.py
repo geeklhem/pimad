@@ -16,11 +16,12 @@ class Model:
     
     def __init__(self, fcts):
         """ Model constructor"""
-        self.attach = types.MethodType(getattr(comp.attach,fcts["attach"]),self)
-        self.birthanddeath = types.MethodType(getattr(comp.birthanddeath,fcts["birthanddeath"]),self)
-        self.fpayoff = types.MethodType(getattr(comp.fpayoff,fcts["fpayoff"]),self)
-        self.dispersion = types.MethodType(getattr(comp.dispersion,fcts["dispersion"]),self)
-        self.initialisation = types.MethodType(getattr(comp.initialisation,fcts["initialisation"]),self)
+        reduce(getattr,"test.attach".split("."),comp)
+        self.attach = types.MethodType(reduce(getattr,fcts["attach"].split("."),comp),self)
+        self.birthanddeath = types.MethodType(reduce(getattr,fcts["birthanddeath"].split("."),comp),self)
+        self.fpayoff = types.MethodType(reduce(getattr,fcts["fpayoff"].split("."),comp),self)
+        self.dispersion = types.MethodType(reduce(getattr,fcts["dispersion"].split("."), comp),self)
+        self.initialisation = types.MethodType(reduce(getattr,fcts["initialisation"].split("."),comp),self)
 
         self.pop = population.Population(100,10,0.1)
 
@@ -41,11 +42,11 @@ class Model:
 
 if __name__ == "__main__":
     # Test code
-    fcts = {"attach": 'test',
-            "birthanddeath":"test",
-            "fpayoff":"test",
-            "dispersion":"test",
-            "initialisation":"test"}
+    fcts = {"attach": 'test.attach',
+            "birthanddeath":"test.bad",
+            "fpayoff":"test.payoff",
+            "dispersion":"test.dispersion",
+            "initialisation":"test.init"}
 
     a = Model(fcts)
     print(a)
