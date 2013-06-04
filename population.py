@@ -4,7 +4,7 @@
 import numpy
 
 class Population:
-    """ A generic class that represent populations data.
+    """ A generic class that represents populations data.
 
     :param N: Population size.
     :param Z: Population resident phenotype.        
@@ -119,6 +119,7 @@ class Population:
         return "Generic population of {:1.0e} individuals.".format(self.N)
 
 if __name__ == "__main__":
+    # Test code
     a = Population(1000,100,0.1)
 
     print(a)
