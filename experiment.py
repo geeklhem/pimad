@@ -1,5 +1,5 @@
 import model
-import component.functionso as m
+import component.ofunctions as m
 
 fcts = {"attach": "functions-o.attachO",
             "birthanddeath":"functions-o.localbirthdeathO",
