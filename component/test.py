@@ -36,17 +36,22 @@ def dispersion(self):
 
 
 def attach(self):
-    """Group formation
-    Called on"""
+    """Group formation. Set the population.repartition array.
+    Called on every generation loop."""
     print("Fonction attach in module :  {0}".format(__name__))
 
 
 
 def payoff(self,n):
+    """ Returns the payoff of individual n.
+    Called every generation loop for each individual."""
     return(0)
 
 
 def bad(self):
+    """ Brith and death function.
+    Called every generation loop.
+    """
     print("Fonction bad in module :  {0}".format(__name__))
 
 
