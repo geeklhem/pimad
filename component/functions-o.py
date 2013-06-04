@@ -1,31 +1,35 @@
+#!/usr/bin/env/ python
+# -*- coding: utf-8 -*-
+"""Orso's functions"""
+
 import math
 import random
 from random import randint
 from random import shuffle
 
 
-def initialize(N, T, patch_du, genotype, phenotype, repartition, payoff):
-	for i in range(N):
-		patch_du.append(int(i/T))
-		genotype.append(randint(0,1))
-		phenotype.append(genotype[i])
-		repartition.append(0)
-		payoff.append(0)
+def initialize(self):
+	for i in range(self.param["N"]):
+		self.population.patch_du[i] = int(i/self.param["T"])
+		self.population.genotype.append(randint(0,1))
+		self.population.phenotype.append(genotype[i])
+		self.population.repartition.append(0)
+		self.population.payoff.append(0)
 
 
 
-def attach(N, T, NPATCH, PS, PA, phenotype, repartition):
-	for i in range(NPATCH):
-		if ((i != NPATCH-1) | ((N%T) == 0)):
-			for j in range(1, T):
-				if random.random() <= math.sqrt((PS**(phenotype[i*T]+phenotype[(i*T)+j]))*(PA**(2-phenotype[i*T]-phenotype[(i*T)+j]))):
-					repartition[i*T] = 1
-					repartition[(i*T)+j] = 1
+def attach(self):
+	for i in range(self.param["NPATCH"]):
+		if ((i != self.param["NPATCH"]-1) | ((self.param["N"]%self.param["T"]) == 0)):
+			for j in range(1, self.param["T"]):
+				if random.random() <= math.sqrt((self.param["ps"]**(self.population.phenotype[i*self.param["T"]]+self.population.phenotype[(i*self.param["T"])+j]))*(self.param["pa"]**(2-self.population.phenotype[i*self.param["T"]]-self.population.phenotype[(i*self.param["T"])+j]))):
+					self.population.repartition[i*self.param["T"]] = 1
+					self.population.repartition[(i*self.param["T"])+j] = 1
 		else:
-			for j in range(1, (N%T)):
-				if random.random() <= math.sqrt((PS**(phenotype[i*T]+phenotype[(i*T)+j]))*(PA**(2-phenotype[i*T]-phenotype[(i*T)+j]))):
-					repartition[i*T] = 1
-					repartition[(i*T)+j] = 1
+			for j in range(1, (self.param["N"]%self.param["T"])):
+				if random.random() <= math.sqrt((self.param["ps"]**(self.population.phenotype[i*self.param["T"]]+self.population.phenotype[(i*self.param["T"])+j]))*(self.param["pa"]**(2-self.population.phenotype[i*self.param["T"]]-self.population.phenotype[(i*self.param["T"])+j]))):
+					self.population.repartition[i*self.param["T"]] = 1
+					self.population.repartition[(i*self.param["T"])+j] = 1
 
 
 

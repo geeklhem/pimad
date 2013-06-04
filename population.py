@@ -24,6 +24,7 @@ class Population:
     :class:`Population`.T                  Aggregation patch size (int) 
     :class:`Population`.resident_phenotype Resident phenotype of the population (float) 
     :class:`Population`.resident_genotype  Resident genotype of the population (float) 
+    :class:`Population`.patch_du           Patch of the individual (N np.array int)        
     :class:`Population`.phenotype          Individual phenotype (N np.array float)        
     :class:`Population`.genotype           Individual genotype (N np.array float)
     :class:`Population`.payoff             Individual payoff (N np.array float)
@@ -41,6 +42,7 @@ class Population:
         else:
             self.resident_genotype  = 0.0
         self.T = T
+	self.patch_du = numpy-array([0]*N)
         self.genotype = numpy.array([G]*N, dtype=numpy.float)
         self.phenotype = numpy.array([Z]*N, dtype=numpy.float)
         self.repartition = numpy.array([1]*N)
