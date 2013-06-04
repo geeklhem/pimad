@@ -1,2 +1,14 @@
 /population.pyc
 /doc/index.rst~
+/component/__init__.pyc
+/component/__init__.py~
+/component/attach.pyc
+/component/attach.py~
+/component/birthanddeath.pyc
+/component/birthanddeath.py~
+/component/dispersion.pyc
+/component/dispersion.py~
+/component/fpayoff.pyc
+/component/fpayoff.py~
+/component/initialisation.pyc
+/component/initialisation.py~

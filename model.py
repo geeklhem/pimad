@@ -3,6 +3,8 @@
 """Class to represent poulations data."""
 import numpy
 import component as comp
+import types
+import population
 
 class Model:
     """ A generic class that contains a model
@@ -20,12 +22,13 @@ class Model:
         self.dispersion = types.MethodType(getattr(comp.dispersion,fcts["dispersion"]),self)
         self.initialisation = types.MethodType(getattr(comp.initialisation,fcts["initialisation"]),self)
 
+        self.pop = population.Population(100,10,0.1)
 
     def step(self):
-        self.disperse()
+        self.dispersion()
         self.attach()
         for n,i in enumerate(self.pop.phenotype):
-            self.payoff[n] = self.fpayoff(n)
+            self.pop.payoff[n] = self.fpayoff(n)
         self.birthanddeath()
 
     def __str__(self):
@@ -40,9 +43,11 @@ if __name__ == "__main__":
     # Test code
     fcts = {"attach": 'test',
             "birthanddeath":"test",
-            "fpayoff":"test"
+            "fpayoff":"test",
             "dispersion":"test",
             "initialisation":"test"}
 
     a = Model(fcts)
     print(a)
+    print(a.pop)
+    a.step()

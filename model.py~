@@ -1,7 +1,0 @@
-#!/usr/bin/env/ python
-# -*- coding: utf-8 -*-
-"""Class to represent poulations data."""
-import numpy
-
-class Model:
-    """ A generic class that contains 
