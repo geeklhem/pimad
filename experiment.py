@@ -1,22 +1,24 @@
 import model
-import component.ofunctions as m
+import component.omodel as om
 
-fcts = {"attach": "functions-o.attachO",
-            "birthanddeath":"functions-o.localbirthdeathO",
-            "fpayoff":"functions-o.fpayO",
-            "dispersion":"functions-o.disperseO",
-            "initialisation":"functions-o.initializeO"}
+fcts = {}
+fcts["attach"] = "ofunctions.attach"
+fcts["birthanddeath"] = "ofunctions.localbirthdeath"
+fcts["fpayoff"] = "ofunctions.fpay"
+fcts["dispersion"] = "ofunctions.disperse"
+fcts["initialisation"] = "ofunctions.initialize"
 
-param = {"N":100,
-         "T":10,
-         "b":3,
-         "c":1,
-         "ps":0.3,
-         "pa":0.1,
-         "mu":0.1}
+param = {}
+param["N"] = 1000
+param["T"] = 50
+param["b"] = 3
+param["c"] = 1
+param["ps"] = 0.5
+param["pa"] = 0.2
+param["mu"] = 0.01
 param["NPATCH"] = param["N"]/param["T"]
 
-a = m.ModelO(param)		#qui istanziare un oggetto della classe ModelO
+a = om.ModelO(param)
 print("\n Model:")
 print(a)
 print("\n Population:")
