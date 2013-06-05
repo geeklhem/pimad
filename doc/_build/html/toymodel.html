@@ -57,8 +57,8 @@
 <p>Needs the following parameters in <em>model.param</em> dict :</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="8%" />
-<col width="92%" />
+<col width="7%" />
+<col width="93%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
@@ -73,13 +73,16 @@
 <td>Linear cost of altruism (int)</td>
 </tr>
 <tr class="row-even"><td>ps</td>
-<td>Attachment probability of a social individual   (float).</td>
+<td>Attachment probability of two social individuals  (float).</td>
 </tr>
 <tr class="row-odd"><td>pa</td>
-<td>Attachment probability of an asocial individual (float).</td>
+<td>Attachment probability of two asocial individuals (float).</td>
 </tr>
-<tr class="row-even"><td>mu</td>
-<td>Mutation rate</td>
+<tr class="row-even"><td>pas</td>
+<td>Attachment probability of an social and an asocial individual (float).</td>
+</tr>
+<tr class="row-odd"><td>mu</td>
+<td>Mutation rate (float).</td>
 </tr>
 </tbody>
 </table>
@@ -102,6 +105,16 @@ self.population.proportions.</td>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>By line in self.population.proportions:</p>
+<ol class="last arabic simple" start="0">
+<li>Social individual in the group.</li>
+<li>Individuals in the group.</li>
+<li>Social individuals alone.</li>
+<li>Individuals alone.</li>
+</ol>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -172,7 +185,7 @@ self.population.repartition,</td>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>By line in self.population.payoff:</p>
-<ol class="last arabic simple">
+<ol class="last arabic simple" start="0">
 <li>Payoff of social individual in a group</li>
 <li>Payoff of asocial individual in a group</li>
 <li>Payoff of social individual alone</li>

@@ -48,6 +48,14 @@ class ToyModel(model.Model):
         **Write**  self.population.repartition, 
                    self.population.proportions.
         =========  ============================
+
+        .. note ::
+           By line in self.population.proportions:
+        
+           0. Social individual in the group.
+           1. Individuals in the group.
+           2. Social individuals alone.
+           3. Individuals alone.
   
         """
         
@@ -98,13 +106,27 @@ class ToyModel(model.Model):
         .. note ::
            By line in self.population.payoff:
         
-           1. Payoff of social individual in a group
-           2. Payoff of asocial individual in a group
-           3. Payoff of social individual alone
-           4. Payoff of asocial individual alone
+           0. Payoff of social individual in a group
+           1. Payoff of asocial individual in a group
+           2. Payoff of social individual alone
+           3. Payoff of asocial individual alone
         
         """
-        pass
+        ## For each patch
+        for patch in range(self.population.Npatch):
+            group_benefit = (self.b*self.population.proportions[patch,0])
+            group_benefit /= self.population.proportions[patch,1]  
+            
+            # Payoff of social individual in a group
+            self.population.payoff[patch,0] = group_benefit - self.c 
+            # Payoff of asocial individual in a group
+            self.population.payoff[patch,1] = group_benefit
+            # Payoff of social individual alone
+            self.population.payoff[patch,2] = self.b - self.c 
+            # Payoff of asocial individual alone
+            self.population.payoff[patch,3] = 0 
+
+            
 
     def demographic(self):
         """Life, Death, Mutation, Heredity and genealogy processes
@@ -158,7 +180,7 @@ if __name__ == "__main__":
              "pas":math.sqrt(0.3*0.1),
              "mu":0.001}
 
-    tracked_values = ["population.N","population.proportions"]
+    tracked_values = ["population.payoff"]
 
     a = ToyModel(param, tracked_values)
 
