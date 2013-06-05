@@ -5,8 +5,24 @@
 import pylab as plt
 import numpy as np
 
-def groupsize_density(self):
-    pass
+def groupsize_density(trace,T):
+    """Visualize group density from population.proportions
+ 
+    :param traces: population.proportions value. 
+    :type traces: np.array float"""
+    
+    grps_size = []
+
+    for i in trace[:,2]:
+        grps_size += [i]*i
+    for i in trace[:,1]:
+        grps_size += [1]*i
+    plt.hist(grps_size,T,histtype="step")
+    plt.xlim(0, T)
+    plt.xlabel("Group size")
+    plt.ylabel("Number of individuals experiencing it")
+    plt.show()
+    
 
 def proportions(traces,phenotype=True,group=True):
     """Visualize population.proportions traces
@@ -74,14 +90,14 @@ def proportions(traces,phenotype=True,group=True):
 if __name__ == "__main__":
     import math
     from toymodel import ToyModel
-    param = {"N":1000,
-             "T":100,
+    param = {"N":100,
+             "T":10,
              "b":20,
              "c":1,
              "ps":0.8,
              "pa":0.3,
              "pas":math.sqrt(0.8*0.3),
-             "mu":0.9}
+             "mu":0.01}
 
     tracked_values = ["population.proportions"]
 
@@ -92,9 +108,12 @@ if __name__ == "__main__":
     print("\n Population:")
     print(a.population)
     print("\n Run:")
-    a.play(10)
+    a.play(500)
 
     #print(a.traces)
-    proportions(a.traces[0]["population.proportions"],True,False)
-    proportions(a.traces[0]["population.proportions"],False,True)
-    proportions(a.traces[0]["population.proportions"],True,True)
+    groupsize_density(a.traces[0]["population.proportions"][0],a.population.T)
+    groupsize_density(a.traces[0]["population.proportions"][499],a.population.T)
+    #proportions(a.traces[0]["population.proportions"],True,False)
+    #proportions(a.traces[0]["population.proportions"],False,True)
+    #proportions(a.traces[0]["population.proportions"],True,True)
+    
