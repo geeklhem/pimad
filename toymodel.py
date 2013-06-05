@@ -195,8 +195,17 @@ class ToyModel(model.Model):
                    self.population.genealogy,
         =========  ============================
         """ 
-        pass
 
+        ## Reset of the individuals population arrays
+        self.population.repartition[:] = 0
+        self.population.genealogy[:] = -1
+
+        ## Shuffling the individuals ! 
+        p = numpy.random.permutation(self.population.N)
+        self.population.phenotype = self.population.phenotype[p] 
+        self.population.genotype = self.population.genotype[p]
+
+                   
     def phenotype_heredity(self,phenotype,genotype):
         """Return the phenotype of the child cell given the one of the parent.
         
@@ -222,7 +231,7 @@ if __name__ == "__main__":
              "pas":math.sqrt(0.3*0.1),
              "mu":0.9}
 
-    tracked_values = ["population.payoff"]
+    tracked_values = ["population.proportions"]
 
     a = ToyModel(param, tracked_values)
 
@@ -231,5 +240,5 @@ if __name__ == "__main__":
     print("\n Population:")
     print(a.population)
     print("\n Run:")
-    a.play(5)
+    a.play(10)
     print(a.traces)
