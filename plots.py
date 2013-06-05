@@ -44,7 +44,7 @@ def proportions(traces,phenotype=True,group=True):
         general[n,2] = sum(trace[:,2])
         general[n,3] = sum(trace[:,3])
 
-    X = range(len(trace))
+    X = range(len(traces))
    
     if phenotype and group:
         Y1 = general[:,1] - general[:,0] 
@@ -67,7 +67,6 @@ def proportions(traces,phenotype=True,group=True):
     elif phenotype and not group:
         Y1 = general[:,0]+general[:,2]
         Y2 = general[:,3]+general[:,1]-Y1
-        
         plt.bar(X,Y1, facecolor='#9999ff', edgecolor='white',label="Social")
         plt.bar(X,Y2,bottom=Y1, facecolor='#ff9999', edgecolor='white',label="Asocial")
 
@@ -90,8 +89,8 @@ def proportions(traces,phenotype=True,group=True):
 if __name__ == "__main__":
     import math
     from toymodel import ToyModel
-    param = {"N":100,
-             "T":10,
+    param = {"N":100000,
+             "T":100,
              "b":20,
              "c":1,
              "ps":0.8,
@@ -108,12 +107,12 @@ if __name__ == "__main__":
     print("\n Population:")
     print(a.population)
     print("\n Run:")
-    a.play(500)
+    a.play(50)
 
     #print(a.traces)
-    groupsize_density(a.traces[0]["population.proportions"][0],a.population.T)
-    groupsize_density(a.traces[0]["population.proportions"][499],a.population.T)
-    #proportions(a.traces[0]["population.proportions"],True,False)
-    #proportions(a.traces[0]["population.proportions"],False,True)
-    #proportions(a.traces[0]["population.proportions"],True,True)
+    #groupsize_density(a.traces[0]["population.proportions"][0],a.population.T)
+    #groupsize_density(a.traces[0]["population.proportions"][9],a.population.T)
+    proportions(a.traces[0]["population.proportions"],True,False)
+    proportions(a.traces[0]["population.proportions"],False,True)
+    proportions(a.traces[0]["population.proportions"],True,True)
     
