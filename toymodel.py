@@ -39,6 +39,7 @@ class ToyModel(model.Model):
         self.payoff()
         self.demographic()
         
+        
 
     def aggregation(self):
         """ Define the aggregation process.
@@ -63,10 +64,10 @@ class ToyModel(model.Model):
         for patch in range(self.population.Npatch):
             # Here patch size is assumed to always be T.
             patch_begin = patch * self.population.T
-            patch_end = patch_begin + self.population.T - 1
+            patch_end = patch_begin + self.population.T 
 
             ## Choose a random recruiter and compute the probabilities to attach.
-            recruiter_index = random.randint(patch_begin,patch_end)
+            recruiter_index = random.randint(patch_begin,patch_end-1)
             
             if self.population.phenotype[recruiter_index]:
                 # The recruiter is social.
@@ -186,19 +187,24 @@ class ToyModel(model.Model):
         
         
     def dispersion(self):
-        """Global shuffling and reset of individuals population.arrays
+        """Global shuffling and reset population.arrays
         
         =========  ============================
         **Write**  self.population.phenotype,
                    self.population.genotype,
                    self.population.repartition,
                    self.population.genealogy,
+                   self.population.payoff.
+                   self.population.proportions.
         =========  ============================
         """ 
 
         ## Reset of the individuals population arrays
         self.population.repartition[:] = 0
         self.population.genealogy[:] = -1
+
+        ## Flush the arrays patches.
+        self.population.flush_patch_arrays()
 
         ## Shuffling the individuals ! 
         p = numpy.random.permutation(self.population.N)
@@ -221,13 +227,12 @@ class ToyModel(model.Model):
 
 if __name__ == "__main__":
     import math
-
     param = {"N":100,
              "T":10,
-             "b":3,
+             "b":20,
              "c":1,
-             "ps":0.3,
-             "pa":0.1,
+             "ps":0.8,
+             "pa":0.3,
              "pas":math.sqrt(0.3*0.1),
              "mu":0.9}
 
@@ -241,4 +246,3 @@ if __name__ == "__main__":
     print(a.population)
     print("\n Run:")
     a.play(10)
-    print(a.traces)

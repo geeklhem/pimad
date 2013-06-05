@@ -8,7 +8,8 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>population &mdash; Pimad beta documentation</title>
+    <title>population &mdash; Pimad beta 3
+ documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -16,7 +17,8 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     'beta',
+        VERSION:     'beta 3
+',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +27,8 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Pimad beta documentation" href="../index.html" />
+    <link rel="top" title="Pimad beta 3
+ documentation" href="../index.html" />
     <link rel="up" title="Module code" href="index.html" /> 
   </head>
   <body>
@@ -38,7 +41,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Pimad beta documentation</a> &raquo;</li>
+        <li><a href="../index.html">Pimad beta 3
+ documentation</a> &raquo;</li>
           <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -55,15 +59,11 @@
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 <div class="viewcode-block" id="Population"><a class="viewcode-back" href="../population.html#population.Population">[docs]</a><span class="k">class</span> <span class="nc">Population</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; A generic class that represent populations data.</span>
+    <span class="sd">&quot;&quot;&quot; A generic class that represents populations data.</span>
 
 <span class="sd">    :param N: Population size.</span>
-<span class="sd">    :param Z: Population resident phenotype.        </span>
-<span class="sd">    :param G: Population resident genotype.</span>
 <span class="sd">    :param T: Patch size.</span>
 <span class="sd">    :type N: int</span>
-<span class="sd">    :type Z: float        </span>
-<span class="sd">    :type G: float        </span>
 <span class="sd">    :type T: int</span>
 
 <span class="sd">    **Attributes**</span>
@@ -71,110 +71,66 @@
 <span class="sd">    ====================================== ===============================================</span>
 <span class="sd">    Name                                   Value       </span>
 <span class="sd">    ====================================== ===============================================</span>
-<span class="sd">    :class:`Population`.N                  Population size (int) </span>
-<span class="sd">    :class:`Population`.T                  Aggregation patch size (int) </span>
-<span class="sd">    :class:`Population`.resident_phenotype Resident phenotype of the population (float) </span>
-<span class="sd">    :class:`Population`.resident_genotype  Resident genotype of the population (float) </span>
-<span class="sd">    :class:`Population`.phenotype          Individual phenotype (N np.array float)        </span>
-<span class="sd">    :class:`Population`.genotype           Individual genotype (N np.array float)</span>
-<span class="sd">    :class:`Population`.payoff             Individual payoff (N np.array float)</span>
-<span class="sd">    :class:`Population`.group              Individual &quot;is in a group ?&quot; (N np.array bool)</span>
+<span class="sd">    **Integer**</span>
+<span class="sd">    -------------------------------------- -----------------------------------------------</span>
+<span class="sd">    :class:`Population`.N                  Population size (int).</span>
+<span class="sd">    :class:`Population`.T                  Aggregation patch size (int). </span>
+<span class="sd">    :class:`Population`.Npatch             Number of patches (int).</span>
+<span class="sd">    **Individuals data**</span>
+<span class="sd">    -------------------------------------- -----------------------------------------------</span>
+<span class="sd">    :class:`Population`.phenotype          Individual phenotype (N np.array bool).        </span>
+<span class="sd">    :class:`Population`.genotype           Individual genotype (N np.array bool).</span>
+<span class="sd">    :class:`Population`.repartition        Individual &quot;is in a group ?&quot; (N np.array bool).</span>
+<span class="sd">    :class:`Population`.genealogy          Index of individual parent (N np.array int).    </span>
+<span class="sd">    **Patch data**</span>
+<span class="sd">    -------------------------------------- -----------------------------------------------</span>
+<span class="sd">    :class:`Population`.proportions        Group comp proportions (N/T*4 np.array float).    </span>
+<span class="sd">    :class:`Population`.payoff             Payoffs by patch (N/T*4 np.array float).</span>
 <span class="sd">    ====================================== ===============================================</span>
+<span class="sd">    </span>
+<span class="sd">    .. note ::</span>
+<span class="sd">      Nb. :class:`Population`.genealogy[i]  is the index of the individual i parent in the individuals arrays of precedent generation. If the individual survived for more than one generation, it&#39;s -1. </span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">T</span><span class="p">,</span><span class="n">Z</span><span class="p">,</span><span class="n">G</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">T</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Population constructor.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">N</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">resident_phenotype</span> <span class="o">=</span> <span class="n">Z</span>
-        <span class="k">if</span> <span class="n">G</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">resident_genotype</span>  <span class="o">=</span> <span class="n">G</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">resident_genotype</span>  <span class="o">=</span> <span class="mf">0.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">T</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">genotype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">G</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">phenotype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Z</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">payoff</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Npatch</span> <span class="o">=</span> <span class="n">N</span><span class="o">/</span><span class="n">T</span>
+        <span class="k">if</span> <span class="n">N</span><span class="o">%</span><span class="n">T</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Npatch</span> <span class="o">+=</span> <span class="mi">1</span>
 
-    <span class="k">def</span> <span class="nf">_compute_groupsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create the groupsize array.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">group_size</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int</span><span class="p">)</span> 
-        <span class="k">for</span> <span class="n">n</span><span class="p">,</span><span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">group_size</span><span class="p">[</span><span class="n">n</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">+=</span> <span class="n">i</span>
+        <span class="c">#Individuals data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genotype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phenotype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repartition</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genealogy</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+       
+        <span class="c">#Patch data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">payoff</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Npatch</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proportions</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Npatch</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Population.update"><a class="viewcode-back" href="../population.html#population.Population.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update the internal cache variable after the aggregation proccess (i.e group_size).&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_groupsize</span><span class="p">()</span>
-</div>
-<div class="viewcode-block" id="Population.flush"><a class="viewcode-back" href="../population.html#population.Population.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Shuffle individuals arrays and reset the group/payoff arrays.&quot;&quot;&quot;</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">genotype</span><span class="p">)</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phenotype</span><span class="p">)</span>
-	<span class="c"># TO DO : Keep the two values together columnwise.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">payoff</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="p">)</span>
-        </div>
-<div class="viewcode-block" id="Population.group_number"><a class="viewcode-back" href="../population.html#population.Population.group_number">[docs]</a>    <span class="k">def</span> <span class="nf">group_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">i</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Return the group of individual i, 0 if none.</span>
+<div class="viewcode-block" id="Population.flush_patch_arrays"><a class="viewcode-back" href="../population.html#population.Population.flush_patch_arrays">[docs]</a>    <span class="k">def</span> <span class="nf">flush_patch_arrays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c">#Patch data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">payoff</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Npatch</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proportions</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Npatch</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
 
-<span class="sd">        :param i: individual number &lt; self.N.</span>
-<span class="sd">        :type i: int </span>
-<span class="sd">        :return: int -- group number or 0 if alone.&quot;&quot;&quot;</span>
-        
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mi">0</span></div>
-<div class="viewcode-block" id="Population.traits_values"><a class="viewcode-back" href="../population.html#population.Population.traits_values">[docs]</a>    <span class="k">def</span> <span class="nf">traits_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Return the list of phenotype values found in this population.</span>
-
-<span class="sd">        :return: numpy array -- array of unique occurences in :class:`Population`.phenotype.</span>
-<span class="sd">        &quot;&quot;&quot;</span> 
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">phenotype</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="Population.trait_number"><a class="viewcode-back" href="../population.html#population.Population.trait_number">[docs]</a>    <span class="k">def</span> <span class="nf">trait_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the number of individual having a social trait of z.</span>
-
-<span class="sd">        :param z: social trait value.</span>
-<span class="sd">        :type z: float</span>
-<span class="sd">        :return: int -- number of &quot;z-individuals&quot;. </span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phenotype</span><span class="p">,[</span><span class="n">z</span><span class="p">,</span><span class="n">z</span><span class="p">])[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span>
-</div>
-<div class="viewcode-block" id="Population.group_density"><a class="viewcode-back" href="../population.html#population.Population.group_density">[docs]</a>    <span class="k">def</span> <span class="nf">group_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Return the group distribution of z-social individuals.</span>
-
-
-<span class="sd">        :param z: social trait value.</span>
-<span class="sd">        :type z: float</span>
-<span class="sd">        :return: numpy array [1,T] -- density of groups. &quot;&quot;&quot;</span>
-        <span class="n">density</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">n</span><span class="p">,</span><span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phenotype</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">z</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">[</span><span class="n">n</span><span class="p">]:</span>
-                    <span class="n">density</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">group_size</span><span class="p">[</span><span class="n">i</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">density</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">density</span>
 </div>
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">s</span> <span class="o">=</span> <span class="s">&quot;Generic population: </span><span class="se">\n</span><span class="s">&quot;</span>
-        <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;Population size: {:1.0e}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
-        <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;Patch size: {}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-        <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;Resident phenotype : {} and genotype : {}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resident_phenotype</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">resident_genotype</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;Population size: {0:1.0e}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;Patch size: {0}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">s</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s">&quot;Generic population of {:1.0e} individuals.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&quot;Generic population of {0:1.0e} individuals.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
 </div>
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span>
-
+    <span class="c"># Test code</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">group_size</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">group_density</span><span class="p">(</span><span class="mf">0.1</span><span class="p">))</span>
+   
 </pre></div>
 
           </div>
@@ -182,6 +138,10 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+<h3><a href="../index.html">Table Of Contents</a></h3>
+<ul class="simple">
+</ul>
+
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
@@ -208,7 +168,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Pimad beta documentation</a> &raquo;</li>
+        <li><a href="../index.html">Pimad beta 3
+ documentation</a> &raquo;</li>
           <li><a href="index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

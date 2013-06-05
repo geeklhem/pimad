@@ -47,8 +47,8 @@ class Population:
             self.Npatch += 1
 
         #Individuals data
-        self.genotype = numpy.array([0]*N, dtype=numpy.bool)
-        self.phenotype = numpy.array([0]*N, dtype=numpy.bool)
+        self.genotype = numpy.array([0]*(N/2)+[1]*(N/2), dtype=numpy.bool)
+        self.phenotype = numpy.array([0]*(N/2)+[1]*(N/2), dtype=numpy.bool)
         self.repartition = numpy.array([0]*N, dtype=numpy.bool)
         self.genealogy = numpy.array([0]*N, dtype=numpy.int)
        
@@ -56,6 +56,10 @@ class Population:
         self.payoff = numpy.zeros((self.Npatch,4),dtype=numpy.float)
         self.proportions = numpy.zeros((self.Npatch,4),dtype=numpy.float)
 
+    def flush_patch_arrays(self):
+        #Patch data
+        self.payoff = numpy.zeros((self.Npatch,4),dtype=numpy.float)
+        self.proportions = numpy.zeros((self.Npatch,4),dtype=numpy.float)
 
 
     def __str__(self):

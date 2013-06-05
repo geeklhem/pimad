@@ -3,6 +3,7 @@
 """Class to represent poulations data."""
 # Import built-in modules
 import numpy
+import copy
 
 # Import custom modules
 import population
@@ -57,7 +58,7 @@ class Model:
         #Create a new trace dict with a list by tracked values.
         self.traces.append({})
         for t in self.tracked:
-            self.traces[-1][t] = []
+            self.traces[-1][t] = [0]*nb_generations
 
         #Generation loop
         for g in range(nb_generations):
@@ -65,8 +66,7 @@ class Model:
             self.step()
             # Add the values of tracked variable to the trace.
             for t in self.tracked:
-                self.traces[-1][t].append(reduce(getattr,t.split("."),self))
-    
+                self.traces[-1][t][g] = copy.copy(reduce(getattr,t.split("."),self))
 
     def __str__(self):
         s = "Generic model.\n"
