@@ -63,7 +63,7 @@ class ToyModel(model.Model):
         for patch in range(self.population.Npatch):
             # Here patch size is assumed to always be T.
             patch_begin = patch * self.population.T
-            patch_end = patch_begin + self.population.T
+            patch_end = patch_begin + self.population.T - 1
 
             ## Choose a random recruiter and compute the probabilities to attach.
             recruiter_index = random.randint(patch_begin,patch_end)
@@ -129,7 +129,7 @@ class ToyModel(model.Model):
             
 
     def demographic(self):
-        """Life, Death, Mutation, Heredity and genealogy processes
+        """Global life, Death, Mutation, Heredity and genealogy processes
         
         =========  ============================
         **Read**   self.population.phenotype,
@@ -138,13 +138,53 @@ class ToyModel(model.Model):
                    self.population.payoff.
         **Write**  self.population.phenotype,
                    self.population.genotype,
-                   self.population.repartition,
-                   self.population.genealogy,
+                   self.population.genealogy.
         =========  ============================
         """     
         
-        pass
+        newborn_genotype = []
+        newborn_phenotype = []
+        newborn_genealogy = []
 
+        ## Normalize the payoff to give the fitness
+        fitness = numpy.array(self.population.payoff, dtype=numpy.float)
+        fitness -= numpy.min(fitness)
+        fitness /= numpy.max(fitness)
+        
+        #fitness index for the couples of (phenotype, repartition).
+        fitness_index = {(1,1):0, #social in group.
+                         (0,1):1, #asocial in group.
+                         (1,0):2, #social alone.
+                         (0,0):3} #asocial alone.
+
+        ## Each individual as a chance to reproduce once.
+        for n,g in enumerate(self.population.genotype):
+            p = self.population.phenotype[n] 
+            r = self.population.repartition[n]
+            patch = n/self.population.T
+            if random.random()<fitness[patch,fitness_index[(p,r)]]:
+                #The genotype is inherited or flipped if mutated.
+                if random.random()<self.param["mu"]:
+                    # Mutated : if g = 1, not g = 0 and if g = 0, not g = 1 
+                    newborn_genotype.append(not g)
+                else:
+                    newborn_genotype.append(g)
+                
+                # Phenotype is inherited according to the rules of phenotype_heredity().
+                newborn_phenotype.append(self.phenotype_heredity(p,g))
+                
+                # Genealogy is the index of the parent in the previous generation.
+                newborn_genealogy.append(n)
+
+        ## Death process : newborn are inserted in random position inside the new population, thus killing the one whose place they take.
+        for i in range(len(newborn_genotype)):
+            n = random.randint(0,self.population.N-1)
+            self.population.phenotype[n] = newborn_phenotype[i]
+            self.population.genotype[n]  = newborn_genotype[i]
+            self.population.genealogy[n] = newborn_genealogy[i]
+                                         
+        
+        
     def dispersion(self):
         """Global shuffling and reset of individuals population.arrays
         
@@ -157,16 +197,18 @@ class ToyModel(model.Model):
         """ 
         pass
 
-    def phenotype_heredity(self,phenotype):
+    def phenotype_heredity(self,phenotype,genotype):
         """Return the phenotype of the child cell given the one of the parent.
         
         :param phenotype: Phenotype of the parent. 
         :type phenotype: bool
+        :param genotype: genotype of the parent. 
+        :type genotype: bool
         :return: (bool) - Phenotype of the child. 
         .. note ::
           Here it's an identity, this method should be overrided in a inherited model.
         """
-        return phenotype
+        return genotype
 
 if __name__ == "__main__":
     import math
@@ -178,7 +220,7 @@ if __name__ == "__main__":
              "ps":0.3,
              "pa":0.1,
              "pas":math.sqrt(0.3*0.1),
-             "mu":0.001}
+             "mu":0.9}
 
     tracked_values = ["population.payoff"]
 
