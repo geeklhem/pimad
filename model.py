@@ -29,8 +29,8 @@ class Model:
     
     def __init__(self,param,tracked_values=[]):
         """ Model object constructor"""
-        # Create a "Population" object with parameters given by the param dict. (and Z=1)
-        self.population = population.Population(param["N"],param["T"],1)
+        # Create a "Population" object with parameters given by the param dict.
+        self.population = population.Population(param["N"],param["T"])
         
         # b and c are copied into the model namespace in order to access them with self.b 
         self.b = param["b"]
