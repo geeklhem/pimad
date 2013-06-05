@@ -7,12 +7,8 @@ class Population:
     """ A generic class that represents populations data.
 
     :param N: Population size.
-    :param Z: Population resident phenotype.        
-    :param G: Population resident genotype.
     :param T: Patch size.
     :type N: int
-    :type Z: float        
-    :type G: float        
     :type T: int
 
     **Attributes**
@@ -20,98 +16,52 @@ class Population:
     ====================================== ===============================================
     Name                                   Value       
     ====================================== ===============================================
-    :class:`Population`.N                  Population size (int) 
-    :class:`Population`.T                  Aggregation patch size (int) 
-    :class:`Population`.resident_phenotype Resident phenotype of the population (float) 
-    :class:`Population`.resident_genotype  Resident genotype of the population (float) 
-    :class:`Population`.patch_du           Patch of the individual (N np.array int)        
-    :class:`Population`.phenotype          Individual phenotype (N np.array float)        
-    :class:`Population`.genotype           Individual genotype (N np.array float)
-    :class:`Population`.payoff             Individual payoff (N np.array float)
-    :class:`Population`.repartition        Individual "is in a group ?" (N np.array bool)
+    **Integer**
+    -------------------------------------- -----------------------------------------------
+    :class:`Population`.N                  Population size (int).
+    :class:`Population`.T                  Aggregation patch size (int). 
+    :class:`Population`.Npatch             Number of patches (int).
+    **Individuals data**
+    -------------------------------------- -----------------------------------------------
+    :class:`Population`.phenotype          Individual phenotype (N np.array bool).        
+    :class:`Population`.genotype           Individual genotype (N np.array bool).
+    :class:`Population`.repartition        Individual "is in a group ?" (N np.array bool).
+    :class:`Population`.genealogy          Index of individual parent (N np.array int).    
+    **Patch data**
+    -------------------------------------- -----------------------------------------------
+    :class:`Population`.proportions        Group comp proportions (N/T*4 np.array float).    
+    :class:`Population`.payoff             Payoffs by patch (N/T*4 np.array float).
     ====================================== ===============================================
+    
+    .. note ::
+      Nb. :class:`Population`.genealogy[i]  is the index of the individual i parent in the individuals arrays of precedent generation. If the individual survived for more than one generation, it's -1. 
 
     """
 
-    def __init__(self,N,T,Z,G=None):
+    def __init__(self,N,T):
         """Population constructor."""
         self.N = N 
-        self.resident_phenotype = Z
-        if G != None:
-            self.resident_genotype  = G
-        else:
-            self.resident_genotype  = 0.0
         self.T = T
-	self.patch_du = numpy.array([0]*N)
-        self.genotype = numpy.array([G]*N, dtype=numpy.float)
-        self.phenotype = numpy.array([Z]*N, dtype=numpy.float)
-        self.repartition = numpy.array([0]*N)
-        self.payoff = numpy.array([0]*N)
-        self.update()
+        self.Npatch = N/T
+        if N%T:
+            self.Npatch += 1
 
-    def _compute_groupsize(self):
-        """Create the groupsize array."""
-        self.group_size = numpy.array([0] * (self.N/self.T),dtype=numpy.int) 
-        for n,i in enumerate(self.repartition):
-            self.group_size[n/self.T] += i
-
-    def update(self):
-        """Update the internal cache variable after the aggregation proccess (i.e group_size)."""
-        self._compute_groupsize()
-
-    def flush(self):
-        """ Shuffle individuals arrays and reset the group/payoff arrays."""
-        self.repartition = numpy.array([0]*N)
-        self.payoff = numpy.array([0]*N)
-        
-    def group_number(self,i):
-        """ Return the group of individual i, 0 if none.
-
-        :param i: individual number < self.N.
-        :type i: int 
-        :return: int -- group number or 0 if alone."""
-        
-        if self.repartition[i]:
-            return (i/self.T)+1
-        else:
-            return 0
-    def traits_values(self):
-        """ Return the list of phenotype values found in this population.
-
-        :return: numpy array -- array of unique occurences in :class:`Population`.phenotype.
-        """ 
-        return numpy.unique(a.phenotype)
-
-    def trait_number(self,z):
-        """Return the number of individual having a social trait of z.
-
-        :param z: social trait value.
-        :type z: float
-        :return: int -- number of "z-individuals". 
-        """
-        return np.histogram(self.phenotype,[z,z])[0][0]/self.N
-
-    def group_density(self,z):
-        """ Return the group distribution of z-social individuals.
+        #Individuals data
+        self.genotype = numpy.array([0]*N, dtype=numpy.bool)
+        self.phenotype = numpy.array([0]*N, dtype=numpy.bool)
+        self.repartition = numpy.array([0]*N, dtype=numpy.bool)
+        self.genealogy = numpy.array([0]*N, dtype=numpy.int)
+       
+        #Patch data
+        self.payoff = numpy.zeros((self.Npatch,4),dtype=numpy.float)
+        self.proportions = numpy.zeros((self.Npatch,4),dtype=numpy.float)
 
 
-        :param z: social trait value.
-        :type z: float
-        :return: numpy array [1,T] -- density of groups. """
-        density = [0]*(self.T+1)
-        for n,i in enumerate(self.phenotype):
-            if i == z:
-                if self.repartition[n]:
-                    density[self.group_size[i/self.T]] += 1
-                else:
-                    density[0] += 1
-        return density
 
     def __str__(self):
         s = "Generic population: \n"
         s += "Population size: {0:1.0e}\n".format(self.N)
         s += "Patch size: {0}\n".format(self.T)
-        s += "Resident phenotype : {0} and genotype : {1}\n".format(self.resident_phenotype,self.resident_genotype)
         return s
 
     def __repr__(self):
@@ -119,9 +69,6 @@ class Population:
 
 if __name__ == "__main__":
     # Test code
-    a = Population(1000,100,0.1)
-
+    a = Population(1000,100)
     print(a)
-    print(a.group_size)
-    print(a.group_density(0.1))
-
+   
