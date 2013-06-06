@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>toymodel &mdash; Pimad beta 0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'beta 0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Pimad beta 0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">Pimad beta 0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for toymodel</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env/ python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;The toy model as defined by Garcia &amp; De Monte 2012.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">import</span> <span class="nn">model</span>
+
+
+<div class="viewcode-block" id="ToyModel"><a class="viewcode-back" href="../toymodel.html#toymodel.ToyModel">[docs]</a><span class="k">class</span> <span class="nc">ToyModel</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A toy model of group formation by differential attachment. [Garcia &amp; De Monte 2012]</span>
+
+
+<span class="sd">    Needs the following parameters in *model.param* dict : </span>
+<span class="sd">    </span>
+<span class="sd">    =====  =====================================================================</span>
+<span class="sd">    Name   Parameter</span>
+<span class="sd">    =====  =====================================================================</span>
+<span class="sd">    b      Benefits in the pgg (int)</span>
+<span class="sd">    c      Linear cost of altruism (int)</span>
+<span class="sd">    ps     Attachment probability of two social individuals  (float).</span>
+<span class="sd">    pa     Attachment probability of two asocial individuals (float).</span>
+<span class="sd">    pas    Attachment probability of an social and an asocial individual (float).</span>
+<span class="sd">    mu     Mutation rate (float).</span>
+<span class="sd">    =====  =====================================================================</span>
+
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ToyModel.step"><a class="viewcode-back" href="../toymodel.html#toymodel.ToyModel.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Runs one generation of the model</span>
+<span class="sd">    </span>
+<span class="sd">        Called by :class:`Population`.play at each generation &quot;&quot;&quot;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">dispersion</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">aggregation</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">payoff</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">demographic</span><span class="p">()</span>
+        
+        
+</div>
+<div class="viewcode-block" id="ToyModel.aggregation"><a class="viewcode-back" href="../toymodel.html#toymodel.ToyModel.aggregation">[docs]</a>    <span class="k">def</span> <span class="nf">aggregation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Define the aggregation process.</span>
+<span class="sd">        </span>
+<span class="sd">        =========  ============================</span>
+<span class="sd">        **Read**   self.population.phenotype.</span>
+<span class="sd">        **Write**  self.population.repartition, </span>
+<span class="sd">                   self.population.proportions.</span>
+<span class="sd">        =========  ============================</span>
+
+<span class="sd">        .. note ::</span>
+<span class="sd">           By line in self.population.proportions:</span>
+<span class="sd">        </span>
+<span class="sd">           0. Social individual in the group.</span>
+<span class="sd">           1. Individuals in the group.</span>
+<span class="sd">           2. Social individuals alone.</span>
+<span class="sd">           3. Individuals alone.</span>
+<span class="sd">  </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="c">## For each patch</span>
+        <span class="k">for</span> <span class="n">patch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">Npatch</span><span class="p">):</span>
+            <span class="c"># Here patch size is assumed to always be T.</span>
+            <span class="n">patch_begin</span> <span class="o">=</span> <span class="n">patch</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">patch_end</span> <span class="o">=</span> <span class="n">patch_begin</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">T</span> 
+
+            <span class="c">## Choose a random recruiter and compute the probabilities to attach.</span>
+            <span class="n">recruiter_index</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">patch_begin</span><span class="p">,</span><span class="n">patch_end</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">phenotype</span><span class="p">[</span><span class="n">recruiter_index</span><span class="p">]:</span>
+                <span class="c"># The recruiter is social.</span>
+                <span class="n">proba</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s">&quot;pas&quot;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s">&quot;ps&quot;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span> 
+                <span class="c"># The recruiter is asocial.</span>
+                <span class="n">proba</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s">&quot;pa&quot;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s">&quot;pas&quot;</span><span class="p">])</span>
+
+            <span class="c">## Loop on patch individuals and give them a chance to attach to the group.</span>
+            <span class="k">for</span> <span class="n">n</span><span class="p">,</span><span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">phenotype</span><span class="p">[</span><span class="n">patch_begin</span><span class="p">:</span><span class="n">patch_end</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">proba</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">repartition</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="n">patch_begin</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">proportions</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">i</span> <span class="c">#= 1 if social</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">proportions</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">proportions</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">i</span> <span class="c">#= 1 if social</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">proportions</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                       
+            <span class="c"># The recruiter is always in the group. </span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">repartition</span><span class="p">[</span><span class="n">recruiter_index</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">repartition</span><span class="p">[</span><span class="n">recruiter_index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">proportions</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">i</span> <span class="c">#= 1 if social</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">proportions</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">proportions</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">-=</span> <span class="n">i</span> <span class="c">#= 1 if social</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">proportions</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+</div>
+<div class="viewcode-block" id="ToyModel.payoff"><a class="viewcode-back" href="../toymodel.html#toymodel.ToyModel.payoff">[docs]</a>    <span class="k">def</span> <span class="nf">payoff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the payoff for each patch and each combinaison of repartition and phenotype.</span>
+<span class="sd">        </span>
+<span class="sd">        =========  ============================</span>
+<span class="sd">        **Read**   self.population.phenotype.</span>
+<span class="sd">                   self.population.repartition, </span>
+<span class="sd">        **Write**  self.population.payoff.</span>
+<span class="sd">        =========  ============================</span>
+<span class="sd">        </span>
+<span class="sd">        .. note ::</span>
+<span class="sd">           By line in self.population.payoff:</span>
+<span class="sd">        </span>
+<span class="sd">           0. Payoff of social individual in a group</span>
+<span class="sd">           1. Payoff of asocial individual in a group</span>
+<span class="sd">           2. Payoff of social individual alone</span>
+<span class="sd">           3. Payoff of asocial individual alone</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">## For each patch</span>
+        <span class="k">for</span> <span class="n">patch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">Npatch</span><span class="p">):</span>
+            <span class="n">group_benefit</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">proportions</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">group_benefit</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">proportions</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>  
+            
+            <span class="c"># Payoff of social individual in a group</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">payoff</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">group_benefit</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span> 
+            <span class="c"># Payoff of asocial individual in a group</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">payoff</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">group_benefit</span>
+            <span class="c"># Payoff of social individual alone</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">payoff</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span> 
+            <span class="c"># Payoff of asocial individual alone</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">payoff</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> 
+
+            
+</div>
+<div class="viewcode-block" id="ToyModel.demographic"><a class="viewcode-back" href="../toymodel.html#toymodel.ToyModel.demographic">[docs]</a>    <span class="k">def</span> <span class="nf">demographic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Global life, Death, Mutation, Heredity and genealogy processes</span>
+<span class="sd">        </span>
+<span class="sd">        =========  ============================</span>
+<span class="sd">        **Read**   self.population.phenotype,</span>
+<span class="sd">                   self.population.genotype,</span>
+<span class="sd">                   self.population.repartition,</span>
+<span class="sd">                   self.population.payoff.</span>
+<span class="sd">        **Write**  self.population.phenotype,</span>
+<span class="sd">                   self.population.genotype,</span>
+<span class="sd">                   self.population.genealogy.</span>
+<span class="sd">        =========  ============================</span>
+<span class="sd">        &quot;&quot;&quot;</span>     
+        
+        <span class="n">newborn_genotype</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">newborn_phenotype</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">newborn_genealogy</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c">## Normalize the payoff to give the fitness</span>
+        <span class="n">fitness</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">payoff</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="n">fitness</span> <span class="o">-=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fitness</span><span class="p">)</span>
+        <span class="n">fitness</span> <span class="o">/=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">fitness</span><span class="p">)</span>
+        
+        <span class="c">#fitness index for the couples of (phenotype, repartition).</span>
+        <span class="n">fitness_index</span> <span class="o">=</span> <span class="p">{(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="mi">0</span><span class="p">,</span> <span class="c">#social in group.</span>
+                         <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="mi">1</span><span class="p">,</span> <span class="c">#asocial in group.</span>
+                         <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span><span class="mi">2</span><span class="p">,</span> <span class="c">#social alone.</span>
+                         <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span><span class="mi">3</span><span class="p">}</span> <span class="c">#asocial alone.</span>
+
+        <span class="c">## Each individual as a chance to reproduce once.</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span><span class="n">g</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">genotype</span><span class="p">):</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">phenotype</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> 
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">repartition</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+            <span class="n">patch</span> <span class="o">=</span> <span class="n">n</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">T</span>
+            <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">&lt;</span><span class="n">fitness</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span><span class="n">fitness_index</span><span class="p">[(</span><span class="n">p</span><span class="p">,</span><span class="n">r</span><span class="p">)]]:</span>
+                <span class="c">#The genotype is inherited or flipped if mutated.</span>
+                <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s">&quot;mu&quot;</span><span class="p">]:</span>
+                    <span class="c"># Mutated : if g = 1, not g = 0 and if g = 0, not g = 1 </span>
+                    <span class="n">newborn_genotype</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="ow">not</span> <span class="n">g</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">newborn_genotype</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+                
+                <span class="c"># Phenotype is inherited according to the rules of phenotype_heredity().</span>
+                <span class="n">newborn_phenotype</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phenotype_heredity</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">g</span><span class="p">))</span>
+                
+                <span class="c"># Genealogy is the index of the parent in the previous generation.</span>
+                <span class="n">newborn_genealogy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+        <span class="c">## Death process : newborn are inserted in random position inside the new population, thus killing the one whose place they take.</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">newborn_genotype</span><span class="p">)):</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">phenotype</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">newborn_phenotype</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">genotype</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>  <span class="o">=</span> <span class="n">newborn_genotype</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">genealogy</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">newborn_genealogy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                                         
+        
+        </div>
+<div class="viewcode-block" id="ToyModel.dispersion"><a class="viewcode-back" href="../toymodel.html#toymodel.ToyModel.dispersion">[docs]</a>    <span class="k">def</span> <span class="nf">dispersion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Global shuffling and reset population.arrays</span>
+<span class="sd">        </span>
+<span class="sd">        =========  ============================</span>
+<span class="sd">        **Write**  self.population.phenotype,</span>
+<span class="sd">                   self.population.genotype,</span>
+<span class="sd">                   self.population.repartition,</span>
+<span class="sd">                   self.population.genealogy,</span>
+<span class="sd">                   self.population.payoff.</span>
+<span class="sd">                   self.population.proportions.</span>
+<span class="sd">        =========  ============================</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+
+        <span class="c">## Reset of the individuals population arrays</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">repartition</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">genealogy</span><span class="p">[:]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="c">## Flush the arrays patches.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">flush_patch_arrays</span><span class="p">()</span>
+
+        <span class="c">## Shuffling the individuals ! </span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">phenotype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">phenotype</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">genotype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">genotype</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+
+                   </div>
+<div class="viewcode-block" id="ToyModel.phenotype_heredity"><a class="viewcode-back" href="../toymodel.html#toymodel.ToyModel.phenotype_heredity">[docs]</a>    <span class="k">def</span> <span class="nf">phenotype_heredity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">phenotype</span><span class="p">,</span><span class="n">genotype</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the phenotype of the child cell given the one of the parent.</span>
+<span class="sd">        </span>
+<span class="sd">        :param phenotype: Phenotype of the parent. </span>
+<span class="sd">        :type phenotype: bool</span>
+<span class="sd">        :param genotype: genotype of the parent. </span>
+<span class="sd">        :type genotype: bool</span>
+<span class="sd">        :return: (bool) - Phenotype of the child. </span>
+<span class="sd">        .. note ::</span>
+<span class="sd">          Here it&#39;s an identity, this method should be overrided in a inherited model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">genotype</span>
+</div></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">math</span>
+    <span class="n">param</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;N&quot;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span>
+             <span class="s">&quot;T&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span>
+             <span class="s">&quot;b&quot;</span><span class="p">:</span><span class="mi">20</span><span class="p">,</span>
+             <span class="s">&quot;c&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
+             <span class="s">&quot;ps&quot;</span><span class="p">:</span><span class="mf">0.8</span><span class="p">,</span>
+             <span class="s">&quot;pa&quot;</span><span class="p">:</span><span class="mf">0.3</span><span class="p">,</span>
+             <span class="s">&quot;pas&quot;</span><span class="p">:</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.3</span><span class="o">*</span><span class="mf">0.1</span><span class="p">),</span>
+             <span class="s">&quot;mu&quot;</span><span class="p">:</span><span class="mf">0.9</span><span class="p">}</span>
+
+    <span class="n">tracked_values</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;population.proportions&quot;</span><span class="p">]</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">ToyModel</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">tracked_values</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s"> Model:&quot;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s"> Population:&quot;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">population</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s"> Run:&quot;</span><span class="p">)</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../index.html">Table Of Contents</a></h3>
+<ul class="simple">
+</ul>
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">Pimad beta 0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Guilhem Doulcier.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

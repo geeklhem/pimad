@@ -1,0 +1,170 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>population &mdash; Pimad beta 0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'beta 0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Pimad beta 0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">Pimad beta 0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for population</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env/ python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Class to represent poulations data.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<div class="viewcode-block" id="Population"><a class="viewcode-back" href="../population.html#population.Population">[docs]</a><span class="k">class</span> <span class="nc">Population</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; A generic class that represents populations data.</span>
+
+<span class="sd">    :param N: Population size.</span>
+<span class="sd">    :param T: Patch size.</span>
+<span class="sd">    :type N: int</span>
+<span class="sd">    :type T: int</span>
+
+<span class="sd">    **Attributes**</span>
+
+<span class="sd">    ====================================== ===============================================</span>
+<span class="sd">    Name                                   Value       </span>
+<span class="sd">    ====================================== ===============================================</span>
+<span class="sd">    **Integer**</span>
+<span class="sd">    -------------------------------------- -----------------------------------------------</span>
+<span class="sd">    :class:`Population`.N                  Population size (int).</span>
+<span class="sd">    :class:`Population`.T                  Aggregation patch size (int). </span>
+<span class="sd">    :class:`Population`.Npatch             Number of patches (int).</span>
+<span class="sd">    **Individuals data**</span>
+<span class="sd">    -------------------------------------- -----------------------------------------------</span>
+<span class="sd">    :class:`Population`.phenotype          Individual phenotype (N np.array bool).        </span>
+<span class="sd">    :class:`Population`.genotype           Individual genotype (N np.array bool).</span>
+<span class="sd">    :class:`Population`.repartition        Individual &quot;is in a group ?&quot; (N np.array bool).</span>
+<span class="sd">    :class:`Population`.genealogy          Index of individual parent (N np.array int).    </span>
+<span class="sd">    **Patch data**</span>
+<span class="sd">    -------------------------------------- -----------------------------------------------</span>
+<span class="sd">    :class:`Population`.proportions        Group comp proportions (N/T*4 np.array float).    </span>
+<span class="sd">    :class:`Population`.payoff             Payoffs by patch (N/T*4 np.array float).</span>
+<span class="sd">    ====================================== ===============================================</span>
+<span class="sd">    </span>
+<span class="sd">    .. note ::</span>
+<span class="sd">      Nb. :class:`Population`.genealogy[i]  is the index of the individual i parent in the individuals arrays of precedent generation. If the individual survived for more than one generation, it&#39;s -1. </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">T</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Population constructor.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">N</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Npatch</span> <span class="o">=</span> <span class="n">N</span><span class="o">/</span><span class="n">T</span>
+        <span class="k">if</span> <span class="n">N</span><span class="o">%</span><span class="n">T</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Npatch</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c">#Individuals data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genotype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phenotype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repartition</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genealogy</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+       
+        <span class="c">#Patch data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">payoff</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Npatch</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proportions</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Npatch</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Population.flush_patch_arrays"><a class="viewcode-back" href="../population.html#population.Population.flush_patch_arrays">[docs]</a>    <span class="k">def</span> <span class="nf">flush_patch_arrays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c">#Patch data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">payoff</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Npatch</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proportions</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Npatch</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s">&quot;Generic population: </span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;Population size: {0:1.0e}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;Patch size: {0}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;Generic population of {0:1.0e} individuals.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c"># Test code</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+   
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../index.html">Table Of Contents</a></h3>
+<ul class="simple">
+</ul>
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">Pimad beta 0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Guilhem Doulcier.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

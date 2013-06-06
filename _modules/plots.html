@@ -1,0 +1,192 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>plots &mdash; Pimad beta 0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'beta 0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Pimad beta 0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">Pimad beta 0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for plots</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env/ python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Visualisation functions for model traces using matplotlib&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pylab</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="groupsize_density"><a class="viewcode-back" href="../plots.html#plots.groupsize_density">[docs]</a><span class="k">def</span> <span class="nf">groupsize_density</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="proportions"><a class="viewcode-back" href="../plots.html#plots.proportions">[docs]</a><span class="k">def</span> <span class="nf">proportions</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span><span class="n">phenotype</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">group</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Visualize population.proportions traces</span>
+<span class="sd">    </span>
+<span class="sd">    :param traces: Successives population.proportions values. </span>
+<span class="sd">    :type traces: list</span>
+<span class="sd">    :param phenotype: Split the data by social/asocial.</span>
+<span class="sd">    :param group: Split the data by in group/alone.</span>
+<span class="sd">    :type phenotype: bool</span>
+<span class="sd">    :type group: bool</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">      Raise an exception if phenotype and group are False.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="n">general</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">traces</span><span class="p">),</span><span class="mi">4</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span><span class="n">trace</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">traces</span><span class="p">):</span>
+        <span class="n">general</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trace</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">general</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trace</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">general</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trace</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">general</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trace</span><span class="p">[:,</span><span class="mi">3</span><span class="p">])</span>
+
+    <span class="n">X</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">trace</span><span class="p">))</span>
+   
+    <span class="k">if</span> <span class="n">phenotype</span> <span class="ow">and</span> <span class="n">group</span><span class="p">:</span>
+        <span class="n">Y1</span> <span class="o">=</span> <span class="n">general</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">general</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">Y2</span> <span class="o">=</span> <span class="n">general</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">general</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">Y3</span> <span class="o">=</span> <span class="n">general</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">Y4</span> <span class="o">=</span> <span class="n">general</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y1</span><span class="p">,</span>
+                <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;#9999ff&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s">&quot;Asocial in group&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y2</span><span class="p">,</span><span class="n">bottom</span><span class="o">=</span><span class="n">Y1</span>
+                <span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;#ff9999&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s">&quot;Asocial alone&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y3</span><span class="p">,</span><span class="n">bottom</span><span class="o">=</span><span class="n">Y2</span><span class="o">+</span><span class="n">Y1</span><span class="p">,</span>
+                <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;#99ff99&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s">&quot;Social in group&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y4</span><span class="p">,</span><span class="n">bottom</span><span class="o">=</span><span class="n">Y3</span><span class="o">+</span><span class="n">Y2</span><span class="o">+</span><span class="n">Y1</span><span class="p">,</span>
+                <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;#ffff99&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s">&quot;Social alone&quot;</span><span class="p">)</span>
+    
+    <span class="k">elif</span> <span class="n">phenotype</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">group</span><span class="p">:</span>
+        <span class="n">Y1</span> <span class="o">=</span> <span class="n">general</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">general</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">Y2</span> <span class="o">=</span> <span class="n">general</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">+</span><span class="n">general</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">Y1</span>
+        
+        <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y1</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;#9999ff&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Social&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y2</span><span class="p">,</span><span class="n">bottom</span><span class="o">=</span><span class="n">Y1</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;#ff9999&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Asocial&quot;</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">phenotype</span> <span class="ow">and</span>  <span class="n">group</span><span class="p">:</span>
+        <span class="n">Y1</span> <span class="o">=</span> <span class="n">general</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">Y2</span> <span class="o">=</span> <span class="n">general</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y1</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;#9999ff&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;In group&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y2</span><span class="p">,</span><span class="n">bottom</span><span class="o">=</span><span class="n">Y1</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;#ff9999&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Alone&quot;</span><span class="p">)</span>
+
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;One of the boolean parameters must be True.&quot;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.02</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="o">.</span><span class="mi">102</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+           <span class="n">ncol</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&quot;expand&quot;</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Generations&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">math</span>
+    <span class="kn">from</span> <span class="nn">toymodel</span> <span class="kn">import</span> <span class="n">ToyModel</span>
+    <span class="n">param</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;N&quot;</span><span class="p">:</span><span class="mi">1000</span><span class="p">,</span>
+             <span class="s">&quot;T&quot;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span>
+             <span class="s">&quot;b&quot;</span><span class="p">:</span><span class="mi">20</span><span class="p">,</span>
+             <span class="s">&quot;c&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
+             <span class="s">&quot;ps&quot;</span><span class="p">:</span><span class="mf">0.8</span><span class="p">,</span>
+             <span class="s">&quot;pa&quot;</span><span class="p">:</span><span class="mf">0.3</span><span class="p">,</span>
+             <span class="s">&quot;pas&quot;</span><span class="p">:</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.8</span><span class="o">*</span><span class="mf">0.3</span><span class="p">),</span>
+             <span class="s">&quot;mu&quot;</span><span class="p">:</span><span class="mf">0.9</span><span class="p">}</span>
+
+    <span class="n">tracked_values</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;population.proportions&quot;</span><span class="p">]</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">ToyModel</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">tracked_values</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s"> Model:&quot;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s"> Population:&quot;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">population</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s"> Run:&quot;</span><span class="p">)</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="c">#print(a.traces)</span>
+    <span class="n">proportions</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&quot;population.proportions&quot;</span><span class="p">],</span><span class="bp">True</span><span class="p">,</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">proportions</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&quot;population.proportions&quot;</span><span class="p">],</span><span class="bp">False</span><span class="p">,</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">proportions</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&quot;population.proportions&quot;</span><span class="p">],</span><span class="bp">True</span><span class="p">,</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../index.html">Table Of Contents</a></h3>
+<ul class="simple">
+</ul>
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">Pimad beta 0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Guilhem Doulcier.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
