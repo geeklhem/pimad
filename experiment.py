@@ -98,6 +98,20 @@ def main():
         print("File {0} loaded successfully.".format(args["<file>"]))
         return(loaded)
 
+def rescue(r):
+    """Recreate a trace object from an acient version"""
+    param = {"N":1000000,
+             "T":100,
+             "b":20,
+             "c":1,
+             "ps":0.8,
+             "pa":0.3,
+             "pas":math.sqrt(0.8*0.3),
+             "mu":0.01}
+    tracked_values = ["population.proportions"]
+    m = ToyModel(param, tracked_values)
+    m.traces = r
+    return trace.Trace(m)
 
 if __name__ == '__main__':
     data = main()
