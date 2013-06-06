@@ -10,8 +10,8 @@ import numpy as np
 class Trace:
     """ A generic model trace container 
     
-    :param: The "traces" attribute of the model to set.
-    :type: list"""
+    :param: The model instance.
+    :type: Model"""
     def __init__(self,model):
         """Constructor"""
         self.traces = copy.copy(model.traces)

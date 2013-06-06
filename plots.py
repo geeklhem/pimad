@@ -9,30 +9,11 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import pylab as plt
 import numpy as np
 
-def groupsize_density(trace,T):
-    """Visualize group density from population.proportions
- 
-    :param traces: population.proportions value. 
-    :type traces: np.array float"""
-    
-    grps_size = []
-
-    for i in trace[:,2]:
-        grps_size += [i]*i
-    for i in trace[:,1]:
-        grps_size += [1]*i
-    plt.hist(grps_size,T,histtype="step")
-    plt.xlim(0, T)
-    plt.xlabel("Group size")
-    plt.ylabel("Number of individuals experiencing it")
-    plt.show()
-    
-
-def proportions(traces,phenotype=True,group=True):
+def proportions(trace_object,phenotype=True,group=True):
     """Visualize population.proportions traces
     
-    :param traces: Successives population.proportions values. 
-    :type traces: list
+    :param trace_object: Traces containing object 
+    :type traces: Trace
     :param phenotype: Split the data by social/asocial.
     :param group: Split the data by in group/alone.
     :type phenotype: bool
@@ -41,6 +22,8 @@ def proportions(traces,phenotype=True,group=True):
     .. warning::
       Raise an exception if phenotype and group are False.
 """
+
+    traces = trace_object.traces[0]["population.proportions"]
     general = np.zeros((len(traces),4))
     for n,trace in enumerate(traces):
         general[n,0] = sum(trace[:,0])
@@ -150,7 +133,7 @@ if __name__ == "__main__":
     a.play(50)
 
     #print(a.traces)
-    #groupsize_density(a.traces[0]["population.proportions"][0],a.population.T)
+    #groupsize_density(a.,a.population.T)
     #groupsize_density(a.traces[0]["population.proportions"][9],a.population.T)
     proportions(a.traces[0]["population.proportions"],True,False)
     proportions(a.traces[0]["population.proportions"],False,True)
