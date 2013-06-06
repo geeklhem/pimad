@@ -1,17 +1,61 @@
 #!/usr/bin/env/ python
 # -*- coding: utf-8 -*-
-"""Experiment"""
+"""
+PIMAD : Pimad Is Modeling Adaptive Dynamics
+A modeling tool for studying adaptive evolution of grouping by adhesion.
+
+Usage:
+  main.py <file> [-g <number>]
+  main.py (-h | --help)
+  main.py --version
+  main.py --license
+
+Pimad will try to load any trace data found in <file>. If it's unsuccessfull it 
+will create one using the model defined in this file. It will play it for ten
+generations unless the "-g" option is provided.
+
+Options:
+  -g                       Number of generations to run
+  -h --help                Show this screen.
+  --version                Show version.
+  --license                Show license information.
+
+"""
 import sys
 import math
+from docopt import docopt
 
 import trace
 import plots
 from toymodel import ToyModel
 
-if sys.argv[1] == "c":
-    print("Create")
-    param = {"N":100000,
-             "T":1000,
+__author__ = "Guilhem Doulcier"
+__copyright__ = "Copyright 2013, Guilhem Doulcier"
+__license__ = "GPLv3"
+with open('version.txt', 'r') as f:
+    __version__ = f.read()
+__email__ = "guilhem.doulcier@ens.fr"
+__date__ = "2013"
+
+def routine_pl(loaded):
+     plots.proportions(loaded.traces[0]["population.proportions"],True,False)
+     plots.proportions(loaded.traces[0]["population.proportions"],False,True)
+     plots.proportions(loaded.traces[0]["population.proportions"],True,True)
+
+def main():
+    args = docopt(__doc__, version=__version__)
+    if  args["--license"]:
+        print('\n    PIMAD : Pimad is modeling adaptive dynamics - v'+__version__)
+        print("    Copyright (C) 2013 Guilhem DOULCIER")
+        print("    This program comes with ABSOLUTELY NO WARRANTY.")
+        print("    This program is free software: you can redistribute it and/or modify")
+        print("    it under the terms of the GNU General Public License as published by") 
+        print("    the Free Software Foundation, either version 3 of the License, or") 
+        print("    (at your option) any later version.\n")
+        sys.exit(2)
+    
+    param = {"N":1000,
+             "T":10,
              "b":20,
              "c":1,
              "ps":0.8,
@@ -21,23 +65,28 @@ if sys.argv[1] == "c":
 
     tracked_values = ["population.proportions"]
 
-    a = ToyModel(param, tracked_values)
+    try :
+        loaded = trace.load_trace(args['<file>'])
+    except:
+        print("File {0} not found, creating one.".format(args["<file>"]))
+        m = ToyModel(param, tracked_values)
+        if not args["-g"]:
+            g = 10
+        else:
+            g = args["-g"]
 
-    print("\n Model:")
-    print(a)
-    print("\n Population:")
-    print(a.population)
-    print("\n Run:")
-    a.play(50)
-    test = trace.Trace(a)
-    trace.save_trace(test,"name.data")
+        print("\n Model:")
+        print(m)
+        print("\n Population:")
+        print(m.population)
+        print("\n Run:")
+        m.play(g)
+        tr = trace.Trace(m)
+        trace.save_trace(tr,args['<file>'])
+    else:
+        print("File {0} loaded successfully.".format(args["<file>"]))
 
-elif sys.argv[1] == "l":
-    print("Load trace as loaded")
-    loaded = trace.load_trace("name.data")
-    plots.proportions(loaded.traces[0]["population.proportions"],True,False)
-    plots.proportions(loaded.traces[0]["population.proportions"],False,True)
-    plots.proportions(loaded.traces[0]["population.proportions"],True,True)
+if __name__ == '__main__':
+    main()
 
-else:
-    print("Nothing")
+
