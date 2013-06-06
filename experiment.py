@@ -64,8 +64,9 @@ def main():
         print("    (at your option) any later version.\n")
         sys.exit(2)
     
-    param = {"N":10000,
+    param = {"N":1000000,
              "T":100,
+             "ip":0.1,
              "b":20,
              "c":1,
              "ps":0.8,
@@ -103,6 +104,7 @@ def rescue(r):
     param = {"N":1000000,
              "T":100,
              "b":20,
+             "ip":0.5,
              "c":1,
              "ps":0.8,
              "pa":0.3,
@@ -115,6 +117,6 @@ def rescue(r):
 
 if __name__ == '__main__':
     data = main()
-    plots.groupsize_surface(data)
+    #plots.groupsize_surface(data)
     #plots.fgs_correlation(data.traces[0]["population.proportions"],data.p["T"])
 

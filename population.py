@@ -21,6 +21,7 @@ class Population:
     :class:`Population`.N                  Population size (int).
     :class:`Population`.T                  Aggregation patch size (int). 
     :class:`Population`.Npatch             Number of patches (int).
+    :class:`Population`.ip                 Initial proportion of social (float).
     **Individuals data**
     -------------------------------------- -----------------------------------------------
     :class:`Population`.phenotype          Individual phenotype (N np.array bool).        
@@ -38,16 +39,17 @@ class Population:
 
     """
 
-    def __init__(self,N,T):
+    def __init__(self,N,T,ip=0.5):
         """Population constructor."""
         self.N = N 
         self.T = T
         self.Npatch = N/T
+        self.pi = pi 
         if N%T:
             self.Npatch += 1
 
         #Individuals data
-        self.genotype = numpy.array([0]*(N/2)+[1]*(N/2), dtype=numpy.bool)
+        self.genotype = numpy.array([0]*(N-int(N*ip))+[1]*int(N*ip), dtype=numpy.bool)
         self.phenotype = numpy.array([0]*(N/2)+[1]*(N/2), dtype=numpy.bool)
         self.repartition = numpy.array([0]*N, dtype=numpy.bool)
         self.genealogy = numpy.array([0]*N, dtype=numpy.int)

@@ -229,6 +229,7 @@ if __name__ == "__main__":
     import math
     param = {"N":100,
              "T":10,
+             "ip":0.5,
              "b":20,
              "c":1,
              "ps":0.8,

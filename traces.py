@@ -91,6 +91,7 @@ if __name__ == "__main__":
     from toymodel import ToyModel
     param = {"N":10000,
              "T":50,
+             "ip":0.5,
              "b":20,
              "c":1,
              "ps":0.8,

@@ -11,7 +11,7 @@ import population
 class Model:
     """ A generic class that contains a model
 
-    :param param: Parameters of the model. Must contain at least N, T (for :class:`Population` initialisation) and c et b (cost and benfits).
+    :param param: Parameters of the model. Must contain at least N, T, ip (for :class:`Population` initialisation) and c et b (cost and benfits).
     :param tracked_values: Values to track at each re 
     :type param: dict
     :type tracked_values: list
@@ -20,6 +20,7 @@ class Model:
 
         param = {"N":100000,
                  "T":1000,
+                 "ip":0.5,
                  "b":3,
                  "c":1,
                  "ps":0.3,
@@ -31,7 +32,7 @@ class Model:
     def __init__(self,param,tracked_values=[]):
         """ Model object constructor"""
         # Create a "Population" object with parameters given by the param dict.
-        self.population = population.Population(param["N"],param["T"])
+        self.population = population.Population(param["N"],param["T"],param["ip"])
         
         # b and c are copied into the model namespace in order to access them with self.b 
         self.b = param["b"]
@@ -86,6 +87,7 @@ if __name__ == "__main__":
              "T":1000,
              "b":3,
              "c":1,
+             "ip":0.5,
              "ps":0.3,
              "pa":0.1,
              "mu":0.001}
