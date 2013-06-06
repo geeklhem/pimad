@@ -8,7 +8,8 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>model Module &mdash; Pimad beta 0 documentation</title>
+    <title>model Module &mdash; Pimad beta 3
+ documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +17,8 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     'beta 0',
+        VERSION:     'beta 3
+',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +27,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Pimad beta 0 documentation" href="index.html" /> 
+    <link rel="top" title="Pimad beta 3
+ documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,7 +37,11 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="index.html">Pimad beta 0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Pimad beta 3
+ documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -43,8 +50,51 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="model-module">
-<h1>model Module<a class="headerlink" href="#model-module" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-model">
+<span id="model-module"></span><h1>model Module<a class="headerlink" href="#module-model" title="Permalink to this headline">¶</a></h1>
+<p>Class to represent poulations data.</p>
+<dl class="class">
+<dt id="model.Model">
+<em class="property">class </em><tt class="descclassname">model.</tt><tt class="descname">Model</tt><big>(</big><em>param</em>, <em>tracked_values=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="reference internal" href="_modules/model.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#model.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>A generic class that contains a model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>param</strong> (<a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Parameters of the model. Must contain at least N, T (for <tt class="xref py py-class docutils literal"><span class="pre">Population</span></tt> initialisation) and c et b (cost and benfits).</li>
+<li><strong>tracked_values</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; Values to track at each re</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">param</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;N&quot;</span><span class="p">:</span><span class="mi">100000</span><span class="p">,</span>
+         <span class="s">&quot;T&quot;</span><span class="p">:</span><span class="mi">1000</span><span class="p">,</span>
+         <span class="s">&quot;b&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span>
+         <span class="s">&quot;c&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
+         <span class="s">&quot;ps&quot;</span><span class="p">:</span><span class="mf">0.3</span><span class="p">,</span>
+         <span class="s">&quot;pa&quot;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span>
+         <span class="s">&quot;mu&quot;</span><span class="p">:</span><span class="mf">0.001</span><span class="p">}</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="model.Model.play">
+<tt class="descname">play</tt><big>(</big><em>nb_generations</em><big>)</big><a class="reference internal" href="_modules/model.html#Model.play"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#model.Model.play" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialisation and call of the main loop</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="model.Model.step">
+<tt class="descname">step</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/model.html#Model.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#model.Model.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs one generation of the model</p>
+<p>Must be overrided by the class herited from model.
+Called by <tt class="xref py py-class docutils literal"><span class="pre">Population</span></tt>.play at each generation</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -80,7 +130,11 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="index.html">Pimad beta 0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Pimad beta 3
+ documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

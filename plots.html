@@ -8,7 +8,8 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>plots Module &mdash; Pimad beta 0 documentation</title>
+    <title>plots Module &mdash; Pimad beta 3
+ documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +17,8 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     'beta 0',
+        VERSION:     'beta 3
+',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +27,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Pimad beta 0 documentation" href="index.html" /> 
+    <link rel="top" title="Pimad beta 3
+ documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,7 +37,11 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="index.html">Pimad beta 0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Pimad beta 3
+ documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -43,8 +50,56 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="plots-module">
-<h1>plots Module<a class="headerlink" href="#plots-module" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-plots">
+<span id="plots-module"></span><h1>plots Module<a class="headerlink" href="#module-plots" title="Permalink to this headline">¶</a></h1>
+<p>Visualisation functions for model traces using matplotlib</p>
+<dl class="function">
+<dt id="plots.group_level_cov">
+<tt class="descclassname">plots.</tt><tt class="descname">group_level_cov</tt><big>(</big><em>trace</em><big>)</big><a class="headerlink" href="#plots.group_level_cov" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="plots.groupsize_density">
+<tt class="descclassname">plots.</tt><tt class="descname">groupsize_density</tt><big>(</big><em>trace</em>, <em>T</em><big>)</big><a class="reference internal" href="_modules/plots.html#groupsize_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plots.groupsize_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualize group density from population.proportions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>traces</strong> (<em>np.array float</em>) &#8211; population.proportions value.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plots.groupsize_surface">
+<tt class="descclassname">plots.</tt><tt class="descname">groupsize_surface</tt><big>(</big><em>trace</em><big>)</big><a class="headerlink" href="#plots.groupsize_surface" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="plots.proportions">
+<tt class="descclassname">plots.</tt><tt class="descname">proportions</tt><big>(</big><em>traces</em>, <em>phenotype=True</em>, <em>group=True</em><big>)</big><a class="reference internal" href="_modules/plots.html#proportions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plots.proportions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualize population.proportions traces</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>traces</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; Successives population.proportions values.</li>
+<li><strong>phenotype</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Split the data by social/asocial.</li>
+<li><strong>group</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Split the data by in group/alone.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Raise an exception if phenotype and group are False.</p>
+</div>
+</dd></dl>
+
 </div>
 
 
@@ -80,7 +135,11 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="index.html">Pimad beta 0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Pimad beta 3
+ documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
