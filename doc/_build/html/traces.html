@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>plots Module &mdash; Pimad beta 3
+    <title>traces Module &mdash; Pimad beta 3
  documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
@@ -50,45 +50,34 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="module-plots">
-<span id="plots-module"></span><h1>plots Module<a class="headerlink" href="#module-plots" title="Permalink to this headline">¶</a></h1>
-<p>Visualisation functions for model traces using matplotlib</p>
-<dl class="function">
-<dt id="plots.groupsize_density">
-<tt class="descclassname">plots.</tt><tt class="descname">groupsize_density</tt><big>(</big><em>trace</em>, <em>T</em><big>)</big><a class="reference internal" href="_modules/plots.html#groupsize_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plots.groupsize_density" title="Permalink to this definition">¶</a></dt>
-<dd><p>Visualize group density from population.proportions</p>
+  <div class="section" id="module-traces">
+<span id="traces-module"></span><h1>traces Module<a class="headerlink" href="#module-traces" title="Permalink to this headline">¶</a></h1>
+<p>Model traces containers</p>
+<dl class="class">
+<dt id="traces.Trace">
+<em class="property">class </em><tt class="descclassname">traces.</tt><tt class="descname">Trace</tt><big>(</big><em>model</em><big>)</big><a class="reference internal" href="_modules/traces.html#Trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#traces.Trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>A generic model trace container</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>traces</strong> (<em>np.array float</em>) &#8211; population.proportions value.</td>
+<tr class="field-odd field"><th class="field-name">Param :</th><td class="field-body">The &#8220;traces&#8221; attribute of the model to set.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">list</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="function">
-<dt id="plots.proportions">
-<tt class="descclassname">plots.</tt><tt class="descname">proportions</tt><big>(</big><em>traces</em>, <em>phenotype=True</em>, <em>group=True</em><big>)</big><a class="reference internal" href="_modules/plots.html#proportions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plots.proportions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Visualize population.proportions traces</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>traces</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; Successives population.proportions values.</li>
-<li><strong>phenotype</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Split the data by social/asocial.</li>
-<li><strong>group</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Split the data by in group/alone.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Raise an exception if phenotype and group are False.</p>
-</div>
-</dd></dl>
+<dt id="traces.load_trace">
+<tt class="descclassname">traces.</tt><tt class="descname">load_trace</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/traces.html#load_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#traces.load_trace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="traces.save_trace">
+<tt class="descclassname">traces.</tt><tt class="descname">save_trace</tt><big>(</big><em>trace</em>, <em>name</em><big>)</big><a class="reference internal" href="_modules/traces.html#save_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#traces.save_trace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 

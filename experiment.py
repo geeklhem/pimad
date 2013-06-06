@@ -14,6 +14,11 @@ Pimad will try to load any trace data found in <file>. If it's unsuccessfull it
 will create one using the model defined in this file. It will play it for ten
 generations unless the "-g" option is provided.
 
+You should use this file with interactive python :
+`ipython -i exepriment.py test.data`.
+You will then be able to apply output function to the loaded or generated data
+using the `data` object.
+
 Options:
   -g                       Number of generations to run
   -h --help                Show this screen.
@@ -25,15 +30,18 @@ import sys
 import math
 from docopt import docopt
 
-import trace
+import traces as trace
 import plots
 from toymodel import ToyModel
 
 __author__ = "Guilhem Doulcier"
 __copyright__ = "Copyright 2013, Guilhem Doulcier"
 __license__ = "GPLv3"
-with open('version.txt', 'r') as f:
-    __version__ = f.read()
+try:
+    with open('version.txt', 'r') as f:
+        __version__ = f.read()
+except:
+        __version__ = "unknown"
 __email__ = "guilhem.doulcier@ens.fr"
 __date__ = "2013"
 
@@ -83,10 +91,13 @@ def main():
         m.play(g)
         tr = trace.Trace(m)
         trace.save_trace(tr,args['<file>'])
+        return(tr)
     else:
         print("File {0} loaded successfully.".format(args["<file>"]))
+        return(loaded)
+
 
 if __name__ == '__main__':
-    main()
+    data = main()
 
 
