@@ -85,7 +85,7 @@ def groupsize_surface(trace):
     X, Y = np.meshgrid(X, Y)
     
 
-    surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
+    surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.prism_r,
             linewidth=0, antialiased=False)
 
     plt.ylabel("Group size")
