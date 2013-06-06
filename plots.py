@@ -113,6 +113,18 @@ def groupsize_surface(trace):
 
     plt.show()
 
+def group_level_cov(trace):
+    
+    X = range(len(trace.covPrice))
+    Y = trace.covPrice
+    plt.scatter(X,Y)
+
+    plt.ylabel("Group-level covariance")
+    plt.xlabel("Generation")
+
+    plt.show()
+
+
 if __name__ == "__main__":
     import math
     from toymodel import ToyModel
