@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 """Visualisation functions for model traces using matplotlib"""
 
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
+
 import pylab as plt
 import numpy as np
 
@@ -84,6 +88,29 @@ def proportions(traces,phenotype=True,group=True):
     plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
            ncol=4, mode="expand", borderaxespad=0.)
     plt.xlabel("Generations")
+    plt.show()
+
+
+def groupsize_surface(trace):
+    generations=len(trace.traces[0]["population.proportions"])
+    Z = trace.grpsize_density
+    
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    Y = np.arange(0, trace.p["T"]+1, 1)
+    X = np.arange(0, generations, 1)
+    X, Y = np.meshgrid(X, Y)
+    
+
+    surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
+            linewidth=0, antialiased=False)
+
+    plt.ylabel("Group size")
+    plt.xlabel("Generation")
+
+    ax.zaxis.set_major_locator(LinearLocator(10))
+    ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+
     plt.show()
 
 if __name__ == "__main__":

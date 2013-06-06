@@ -26,10 +26,10 @@ Options:
   --license                Show license information.
 
 """
+
 import sys
 import math
 from docopt import docopt
-
 import traces as trace
 import plots
 from toymodel import ToyModel
@@ -37,11 +37,13 @@ from toymodel import ToyModel
 __author__ = "Guilhem Doulcier"
 __copyright__ = "Copyright 2013, Guilhem Doulcier"
 __license__ = "GPLv3"
+
 try:
     with open('version.txt', 'r') as f:
         __version__ = f.read()
 except:
         __version__ = "unknown"
+
 __email__ = "guilhem.doulcier@ens.fr"
 __date__ = "2013"
 
@@ -62,8 +64,8 @@ def main():
         print("    (at your option) any later version.\n")
         sys.exit(2)
     
-    param = {"N":1000,
-             "T":10,
+    param = {"N":10000,
+             "T":100,
              "b":20,
              "c":1,
              "ps":0.8,
@@ -81,7 +83,7 @@ def main():
         if not args["-g"]:
             g = 10
         else:
-            g = args["-g"]
+            g = int(args["<number>"])
 
         print("\n Model:")
         print(m)
@@ -99,5 +101,6 @@ def main():
 
 if __name__ == '__main__':
     data = main()
-
+    plots.groupsize_surface(data)
+    #plots.fgs_correlation(data.traces[0]["population.proportions"],data.p["T"])
 
