@@ -22,9 +22,12 @@ def export(tr,name):
         <h1>Experimental reports index</h1>
         <ul>
         """
+        
         for i in glob.glob("reports/*_report.html"):
-            page += '\n<li><a href="{path}">{name}</a><li/>'.format(path=i,
-                                                                    name=i)
+            path_i = str(i).split("/")[-1]
+            name_i = str(path_i).split("_")[0]
+            page += '\n<li><a href="{path}">{name}</a></li>'.format(path=path_i,
+                                                                    name=name_i)
 
         page += "</ul></body>"
 
@@ -45,7 +48,7 @@ def export_fig(tr,base_filename):
     plt.savefig(base_filename+"_grpLvlCov.svg")
     plt.clf()
     trace_plots.groupsize_surface(tr,False)
-    plt.savefig(base_filename+"_surface.svg")
+    plt.savefig(base_filename+"_surface.png")
     plt.clf()
 
 def export_html(tr,name):
@@ -87,6 +90,9 @@ def export_html(tr,name):
     
     for i in glob.glob(name+"*.svg"):
         page += '\n<img src="{path}"/><br/>'.format(path=i)
+    for i in glob.glob(name+"*.png"):
+        page += '\n<img src="{path}"/><br/>'.format(path=i)
+
 
     page += "</body>"
     return page
