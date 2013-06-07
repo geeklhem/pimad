@@ -32,7 +32,6 @@ import sys
 import math
 from docopt import docopt
 import traces as trace
-import plots
 from toymodel import ToyModel, ToyDictyo
 
 __author__ = "Guilhem Doulcier"
@@ -64,7 +63,7 @@ def main():
     if not args["-p"]:
         pi = 0.1
     else:
-        pi = int(args["<init_prop>"])
+        pi = float(args["<init_prop>"])
 
     
     param = {"N":1000000,
