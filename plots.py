@@ -6,10 +6,10 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
-import pylab as plt
+import matplotlib.pyplot as plt
 import numpy as np
 
-def proportions(trace_object,phenotype=True,group=True):
+def proportions(trace_object,phenotype=True,group=True,show=True):
     """Visualize population.proportions traces
     
     :param trace_object: Traces containing object 
@@ -22,7 +22,6 @@ def proportions(trace_object,phenotype=True,group=True):
     .. warning::
       Raise an exception if phenotype and group are False.
 """
-
     traces = trace_object.traces[0]["population.proportions"]
     general = np.zeros((len(traces),4))
     for n,trace in enumerate(traces):
@@ -71,10 +70,12 @@ def proportions(trace_object,phenotype=True,group=True):
     plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
            ncol=4, mode="expand", borderaxespad=0.)
     plt.xlabel("Generations")
-    plt.show()
+    if show:
+        plt.show()
 
 
-def groupsize_surface(trace):
+
+def groupsize_surface(trace,show=True):
     generations=len(trace.traces[0]["population.proportions"])
     Z = trace.grpsize_density
     
@@ -94,9 +95,12 @@ def groupsize_surface(trace):
     ax.zaxis.set_major_locator(LinearLocator(10))
     ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
 
-    plt.show()
+    if show:
+        plt.show()
 
-def group_level_cov(trace):
+
+
+def group_level_cov(trace, show=True):
     
     X = range(len(trace.covPrice))
     Y = trace.covPrice
@@ -105,13 +109,24 @@ def group_level_cov(trace):
     plt.ylabel("Group-level covariance")
     plt.xlabel("Generation")
 
-    plt.show()
+    if show:
+        plt.show()
+
+def routine_graphes(tr):
+    groupsize_surface(tr)
+    proportions(tr,True,False)
+    proportions(tr,False,True)
+    proportions(tr,True,True)
+    group_level_cov(tr)
+
 
 
 if __name__ == "__main__":
     import math
     from toymodel import ToyModel
-    param = {"N":100000,
+    import traces
+
+    param = {"N":1000,
              "T":100,
              "ip":0.5,
              "b":20,
@@ -131,11 +146,6 @@ if __name__ == "__main__":
     print(a.population)
     print("\n Run:")
     a.play(50)
-
-    #print(a.traces)
-    #groupsize_density(a.,a.population.T)
-    #groupsize_density(a.traces[0]["population.proportions"][9],a.population.T)
-    proportions(a.traces[0]["population.proportions"],True,False)
-    proportions(a.traces[0]["population.proportions"],False,True)
-    proportions(a.traces[0]["population.proportions"],True,True)
     
+    tr = traces.Trace(a)
+    routine_graphes(tr)

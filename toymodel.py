@@ -28,6 +28,11 @@ class ToyModel(model.Model):
     
     """
 
+    def __init__(self,param,tracked_values=[]):
+        """Constructeur"""
+        model.Model.__init__(self,param,tracked_values)
+        self.model_name = "Toymodel [Garcia & De Monte 2012]"
+
     def step(self):
         """Runs one generation of the model
     
@@ -224,7 +229,13 @@ class ToyModel(model.Model):
         return genotype
 
 class ToyDictyo(ToyModel):
-    """ Can't follow genealogy """
+    """ Based on the toy model but a part of the group don't reproduce. (spore/stem) """
+
+    def __init__(self,param,tracked_values=[]):
+        """Constructeur"""
+        model.Model.__init__(self,param,tracked_values)
+        self.model_name = "ToyDictyo [Modified Toymodel]"
+
 
     def demographic(self):
             """Global life, Death, Mutation, Heredity and genealogy processes

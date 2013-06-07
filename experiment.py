@@ -47,6 +47,7 @@ except:
 __email__ = "guilhem.doulcier@ens.fr"
 __date__ = "2013"
 
+
 def main():
     args = docopt(__doc__, version=__version__)
     if  args["--license"]:

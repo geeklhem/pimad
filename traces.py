@@ -16,6 +16,7 @@ class Trace:
         """Constructor"""
         self.traces = copy.copy(model.traces)
         self.p = copy.copy(model.param)
+        self.model_name = model.model_name
         self._grpsize_density = np.zeros((1,1))
         self._grpsize_density_social = np.zeros((1,1))
         try :
