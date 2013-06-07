@@ -25,7 +25,7 @@ def export(tr,name):
         
         for i in glob.glob("reports/*_report.html"):
             path_i = str(i).split("/")[-1]
-            name_i = str(path_i).split("_")[0]
+            name_i = str(path_i).split(".")[0]
             page += '\n<li><a href="{path}">{name}</a></li>'.format(path=path_i,
                                                                     name=name_i)
 
@@ -105,7 +105,17 @@ if __name__ == "__main__":
         try:
             data = traces.load_trace(sys.argv[1])
         except : 
-            print("Error in {} file import.".format(sys.argv[1]))
+            print("Error in {0} file import.".format(sys.argv[1]))
         else:
-            print(" {} import successfull.".format(sys.argv[1]))
+            print(" {0} import successfull.".format(sys.argv[1]))
             export(data,sys.argv[1])
+
+    else:
+        for f in glob.glob("*.data"):
+            try:
+                data = traces.load_trace(f)
+            except : 
+                print("Error in {0} file import.".format(f))
+            else:
+                print("{0} import successfull.".format(f))
+                export(data,f)
