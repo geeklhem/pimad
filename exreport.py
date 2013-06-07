@@ -15,6 +15,20 @@ def export(tr,name):
         print("Error in creating plots")
     with open("reports/"+name+"_report.html", 'w') as f:
         f.write(export_html(tr,name))
+    with open("reports/index.html", 'w') as f:
+        page = """<html>  
+        <title>Experimental reports index</title>
+        <body>
+        <h1>Experimental reports index</h1>
+        <ul>
+        """
+        for i in glob.glob("*_report.html"):
+            page += '\n<li><a href="{path}">{name}</a><li/>'.format(path=i,
+                                                                    name=i)
+
+        page += "</ul></body>"
+
+        f.write(page)
 
 def export_fig(tr,base_filename):
     base_filename = "reports/" + base_filename
