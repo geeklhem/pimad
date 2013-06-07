@@ -6,9 +6,17 @@ Create a html file report with figures"""
 
 import matplotlib.pyplot as plt
 import plots as trace_plots
+import glob
 
 def export(tr,name):
-    base_filename = name #tr.model_name.split(" ")
+    try:
+        export_fig(tr,name)
+    except:
+        print("Error in creating plots")
+    with open(name+"_report.html", 'w') as f:
+        f.write(export_html(tr,name))
+
+def export_fig(tr,base_filename):
     trace_plots.proportions(tr,True,False,False)
     plt.savefig(base_filename+"_repartitions.svg")
     plt.clf()
@@ -24,6 +32,49 @@ def export(tr,name):
     trace_plots.groupsize_surface(tr,False)
     plt.savefig(base_filename+"_surface.svg")
     plt.clf()
+
+def export_html(tr,name):
+    try:
+        mname = tr.model_name
+    except:
+        mname = "Unknown"
+
+    try:
+        date = tr.date
+    except:
+        date = "Unknown"
+
+    try:
+        g = len(tr.traces[0]["population.proportions"])
+    except:
+        g = "Unknown"
+
+    try:
+        version = tr.version
+    except:
+        version = "Unknown"
+
+    p = "<ul>"
+    for k,v in tr.p.items():
+        p += "<li><strong>{0}</strong> :  {1}</li>".format(k,v)
+    p += "</ul>"
+
+    page = """<html>  
+    <title>{name}</title>
+    <body><h1>Experimental report : {name}</h1>
+    <h2>Informations</h2>
+    <strong>Model name</strong> : {mn}<br/>
+    <strong>Date </strong> : {date} <br/>
+    <strong>Version nb </strong> : {version} <br/>
+    <strong>Generations</strong> : {g} <br/>
+    <strong>Parameters</strong> : {p}<br/>
+    <h2>Figures:</h2>""".format(name=name,p=p,mn=mname,date=date,g=g,version=version)
+    
+    for i in glob.glob(name+"*.svg"):
+        page += '\n<img src="{path}"/><br/>'.format(path=i)
+
+    page += "</body>"
+    return page
 
 if __name__ == "__main__":
     import sys 

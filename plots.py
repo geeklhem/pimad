@@ -95,6 +95,7 @@ def groupsize_surface(trace,show=True):
     ax.zaxis.set_major_locator(LinearLocator(10))
     ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
 
+    ax.view_init(35,50)
     if show:
         plt.show()
 
