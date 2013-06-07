@@ -22,7 +22,7 @@ def export(tr,name):
         <h1>Experimental reports index</h1>
         <ul>
         """
-        for i in glob.glob("*_report.html"):
+        for i in glob.glob("reports/*_report.html"):
             page += '\n<li><a href="{path}">{name}</a><li/>'.format(path=i,
                                                                     name=i)
 
