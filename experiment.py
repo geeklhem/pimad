@@ -47,11 +47,6 @@ except:
 __email__ = "guilhem.doulcier@ens.fr"
 __date__ = "2013"
 
-def routine_pl(loaded):
-     plots.proportions(loaded.traces[0]["population.proportions"],True,False)
-     plots.proportions(loaded.traces[0]["population.proportions"],False,True)
-     plots.proportions(loaded.traces[0]["population.proportions"],True,True)
-
 def main():
     args = docopt(__doc__, version=__version__)
     if  args["--license"]:
@@ -117,6 +112,4 @@ def rescue(r):
 
 if __name__ == '__main__':
     data = main()
-    #plots.groupsize_surface(data)
-    #plots.fgs_correlation(data.traces[0]["population.proportions"],data.p["T"])
 

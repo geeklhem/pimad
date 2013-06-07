@@ -45,12 +45,13 @@ class Population:
         self.T = T
         self.Npatch = N/T
         self.ip = ip 
+        print ip
         if N%T:
             self.Npatch += 1
 
         #Individuals data
         self.genotype = numpy.array([0]*(N-int(N*ip))+[1]*int(N*ip), dtype=numpy.bool)
-        self.phenotype = numpy.array([0]*(N/2)+[1]*(N/2), dtype=numpy.bool)
+        self.phenotype = numpy.array([0]*(N-int(N*ip))+[1]*int(N*ip), dtype=numpy.bool)
         self.repartition = numpy.array([0]*N, dtype=numpy.bool)
         self.genealogy = numpy.array([0]*N, dtype=numpy.int)
        
@@ -75,6 +76,6 @@ class Population:
 
 if __name__ == "__main__":
     # Test code
-    a = Population(1000,100)
+    a = Population(1000,100,0.1)
     print(a)
    
