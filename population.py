@@ -45,7 +45,6 @@ class Population:
         self.T = T
         self.Npatch = N/T
         self.ip = ip 
-        print ip
         if N%T:
             self.Npatch += 1
 

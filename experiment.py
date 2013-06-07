@@ -32,7 +32,7 @@ import math
 from docopt import docopt
 import traces as trace
 import plots
-from toymodel import ToyModel
+from toymodel import ToyModel, ToyDictyo
 
 __author__ = "Guilhem Doulcier"
 __copyright__ = "Copyright 2013, Guilhem Doulcier"
@@ -75,7 +75,8 @@ def main():
         loaded = trace.load_trace(args['<file>'])
     except:
         print("File {0} not found, creating one.".format(args["<file>"]))
-        m = ToyModel(param, tracked_values)
+        #m = ToyModel(param, tracked_values)
+        m = ToyDictyo(param, tracked_values)
         if not args["-g"]:
             g = 10
         else:
