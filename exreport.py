@@ -7,15 +7,16 @@ Create a html file report with figures"""
 import matplotlib.pyplot as plt
 import plots as trace_plots
 import glob
+import os.path
 
 def export(tr,name):
     try:
         export_fig(tr,name)
     except:
         print("Error in creating plots")
-    with open("reports/"+name+"_report.html", 'w') as f:
+    with open(os.path.join("reports/",name+"_report.html"), 'w') as f:
         f.write(export_html(tr,name))
-    with open("reports/index.html", 'w') as f:
+    with open(os.path.join("reports/","index.html"), 'w') as f:
         page = """<html>  
         <title>Experimental reports index</title>
         <body>
@@ -23,8 +24,8 @@ def export(tr,name):
         <ul>
         """
         
-        for i in glob.glob("reports/*_report.html"):
-            path_i = str(i).split("/")[-1]
+        for i in glob.glob(os.path.join("reports/","*_report.html")):
+            path_i = os.path.basename(str(i))
             name_i = str(path_i).split(".")[0]
             page += '\n<li><a href="{path}">{name}</a></li>'.format(path=path_i,
                                                                     name=name_i)
@@ -34,7 +35,7 @@ def export(tr,name):
         f.write(page)
 
 def export_fig(tr,base_filename):
-    base_filename = "reports/" + base_filename
+    base_filename = os.path.join("reports/" + base_filename)
     trace_plots.proportions(tr,True,False,False)
     plt.savefig(base_filename+"_repartitions.svg")
     plt.clf()
@@ -88,10 +89,10 @@ def export_html(tr,name):
     <strong>Parameters</strong> : {p}<br/>
     <h2>Figures:</h2>""".format(name=name,p=p,mn=mname,date=date,g=g,version=version)
     
-    for i in glob.glob(name+"*.svg"):
-        page += '\n<img src="{path}"/><br/>'.format(path=i)
-    for i in glob.glob(name+"*.png"):
-        page += '\n<img src="{path}"/><br/>'.format(path=i)
+    for i in glob.glob(os.path.join("reports/",name+"*.svg")):
+        page += '\n<img src="{path}"/><br/>'.format(path=os.path.basename(i))
+    for i in glob.glob(os.path.join("reports/",name+"*.png")):
+        page += '\n<img src="{path}"/><br/>'.format(path=os.path.basename(i))
 
 
     page += "</body>"
