@@ -13,10 +13,11 @@ def export(tr,name):
         export_fig(tr,name)
     except:
         print("Error in creating plots")
-    with open(name+"_report.html", 'w') as f:
+    with open("reports/"+name+"_report.html", 'w') as f:
         f.write(export_html(tr,name))
 
 def export_fig(tr,base_filename):
+    base_filename = "reports/" + base_filename
     trace_plots.proportions(tr,True,False,False)
     plt.savefig(base_filename+"_repartitions.svg")
     plt.clf()
