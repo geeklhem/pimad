@@ -123,7 +123,7 @@ class ToyModel(model.Model):
             # Payoff of asocial individual in a group
             self.population.payoff[patch,1] = group_benefit
             # Payoff of social individual alone
-            self.population.payoff[patch,2] = self.b - self.c 
+            self.population.payoff[patch,2] = - self.c # and not b-c 
             # Payoff of asocial individual alone
             self.population.payoff[patch,3] = 0 
 
