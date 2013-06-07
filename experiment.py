@@ -5,7 +5,7 @@ PIMAD : Pimad Is Modeling Adaptive Dynamics
 A modeling tool for studying adaptive evolution of grouping by adhesion.
 
 Usage:
-  main.py <file> [-g <number>]
+  main.py <file> [-g <number>] [-p <init_prop>]
   main.py (-h | --help)
   main.py --version
   main.py --license
@@ -21,6 +21,7 @@ using the `data` object.
 
 Options:
   -g                       Number of generations to run
+  -p                       Initial proportion of social individuals in [0,1]
   -h --help                Show this screen.
   --version                Show version.
   --license                Show license information.
@@ -58,10 +59,17 @@ def main():
         print("    the Free Software Foundation, either version 3 of the License, or") 
         print("    (at your option) any later version.\n")
         sys.exit(2)
+
+
+    if not args["-p"]:
+        pi = 0.1
+    else:
+        pi = int(args["<init_prop>"])
+
     
     param = {"N":1000000,
              "T":100,
-             "ip":0.1,
+             "ip":pi,
              "b":20,
              "c":1,
              "ps":0.8,
@@ -71,16 +79,21 @@ def main():
 
     tracked_values = ["population.proportions"]
 
+        
+
     try :
         loaded = trace.load_trace(args['<file>'])
     except:
         print("File {0} not found, creating one.".format(args["<file>"]))
         #m = ToyModel(param, tracked_values)
         m = ToyDictyo(param, tracked_values)
+        
         if not args["-g"]:
             g = 10
         else:
             g = int(args["<number>"])
+        
+        
 
         print("\n Model:")
         print(m)

@@ -1,3 +1,5 @@
+*.pyc
+*~
 /population.pyc
 /doc/index.rst~
 /component/__init__.pyc
@@ -32,3 +34,4 @@
 /experiment.pyc
 /doc/#conf.py#
 /doc/.#conf.py
+/testdict
