@@ -31,6 +31,8 @@ class Model:
     
     def __init__(self,param,tracked_values=[]):
         """ Model object constructor"""
+        self.model_name = "Generic model"
+
         # Create a "Population" object with parameters given by the param dict.
         self.population = population.Population(param["N"],param["T"],param["ip"])
         
@@ -70,12 +72,12 @@ class Model:
                 self.traces[-1][t][g] = copy.copy(reduce(getattr,t.split("."),self))
 
     def __str__(self):
-        s = "Generic model.\n"
+        s = "{0}.\n".format(self.model_name)
         s += "Benefit b =  {0}, cost c = {1}".format(self.b,self.c)
         return s
 
     def __repr__(self):
-        return "Generic model."
+        return "{0}".format(self.model_name)
 
 ###############
 ## Test code ##
