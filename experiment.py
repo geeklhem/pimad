@@ -5,7 +5,7 @@ PIMAD : Pimad Is Modeling Adaptive Dynamics
 A modeling tool for studying adaptive evolution of grouping by adhesion.
 
 Usage:
-  main.py <file> [-g <number>] [-p <init_prop>]
+  main.py <file> [-g=<number>] [-p=<parameters>] [-m=<modelName>]
   main.py (-h | --help)
   main.py --version
   main.py --license
@@ -20,19 +20,21 @@ You will then be able to apply output function to the loaded or generated data
 using the `data` object.
 
 Options:
-  -g                       Number of generations to run
-  -p                       Initial proportion of social individuals in [0,1]
+  -g=<number>              Number of generations to run
+  -p=<parameters>          Model parmeters in the format "p1=value p2=value p3=v"
+  -m=<modelName>           Model name (ToyModel or ToyDictyo)
   -h --help                Show this screen.
   --version                Show version.
   --license                Show license information.
-
 """
 
 import sys
 import math
+import ast
 from docopt import docopt
-import traces as trace
-from toymodel import ToyModel, ToyDictyo
+import models.traces as trace
+import models.toymodel as toymodels
+from models.model import Model
 
 __author__ = "Guilhem Doulcier"
 __copyright__ = "Copyright 2013, Guilhem Doulcier"
@@ -60,16 +62,10 @@ def main():
         print("    (at your option) any later version.\n")
         sys.exit(2)
 
-
-    if not args["-p"]:
-        pi = 0.1
-    else:
-        pi = float(args["<init_prop>"])
-
-    
-    param = {"N":1000000,
+    #Default values
+    param = {"N":100,
              "T":100,
-             "ip":pi,
+             "ip":0.1,
              "b":20,
              "c":1,
              "ps":0.8,
@@ -77,30 +73,40 @@ def main():
              "pas":math.sqrt(0.8*0.3),
              "mu":0.01}
 
+    # Parsing parameters
+    if args["-p"]:
+        custom_p = args["-p"].split(",")
+        for p in custom_p:
+            p = p.split("=")
+            try:
+                p[1] = ast.literal_eval(p[1])
+            except:
+                print("Error in parsing {0} argument".format(p[0]))
+            else:
+                param[p[0]]=p[1]
+                
     tracked_values = ["population.proportions"]
-
-        
 
     try :
         loaded = trace.load_trace(args['<file>'])
     except:
         print("File {0} not found, creating one.".format(args["<file>"]))
-        #m = ToyModel(param, tracked_values)
-        m = ToyDictyo(param, tracked_values)
-        
-        if not args["-g"]:
-            g = 10
+        if args["-m"] == "toydictyo":
+            m = toymodels.ToyDictyo(param, tracked_values)
         else:
-            g = int(args["<number>"])
+            m = toymodels.ToyModel(param, tracked_values)
         
-        
-
         print("\n Model:")
         print(m)
         print("\n Population:")
         print(m.population)
         print("\n Run:")
-        m.play(g)
+
+        if not args["-g"]:
+            m.equilibrium()
+        else:
+            m.play(int(args["-g"]))
+
         tr = trace.Trace(m)
         trace.save_trace(tr,args['<file>'])
         return(tr)
@@ -110,17 +116,7 @@ def main():
 
 def rescue(r):
     """Recreate a trace object from an acient version"""
-    param = {"N":1000000,
-             "T":100,
-             "b":20,
-             "ip":0.5,
-             "c":1,
-             "ps":0.8,
-             "pa":0.3,
-             "pas":math.sqrt(0.8*0.3),
-             "mu":0.01}
-    tracked_values = ["population.proportions"]
-    m = ToyModel(param, tracked_values)
+    m = Model(r.p)
     m.traces = r
     return trace.Trace(m)
 

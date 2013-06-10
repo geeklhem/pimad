@@ -348,4 +348,5 @@ if __name__ == "__main__":
     print("\n Population:")
     print(a.population)
     print("\n Run:")
-    a.play(10)
+    #    a.play(10)
+    a.equilibrium()

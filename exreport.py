@@ -5,7 +5,8 @@
 Create a html file report with figures"""
 
 import matplotlib.pyplot as plt
-import plots as trace_plots
+import output.plots as trace_plots
+import models.traces as traces
 import glob
 import os.path
 
@@ -100,7 +101,7 @@ def export_html(tr,name):
 
 if __name__ == "__main__":
     import sys 
-    import traces
+    
 
     if len(sys.argv) == 2: 
         try:

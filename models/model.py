@@ -4,6 +4,7 @@
 # Import built-in modules
 import numpy
 import copy
+import math
 
 # Import custom modules
 import population
@@ -53,7 +54,45 @@ class Model:
         Called by :class:`Population`.play at each generation """
         pass
 
+    def equilibrium(self):
+        """play until the equilibrium"""
+        print("Playing until equilibrium")
 
+        #Create a new trace dict with a list by tracked values.
+        self.traces.append({})
+        for t in self.tracked:
+            self.traces[-1][t] = []
+
+        coef = 100
+        g = 0
+        criterion = [111,222,333]
+
+        #Generation loop
+        while coef > 0.0001 or g < 3:
+            self.step()
+            
+            # Compute halting cirterion.
+            criterion[2] =  criterion[1] #T+2
+            criterion[1] =  criterion[0]#T+1
+            criterion[0] =  sum(self.population.proportions[:,1]) #T
+            if g > 2:
+                try:
+                    coef = math.fabs( math.log((math.fabs(criterion[0]-criterion[1]))/(math.fabs(criterion[2]-criterion[1])),10))
+                except:
+                    coef = 0
+
+            print("{0} | Halting criterion : {1}".format(g+1,coef))
+
+            
+            
+
+            # Add the values of tracked variable to the trace.
+            for t in self.tracked:
+                self.traces[-1][t].append(copy.copy(reduce(getattr,t.split("."),self)))
+            
+            g +=1
+        
+    
     def play(self,nb_generations):
         """Initialisation and call of the main loop"""
         print("Playing for {0} generations".format(nb_generations))
@@ -85,8 +124,8 @@ class Model:
 # It will only run if the file is directly executed (>>python model.py)
 if __name__ == "__main__":
 
-    param = {"N":100000,
-             "T":1000,
+    param = {"N":10000,
+             "T":100,
              "b":3,
              "c":1,
              "ip":0.5,
@@ -103,5 +142,6 @@ if __name__ == "__main__":
     print("\n Population:")
     print(a.population)
     print("\n Run:")
-    a.play(5)
+    #a.play(5)
+    a.equilibrium()
     print(a.traces)
