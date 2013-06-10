@@ -77,13 +77,13 @@ def export_html(tr,name):
     try:
         version = tr.version
     except:
-        version = "Unknown"
+        version = "unknown version number"
 
 
     try:
         host = tr.host
     except:
-        version = "Unknown"
+        host = "an unknown computer"
 
     p = "<ul>"
     for k,v in tr.p.items():
@@ -95,7 +95,7 @@ def export_html(tr,name):
     <body><h1>Experimental report : {name}</h1>
     <h2>Informations</h2>
     <strong>Model name</strong> : {mn}<br/>
-    <strong>Date </strong> : {date} <strong> on </strong> {host} <strong> running</strong> version nb : {version}<br/>
+    <strong>Date </strong> : {date} <strong> on </strong> {host} <strong> running</strong> pimad {version}<br/>
     <strong>Generations</strong> : {g} <br/>
     <strong>Parameters</strong> : {p}<br/>
     <h2>Figures:</h2>""".format(name=name,p=p,mn=mname,date=date,g=g,version=version,host=host)
