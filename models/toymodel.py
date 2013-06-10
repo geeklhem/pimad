@@ -229,13 +229,19 @@ class ToyModel(model.Model):
         return genotype
 
 class ToyDictyo(ToyModel):
-    """ Based on the toy model but a part of the group don't reproduce. (spore/stem) """
+    """ Based on the toy model but a part of the group don't reproduce. (spore/stem).
+
+    .. note::
+    - Only 80% of the group (cheaters first) get a chance to reproduce.
+    - Alone individuals reproduce only if the parmeter alone_repro = True (Does not change the fitness normalization fonction. [Default = TRUE] 
+    """
 
     def __init__(self,param,tracked_values=[]):
         """Constructeur"""
         model.Model.__init__(self,param,tracked_values)
         self.model_name = "ToyDictyo [Modified Toymodel]"
-
+        if not "alone_repro" in self.param:
+            self.param["alone_repro"]=True
 
     def demographic(self):
             """Global life, Death, Mutation, Heredity and genealogy processes
@@ -293,6 +299,7 @@ class ToyDictyo(ToyModel):
                 p = self.population.phenotype[n] 
                 r = self.population.repartition[n]
                 patch = n/self.population.T
+                
                 allowed = 1
 
                 # Only 80% of the group is allowed to try !
@@ -301,7 +308,9 @@ class ToyDictyo(ToyModel):
                         nb_repro_group_p[patch,p] -= 1
                     else:
                         allowed = 0
-                    
+                else:
+                    allowed = self.param["alone_repro"]
+                  
                 
                 if allowed and random.random()<fitness[patch,fitness_index[(p,r)]]:
             
