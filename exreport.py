@@ -15,6 +15,7 @@ def export(tr,name):
         export_fig(tr,name)
     except:
         print("Error in creating plots")
+        print sys.exc_info()
     with open(os.path.join("reports/",name+"_report.html"), 'w') as f:
         f.write(export_html(tr,name))
     with open(os.path.join("reports/","index.html"), 'w') as f:
@@ -38,19 +39,23 @@ def export(tr,name):
 def export_fig(tr,base_filename):
     base_filename = os.path.join("reports/" + base_filename)
     trace_plots.proportions(tr,True,False,False)
-    plt.savefig(base_filename+"_repartitions.svg")
+    f = plt.gcf()
+    f.set_dpi(150)
+    d = f.get_size_inches()
+    f.set_size_inches( (d[0]*1.5,d[1]) )
+    plt.savefig(base_filename+"_repartitions.png",bbox_inches="tight")
     plt.clf()
     trace_plots.proportions(tr,False,True,False)
-    plt.savefig(base_filename+"_phenotype.svg")
+    plt.savefig(base_filename+"_phenotype.png",bbox_inches="tight")
     plt.clf()
     trace_plots.proportions(tr,True,True,False)
-    plt.savefig(base_filename+"_proportions.svg")
+    plt.savefig(base_filename+"_proportions.png",bbox_inches="tight")
     plt.clf()
     trace_plots.group_level_cov(tr,False)
-    plt.savefig(base_filename+"_grpLvlCov.svg")
+    plt.savefig(base_filename+"_grpLvlCov.png",bbox_inches="tight")
     plt.clf()
     trace_plots.groupsize_surface(tr,False)
-    plt.savefig(base_filename+"_surface.png")
+    plt.savefig(base_filename+"_surface.png",bbox_inches="tight")
     plt.clf()
 
 def export_html(tr,name):
