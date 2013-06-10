@@ -242,6 +242,10 @@ class ToyDictyo(ToyModel):
         self.model_name = "ToyDictyo [Modified Toymodel]"
         if not "alone_repro" in self.param:
             self.param["alone_repro"]=True
+        if self.param["alone_repro"]:
+            self.model_name += "Loners can reproduce"
+        else:
+            self.model_name += "Loners can't reproduce"
 
     def demographic(self):
             """Global life, Death, Mutation, Heredity and genealogy processes

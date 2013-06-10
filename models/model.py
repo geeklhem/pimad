@@ -56,7 +56,7 @@ class Model:
 
     def equilibrium(self):
         """play until the equilibrium"""
-        print("Playing until equilibrium (Limit : {0})".format(self.population.N/1000.0))
+        print("Playing until equilibrium (Criterion limit : {0} for 10 generations)".format(self.population.N/1000.0))
 
         #Create a new trace dict with a list by tracked values.
         self.traces.append({})
