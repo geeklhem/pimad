@@ -26,7 +26,7 @@ def export(tr,name):
         <ul>
         """
         
-        for i in glob.glob(os.path.join("reports/","*_report.html")):
+        for i in sorted(glob.glob(os.path.join("reports/","*_report.html"))):
             path_i = os.path.basename(str(i))
             name_i = str(path_i).split(".")[0]
             page += '\n<li><a href="{path}">{name}</a></li>'.format(path=path_i,
@@ -95,9 +95,9 @@ def export_html(tr,name):
     <strong>Parameters</strong> : {p}<br/>
     <h2>Figures:</h2>""".format(name=name,p=p,mn=mname,date=date,g=g,version=version)
     
-    for i in glob.glob(os.path.join("reports/",name+"*.svg")):
+    for i in sorted(glob.glob(os.path.join("reports/",name+"*.svg"))):
         page += '\n<img src="{path}"/><br/>'.format(path=os.path.basename(i))
-    for i in glob.glob(os.path.join("reports/",name+"*.png")):
+    for i in sorted(glob.glob(os.path.join("reports/",name+"*.png"))):
         page += '\n<img src="{path}"/><br/>'.format(path=os.path.basename(i))
 
 
