@@ -44,7 +44,7 @@ try:
     with open('version.txt', 'r') as f:
         __version__ = f.read()
 except:
-        __version__ = "unknown"
+        __version__ = "unknown version"
 
 __email__ = "guilhem.doulcier@ens.fr"
 __date__ = "2013"

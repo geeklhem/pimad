@@ -79,6 +79,12 @@ def export_html(tr,name):
     except:
         version = "Unknown"
 
+
+    try:
+        host = tr.host
+    except:
+        version = "Unknown"
+
     p = "<ul>"
     for k,v in tr.p.items():
         p += "<li><strong>{0}</strong> :  {1}</li>".format(k,v)
@@ -89,15 +95,14 @@ def export_html(tr,name):
     <body><h1>Experimental report : {name}</h1>
     <h2>Informations</h2>
     <strong>Model name</strong> : {mn}<br/>
-    <strong>Date </strong> : {date} <br/>
-    <strong>Version nb </strong> : {version} <br/>
+    <strong>Date </strong> : {date} <strong> on </strong> {host} <strong> running</strong> version nb : {version}<br/>
     <strong>Generations</strong> : {g} <br/>
     <strong>Parameters</strong> : {p}<br/>
-    <h2>Figures:</h2>""".format(name=name,p=p,mn=mname,date=date,g=g,version=version)
+    <h2>Figures:</h2>""".format(name=name,p=p,mn=mname,date=date,g=g,version=version,host=host)
     
-    for i in sorted(glob.glob(os.path.join("reports/",name+"*.svg"))):
+    for i in sorted(glob.glob(os.path.join("reports/",name+"*.svg")),reverse=True):
         page += '\n<img src="{path}"/><br/>'.format(path=os.path.basename(i))
-    for i in sorted(glob.glob(os.path.join("reports/",name+"*.png"))):
+    for i in sorted(glob.glob(os.path.join("reports/",name+"*.png")),reverse=True):
         page += '\n<img src="{path}"/><br/>'.format(path=os.path.basename(i))
 
 

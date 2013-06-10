@@ -5,7 +5,8 @@
 import copy
 import cPickle as pickle
 import numpy as np
-
+import time 
+import socket
 
 class Trace:
     """ A generic model trace container 
@@ -15,6 +16,13 @@ class Trace:
     def __init__(self,model):
         """Constructor"""
         self.traces = copy.copy(model.traces)
+        self.date = time.strftime("%Y-%m-%d %H:%M:%S",time.gmtime())
+        self.host = socket.gethostname()
+        try:
+            self.version = __version__
+        except:
+            self.version = "unknown"
+
         self.p = copy.copy(model.param)
         self.model_name = model.model_name
         self._grpsize_density = np.zeros((1,1))
