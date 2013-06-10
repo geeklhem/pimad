@@ -68,7 +68,7 @@ class Model:
         criterion = [111,222,333]
 
         #Generation loop
-        while coef > 0.0001 or g < 3:
+        while coef > self.population.N/1000 or g < 3:
             self.step()
             
             # Compute halting cirterion.
@@ -77,7 +77,7 @@ class Model:
             criterion[0] =  sum(self.population.proportions[:,1]) #T
             if g > 2:
                 try:
-                    coef = math.fabs( math.log((math.fabs(criterion[0]-criterion[1]))/(math.fabs(criterion[2]-criterion[1])),10))
+                    coef =  math.fabs(criterion[0]-math.fabs(criterion[1]+criterion[2])/2)
                 except:
                     coef = 0
 
