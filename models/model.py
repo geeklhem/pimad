@@ -77,7 +77,7 @@ class Model:
             criterion[1] =  criterion[0]#T+1
             criterion[0] =  sum(self.population.proportions[:,1]) #T
             coef =  math.fabs(criterion[0]-math.fabs(criterion[1]+criterion[2])/2)
-            if coef < self.population.N/100 and g > 10:
+            if coef < self.population.N/1000 and g > 10:
                 c += 1
             print("{0} | Halting criterion : {1} [{2}/10]".format(g+1,coef,c))
 
