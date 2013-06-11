@@ -314,10 +314,10 @@ class ToyDictyo(ToyModel):
                         allowed = 0
                 else:
                     allowed = self.param["alone_repro"]
-                  
+                
                 
                 if allowed and random.random()<fitness[patch,fitness_index[(p,r)]]:
-            
+                
                     ######### END OF MODIFIED PART #####################################"
                     #The genotype is inherited or flipped if mutated.
                     if random.random()<self.param["mu"]:
