@@ -63,8 +63,15 @@ class Trace:
                 zk[1,ng] += i
             for ni,i in enumerate(g[:,0]): #grouped individuals
                 zk[g[ni,1],ng] += i
-            ## Normalize it :
-            zk[:,ng] = [j/(nj*self.grpsize[nj,ng]) if self.grpsize[nj,ng] and nj else 0  for nj,j in enumerate(zk[:,ng])]  
+            ## The trait is the average proportion of social individuals in 
+            ## k-sized groups. 
+            ## It's "number of social individuals in k-sized groups"
+            ## Over "number of individuals in k-sized groups" (which is
+            ## "k * number of k-sized groups").
+            zk[:,ng] = [j/(nj*self.grpsize[nj,ng]) 
+                        if self.grpsize[nj,ng] and nj 
+                        else 0 
+                        for nj,j in enumerate(zk[:,ng])]  
             
             #compute wk the group-level fitness
             if ng < generations-1:
@@ -77,8 +84,6 @@ class Trace:
                     
                         
 
-        
-        
         cov_zw = np.zeros(generations,dtype=float)
         for g in range(generations):
             cov_zw[g] = np.cov(zk[:,g],wk[:,g],1)[0,1]
