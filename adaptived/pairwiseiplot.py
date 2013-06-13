@@ -127,13 +127,18 @@ def s_exact(m,r,T=100,b=20,c=1):
 # DISPLAY #
 ################################################################################
 
-def array(p=0.1,T=100,b=20,c=1):
+def array(p=0.1,T=100,b=20,c=1,exact=True):
     """ Compute the fitness for all values """
     size = int(1/p)
     a = np.zeros((size,size))
-    for m in range(size):
-        for r in range(size):
-           a[m,r] = s_exact(m*p,r*p,T,b,c)
+    if exact:
+        for m in range(size):
+            for r in range(size):
+                a[m,r] = s_exact(m*p,r*p,T,b,c)
+    else:
+        for m in range(size):
+            for r in range(size):
+                a[m,r] = s(m*p,r*p,T,b,c)
     return a
 
 def draw_array(array,disp=True):
