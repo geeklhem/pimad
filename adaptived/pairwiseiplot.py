@@ -138,6 +138,8 @@ def array(p=0.1,T=100,b=20,c=1):
 
 def draw_array(array,disp=True):
     pl.pcolor(array)
+    c = pl.contour(a,colors="k")
+    pl.clabel(c)
     pl.colorbar()
     if disp:
         pl.show()
