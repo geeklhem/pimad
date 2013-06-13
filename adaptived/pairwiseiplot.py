@@ -60,7 +60,8 @@ def array(p=0.1,T=100,b=20,c=1):
            a[m,r] = s(m*p,r*p,T,b,c)
     return a
 
-def draw_array(array):
+def draw_array(array,disp=True):
     pl.pcolor(array)
     pl.colorbar()
-    pl.show()
+    if disp:
+        pl.show()
