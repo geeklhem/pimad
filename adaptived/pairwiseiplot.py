@@ -5,6 +5,7 @@
 import scipy.misc as sp
 import numpy as np
 import pylab as pl
+import math
 
 ################################################################################
 # ESTIMATION #
@@ -77,10 +78,10 @@ def g(n,z,r,T):
     
     if n == 1:
         # A non recruiter mutant alone didn't attach when it was given the chance.
-        non_recruiter = 1 - z
+        non_recruiter = 1 - math.sqrt(z*r)
     else: 
         # The focal mutant player is recruited
-        non_recruiter = z 
+        non_recruiter = math.sqrt(z * r) 
         # n-2 other residents individuals are recruited over the T-2 left.
         non_recruiter *= sp.comb(T-2,n-2) * r ** (n-2) * (1-r) ** (T-n+2)
     return 1/T * recruiter + (1 - 1/T) * non_recruiter
@@ -104,7 +105,7 @@ def s_exact(m,r,T=100,b=20,c=1):
     Based on *Garcia 2013 : Evolution of a continuous social trait* Equation (8)"""
     
     # loners proportion
-    loners = d(1,r,T) - g(1,m,r,T)
+    loners = g(1,r,r,T) - g(1,m,r,T)
 
     #Grouped individuals proportion 
     group_sum = 0
@@ -141,9 +142,74 @@ def array(p=0.1,T=100,b=20,c=1,exact=True):
                 a[m,r] = s(m*p,r*p,T,b,c)
     return a
 
+
+
 def draw_array(array,disp=True):
     pl.pcolor(array)
     c = pl.contour(array,colors="k")
     pl.clabel(c)
     if disp:
         pl.show()
+
+def routine(p=0.1,Tlist=[50,100,200,1000],blist=[2,4,8,16,20,40,100],c=1):
+    arrays = []
+    b_real_list = []
+    T_real_list = []
+    for b in blist:
+        for T in Tlist:
+            print("Computing PIP for b = {0}, T =  {1}".format(b,T)) 
+            try :
+                arrays.append(array(p,T,b,c,True))
+            except : 
+                print("Error in b = {0}, T =  {1}".format(b,T)) 
+            else:
+                b_real_list.append(b)
+                T_real_list.append(T)
+    return arrays,  b_real_list,  T_real_list
+
+def draw_array_of_pips(arrays,blist,Tlist,disp=False):
+    xmax = len(blist)
+    ymax = len(Tlist)
+    print(xmax)
+    print(ymax)
+    n = 0
+    for i, a in enumerate(arrays):
+        n += 1
+        pl.subplot(xmax,ymax,i+1)
+        ax = pl.gca()
+        draw_array(a,False)
+        ax.set_title("PIP b = {0}, T =  {1}".format(blist[i],Tlist[i]))
+    if disp:
+        pl.show()
+
+
+if __name__ == "__main__":
+    import sys 
+    import glob
+    import os.path
+    if len(sys.argv) == 2: 
+        arrays, b, T = routine(0.1)
+        for i,pip in enumerate(arrays) :
+            param = "_b"+str(b[i])+"_T"+str(T[i])
+            np.save("pip_"+sys.argv[1]+param,pip)
+    elif len(sys.argv) == 3: 
+        arrays = []
+        blist = []
+        Tlist = []
+        for f in sorted(glob.glob("pip_"+sys.argv[1]+"*")):
+            sf = os.path.basename(f).split(".")[0]
+            sf = sf.split("_")
+            b = sf[-2][1:]
+            T = sf[-1][1:]
+            
+            print("Loading file {0}, parameters : b = {1} and T = {2}".format(f,b,T))
+            try:
+                arrays.append(np.load(f))
+            except:
+                print("Error Loading file {0}".format(f))
+            else:
+                blist.append(b)
+                Tlist.append(T)
+        draw_array_of_pips(arrays,blist,Tlist,disp=True)
+    else:
+        array(p=0.1,T=100,b=20,c=1,exact=True)
