@@ -168,10 +168,8 @@ def routine(p=0.1,Tlist=[50,100,200,1000],blist=[2,4,8,16,20,40,100],c=1):
     return arrays,  b_real_list,  T_real_list
 
 def draw_array_of_pips(arrays,blist,Tlist,disp=False):
-    xmax = len(blist)
-    ymax = len(Tlist)
-    print(xmax)
-    print(ymax)
+    xmax = len(set(blist))
+    ymax = len(set(Tlist))
     n = 0
     for i, a in enumerate(arrays):
         n += 1
