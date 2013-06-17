@@ -7,6 +7,7 @@ import numpy as np
 import pylab as pl
 import math
 import matplotlib.colors as mcolors
+import traceback
 
 ################################################################################
 # ESTIMATION #
@@ -124,23 +125,57 @@ def s_exact(m,r,T=100,b=20,c=1):
    
 
 
+def s_sizeThreshold(m,r,T=100,b=20,c=1,t=1):
+    """Fitness of a m z = mutant trait in a z=r monomorphic population. 
+    Only groups smaller than t/T provide benefits.
+
+    
+    :param m: Value of the mutant social trait \in [0,1].
+    :type m: float
+    :param r: Value of the social trait in the monomorphic population \in [0,1].
+    :type r: float
+    :param T: Patch size (Default = 100).
+    :type T: int
+    :param b: Benefits coefficient (Default = 20).
+    :type b: int
+    :param c: Cost coefficient (Default = 1).
+    :type c: int
+    :return: (float) - Fitness of a m z = mutant trait in a z=r monomorphic population.  
+    :param t: Maximal patch fraction \in [0,1] that form a beneficial group.
+    :type t: float
+    """
+    
+    #
+    sum_one = 0
+    for n in range(2,int(t*T)):
+        sum_one += g(n,m,r,T) - g(n,r,r,T)
+
+    #
+    sum_two= 0
+    for n in range(2,int(t*T)):
+        sum_two += g(n,m,r,T)/n
+
+    ## Mean Individual Benefits
+    benefits = (  r   *  b * sum_one - 
+                  (m-r) * b * sum_two)
+ 
+    ## Individual Cost
+    cost = c * (m-r)
+    return benefits - cost
+   
+
 
 ################################################################################
 # DISPLAY #
 ################################################################################
 
-def array(p=0.1,T=100,b=20,c=1,exact=True):
+def array(p=0.1,T=100,b=20,c=1,fitness_func=s_exact):
     """ Compute the fitness for all values """
     size = int(1/p)
     a = np.zeros((size,size))
-    if exact:
-        for m in range(size):
-            for r in range(size):
-                a[m,r] = s_exact(m*p,r*p,T,b,c)
-    else:
-        for m in range(size):
-            for r in range(size):
-                a[m,r] = s(m*p,r*p,T,b,c)
+    for m in range(size):
+        for r in range(size):
+            a[m,r] = fitness_func(m*p,r*p,T,b,c)
     return a
 
 
@@ -158,7 +193,7 @@ def draw_array(array,disp=True):
     if disp:
         pl.show()
 
-def routine(p=0.1,Tlist=[50,100,200,1000],blist=[2,4,8,16,20,40,100],c=1):
+def routine(p=0.1,Tlist=[50,100,500,1000],blist=[4,8,20,40],c=1,ff=s_sizeThreshold):
     arrays = []
     b_real_list = []
     T_real_list = []
@@ -166,9 +201,12 @@ def routine(p=0.1,Tlist=[50,100,200,1000],blist=[2,4,8,16,20,40,100],c=1):
         for T in Tlist:
             print("Computing PIP for b = {0}, T =  {1}".format(b,T)) 
             try :
-                arrays.append(array(p,T,b,c,True))
-            except : 
-                print("Error in b = {0}, T =  {1}".format(b,T)) 
+                arrays.append(array(p,T,b,c,ff))
+            except :
+                exc_type, exc_value, exc_traceback = sys.exc_info() 
+                print("Error in b = {0}, T =  {1}".format(b,T))
+                traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2, file=sys.stdout)
+                
             else:
                 b_real_list.append(b)
                 T_real_list.append(T)
