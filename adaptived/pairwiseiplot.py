@@ -156,7 +156,7 @@ def s_sizeThreshold(m,r,T=100,b=20,c=1,t=1):
         sum_two += g(n,m,r,T)/n
 
     ## Mean Individual Benefits
-    benefits = (  r   *  b * sum_one - 
+    benefits = (  r   *  b * sum_one + 
                   (m-r) * b * sum_two)
  
     ## Individual Cost
