@@ -1,6 +1,22 @@
 #!/usr/bin/env/ python
 # -*- coding: utf-8 -*-
-"""Pairwise invasibility plot functions"""
+"""
+Pairwise invasibility plot functions
+
+Usage:
+  pairwiseiplot.py <file_name> [-p=<precision>] [-b=<bvalues>] [-T=<tvalues>]   [-f=<fitnessFunction>] [-o=<options>] 
+ pairwiseiplot.py <file_name> load
+Options:
+  -f=<fitnessFunction>     Fitness function to use [default: s_simple] 
+  -p=<precision>           Precision [default: 0.1]
+  -b=<bvalues>             b values to loop through [default: 4,8,20,40]
+  -T=<tvalues>             t values to loop through [default: 50,100,500]
+  -o=<options>             Option for the fitness function [default:t=0.75]
+  -h --help                Show this screen.
+"""
+
+__version__ = "alpha"
+
 
 import scipy.misc as sp
 import numpy as np
@@ -8,177 +24,53 @@ import pylab as pl
 import math
 import matplotlib.colors as mcolors
 import traceback
-
-################################################################################
-# ESTIMATION #
-################################################################################
-
-
-def d(n,z,T=100):
-    """Group size distribution experienced by players in a z-monomorphic population
-    
-    :param n: Group size \in [0,T].
-    :type n: int
-    :param z: Value of the social trait in the monomorphic population \in [0,1].
-    :type z: float
-    :param T: Patch size (Default = 100).
-    :type T: int
-    :return: (float) - proportion of individuals of a z-monomorphic population experiencing a n-sized group."""
-
-    # A recruiter has a n group size when n-1 individuals over the T-1 attached to it. 
-    recruiter = sp.comb(T-1,n-1) * z ** (n-1) * (1-z) ** (T-n+1)
-    
-    if n == 1:
-        # A non recruiter alone didn't attach when it was given the chance.
-        non_recruiter = 1 - z
-    else: 
-        # The focal player is recruited
-        non_recruiter = z 
-        # n-2 other individuals are recruited over the T-2 left.
-        non_recruiter *= sp.comb(T-2,n-2) * z ** (n-2) * (1-z) ** (T-n+2)
-    return 1/T * recruiter + (1 - 1/T) * non_recruiter
+import ast
+from docopt import docopt
+import fitness_fct as fitness
 
 
-def s(m,r,T=100,b=20,c=1):
-    """Fitness of a m z = mutant trait in a z=r monomorphic population. Approximated for near m and z
-    
-    :param m: Value of the mutant social trait \in [0,1].
-    :type m: float
-    :param r: Value of the social trait in the monomorphic population \in [0,1].
-    :type r: float
-    :param T: Patch size (Default = 100).
-    :type T: int
-    :param b: Benefits coefficient (Default = 20).
-    :type b: int
-    :param c: Cost coefficient (Default = 1).
-    :type c: int
-    :return: (float) - Fitness of a m z = mutant trait in a z=r monomorphic population.   """
-    
-    group_sum = 0
-    for n in range(2,T+1):
-        group_sum += d(n,r,T)/n 
-    return (m-r) * b * group_sum - c
-
-################################################################################
-# EXACT #
-################################################################################
-def g(n,z,r,T):
-    """Group size distribution experienced by rare z players in a r monomorphic population""
-
-    :param n: Group size \in [0,T].
-    :type n: int
-    :param z: Value of the rare mutant social trait.
-    :type z: float
-    :param r: Value of the social trait in the monomorphic population \in [0,1].
-    :type r: float
-    :param T: Patch size (Default = 100).
-    :type T: int
-    :return: (float) - proportion of rare z individuals experiencing a n-sized group in a r-monomorphic population."""
-    ## A mutant recruiter has a n group size when n-1 residents individuals
-    # over the T-1 attached to it. 
-    recruiter = sp.comb(T-1,n-1) * r ** (n-1) * (1-r) ** (T-n+1)
-    
-    if n == 1:
-        # A non recruiter mutant alone didn't attach when it was given the chance.
-        non_recruiter = 1 - math.sqrt(z*r)
-    else: 
-        # The focal mutant player is recruited
-        non_recruiter = math.sqrt(z * r) 
-        # n-2 other residents individuals are recruited over the T-2 left.
-        non_recruiter *= sp.comb(T-2,n-2) * r ** (n-2) * (1-r) ** (T-n+2)
-    return 1/T * recruiter + (1 - 1/T) * non_recruiter
-    
-
-def s_exact(m,r,T=100,b=20,c=1):
-    """Fitness of a m z = mutant trait in a z=r monomorphic population. Using exact analytical distributions.
-    
-    :param m: Value of the mutant social trait \in [0,1].
-    :type m: float
-    :param r: Value of the social trait in the monomorphic population \in [0,1].
-    :type r: float
-    :param T: Patch size (Default = 100).
-    :type T: int
-    :param b: Benefits coefficient (Default = 20).
-    :type b: int
-    :param c: Cost coefficient (Default = 1).
-    :type c: int
-    :return: (float) - Fitness of a m z = mutant trait in a z=r monomorphic population.  
-
-    Based on *Garcia 2013 : Evolution of a continuous social trait* Equation (8)"""
-    
-    # loners proportion
-    loners = g(1,r,r,T) - g(1,m,r,T)
-
-    #Grouped individuals proportion 
-    group_sum = 0
-    for n in range(2,T+1):
-        group_sum += g(n,m,r,T)/n
-
-    ## Mean Individual Benefits
-    benefits = (  r   *  b * loners + 
-                (m-r) * b * group_sum)
- 
-    ## Individual Cost
-    cost = c * (m-r)
-    
-    return benefits - cost
-   
 
 
-def s_sizeThreshold(m,r,T=100,b=20,c=1,t=1):
-    """Fitness of a m z = mutant trait in a z=r monomorphic population. 
-    Only groups smaller than t/T provide benefits.
+#~~~~~~~~~~~~~~~~~~~~~~~
+# Compute
+#~~~~~~~~~~~~~~~~~~~~~~~
 
-    
-    :param m: Value of the mutant social trait \in [0,1].
-    :type m: float
-    :param r: Value of the social trait in the monomorphic population \in [0,1].
-    :type r: float
-    :param T: Patch size (Default = 100).
-    :type T: int
-    :param b: Benefits coefficient (Default = 20).
-    :type b: int
-    :param c: Cost coefficient (Default = 1).
-    :type c: int
-    :return: (float) - Fitness of a m z = mutant trait in a z=r monomorphic population.  
-    :param t: Maximal patch fraction \in [0,1] that form a beneficial group.
-    :type t: float
-    """
-    
-    #
-    sum_one = 0
-    for n in range(2,int(t*T)):
-        sum_one += g(n,m,r,T) - g(n,r,r,T)
-
-    #
-    sum_two= 0
-    for n in range(2,int(t*T)):
-        sum_two += g(n,m,r,T)/n
-
-    ## Mean Individual Benefits
-    benefits = (  r   *  b * sum_one + 
-                  (m-r) * b * sum_two)
- 
-    ## Individual Cost
-    cost = c * (m-r)
-    return benefits - cost
-   
-
-
-################################################################################
-# DISPLAY #
-################################################################################
-
-def array(p=0.1,T=100,b=20,c=1,fitness_func=s_exact):
+def array(p=0.1,T=100,b=20,c=1,fitness_func="s_simple",options=None):
     """ Compute the fitness for all values """
+    ff = getattr(fitness,fitness_func)
     size = int(1/p)
     a = np.zeros((size,size))
     for m in range(size):
         for r in range(size):
-            a[m,r] = fitness_func(m*p,r*p,T,b,c)
+            a[m,r] = ff(m*p,r*p,T,b,c,options)
     return a
 
 
+def routine(p=0.1,
+            Tlist=[50,100,500,1000],blist=[4,8,20,40],c=1,
+            ff="s_simple",fitnessOptions={}):
+    arrays = []
+    b_real_list = []
+    T_real_list = []
+    for b in blist:
+        for T in Tlist:
+            print("Computing PIP for b = {0}, T =  {1}".format(b,T)) 
+            try :
+                arrays.append(array(p,T,b,c,ff,options=fitnessOptions))
+            except :
+                exc_type, exc_value, exc_traceback = sys.exc_info() 
+                print("Error in b = {0}, T =  {1}".format(b,T))
+                traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2, file=sys.stdout)
+                
+            else:
+                b_real_list.append(b)
+                T_real_list.append(T)
+    return arrays,  b_real_list,  T_real_list
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~
+# Draw
+#~~~~~~~~~~~~~~~~~~~~~~~
 
 def draw_array(array,disp=True):
     
@@ -193,24 +85,6 @@ def draw_array(array,disp=True):
     if disp:
         pl.show()
 
-def routine(p=0.1,Tlist=[50,100,500,1000],blist=[4,8,20,40],c=1,ff=s_sizeThreshold):
-    arrays = []
-    b_real_list = []
-    T_real_list = []
-    for b in blist:
-        for T in Tlist:
-            print("Computing PIP for b = {0}, T =  {1}".format(b,T)) 
-            try :
-                arrays.append(array(p,T,b,c,ff))
-            except :
-                exc_type, exc_value, exc_traceback = sys.exc_info() 
-                print("Error in b = {0}, T =  {1}".format(b,T))
-                traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2, file=sys.stdout)
-                
-            else:
-                b_real_list.append(b)
-                T_real_list.append(T)
-    return arrays,  b_real_list,  T_real_list
 
 def draw_array_of_pips(arrays,blist,Tlist,disp=False):
     xmax = len(set(blist))
@@ -225,27 +99,60 @@ def draw_array_of_pips(arrays,blist,Tlist,disp=False):
     if disp:
         pl.show()
 
+#~~~~~~~~~~~~~~~~~~~~~~~
+# Main
+#~~~~~~~~~~~~~~~~~~~~~~~
 
 if __name__ == "__main__":
     import sys 
     import glob
     import os.path
-    if len(sys.argv) == 2: 
-        arrays, b, T = routine(0.1)
+    args = docopt(__doc__, version=__version__)
+
+    #~~~~~~~~New files~~~~~~#
+    if not args["load"]:
+       
+        #----1----# Parsing parameters
+        options = {}
+        if args["-o"]:
+            custom_p = args["-o"].split(",")
+            for p in custom_p:
+                p = p.split("=")
+                try:
+                    p[1] = ast.literal_eval(p[1])
+                except:
+                    print("Error in parsing {0} argument".format(p[0]))
+                else:
+                    options[p[0]]=p[1]
+        
+
+        blist = map(int, args["-b"].split(","))
+        tlist = map(int, args["-T"].split(","))
+        pre = float(args["-p"])
+
+        #----2----# Compute
+        arrays, b, T = routine(pre,tlist,blist,ff=args["-f"],fitnessOptions=options)
+        
+        #----3----# Save
         for i,pip in enumerate(arrays) :
             param = "_b"+str(b[i])+"_T"+str(T[i])
-            np.save("pip_"+sys.argv[1]+param,pip)
-    elif len(sys.argv) == 3: 
+            np.save("pip_"+args["<file_name>"]+param,pip)
+
+    #~~~~~~~~Loading files~~~~~~#
+    else:
+        #----1----# Load
         arrays = []
         blist = []
         Tlist = []
         for f in sorted(glob.glob("pip_"+sys.argv[1]+"*")):
+
             sf = os.path.basename(f).split(".")[0]
             sf = sf.split("_")
             b = int(sf[-2][1:])
             T = int(sf[-1][1:])
             
             print("Loading file {0}, parameters : b = {1} and T = {2}".format(f,b,T))
+
             try:
                 arrays.append(np.load(f))
             except:
@@ -253,7 +160,9 @@ if __name__ == "__main__":
             else:
                 blist.append(b)
                 Tlist.append(T)
+
+        #----2----# Sort 
         blist,Tlist,arrays = (list(t) for t in zip(*sorted(zip(blist,Tlist,arrays))))
+
+        #----3----# Display
         draw_array_of_pips(arrays,blist,Tlist,disp=True)
-    else:
-        array(p=0.1,T=100,b=20,c=1,exact=True)

@@ -35,3 +35,6 @@
 /adaptived/pip_p01_b8_T1000.npy
 /adaptived/pip_p01_b8_T200.npy
 /adaptived/pip_p01_b8_T50.npy
+*.npy
+*#*
+/adaptived/feh_030311_000001_filelist
