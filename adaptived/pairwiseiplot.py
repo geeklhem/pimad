@@ -6,6 +6,7 @@ import scipy.misc as sp
 import numpy as np
 import pylab as pl
 import math
+import matplotlib.colors as mcolors
 
 ################################################################################
 # ESTIMATION #
@@ -145,7 +146,13 @@ def array(p=0.1,T=100,b=20,c=1,exact=True):
 
 
 def draw_array(array,disp=True):
-    pl.pcolor(array)
+    
+    cmap = mcolors.ListedColormap([(1, 1, 1), 
+                                   (0.5, 0.5, 0.5)])
+    pl.contourf(array, cmap=cmap, levels=[-1000,0,1000])
+
+    cfin = pl.contour(array,np.arange(np.amin(array), np.amax(array), 0.1),colors="0.1")
+    cfin.set_alpha(.2)
     c = pl.contour(array,colors="k")
     pl.clabel(c)
     if disp:
@@ -197,8 +204,8 @@ if __name__ == "__main__":
         for f in sorted(glob.glob("pip_"+sys.argv[1]+"*")):
             sf = os.path.basename(f).split(".")[0]
             sf = sf.split("_")
-            b = sf[-2][1:]
-            T = sf[-1][1:]
+            b = int(sf[-2][1:])
+            T = int(sf[-1][1:])
             
             print("Loading file {0}, parameters : b = {1} and T = {2}".format(f,b,T))
             try:
@@ -208,6 +215,7 @@ if __name__ == "__main__":
             else:
                 blist.append(b)
                 Tlist.append(T)
+        blist,Tlist,arrays = (list(t) for t in zip(*sorted(zip(blist,Tlist,arrays))))
         draw_array_of_pips(arrays,blist,Tlist,disp=True)
     else:
         array(p=0.1,T=100,b=20,c=1,exact=True)
