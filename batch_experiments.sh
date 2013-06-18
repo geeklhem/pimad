@@ -1,12 +1,7 @@
 #!/bin/sh
-python experiment.py toydictyo_ip01.data -g 100 -p 0.1
-python experiment.py toydictyo_ip02.data -g 100 -p 0.2
-python experiment.py toydictyo_ip03.data -g 100 -p 0.3
-python experiment.py toydictyo_ip04.data -g 100 -p 0.4
-python experiment.py toydictyo_ip05.data -g 100 -p 0.5
-python experiment.py toydictyo_ip06.data -g 100 -p 0.6
-python experiment.py toydictyo_ip07.data -g 100 -p 0.7
-python experiment.py toydictyo_ip08.data -g 100 -p 0.8
-python experiment.py toydictyo_ip09.data -g 100 -p 0.9
-python experiment.py toydictyo_ip10.data -g 100 -p 1
- 
+for model in "ToyContinuous" "ContinuousSizeThreshold" ; do
+    python experiment.py $model_z05p.data -m $model -p N=1000000,mu=0,ip=0.01,pa=0.5,ps=0.51
+    python experiment.py $model_z05m.data -m $model -p N=1000000,mu=0,ip=0.01,pa=0.5,ps=0.49
+    python experiment.py $model_z005p.data -m $model -p N=1000000,mu=0,ip=0.01,pa=0.05,ps=0.06
+    python experiment.py $model_z005m.data -m $model -p N=1000000,mu=0,ip=0.01,pa=0.05,ps=0.04
+done 

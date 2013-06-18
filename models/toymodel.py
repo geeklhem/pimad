@@ -8,6 +8,9 @@ import random
 import model
 
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Toy model
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class ToyModel(model.Model):
     """A toy model of group formation by differential attachment. [Garcia & De Monte 2012]
 
@@ -228,6 +231,10 @@ class ToyModel(model.Model):
         """
         return genotype
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dictyo toy model
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 class ToyDictyo(ToyModel):
     """ Based on the toy model but a part of the group don't reproduce. (spore/stem).
 
@@ -340,6 +347,126 @@ class ToyDictyo(ToyModel):
                 self.population.genealogy[n] = newborn_genealogy[i]
 
 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Continuous model
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+class ToyContinuous(ToyModel):
+    """ A model where the probability of attachment are conditioning both the
+    payoff and the social cost.
+
+    In this model there's still only two phenotypes at a time a resident 
+    (the asocial of the toymodel) and a mutant (the social of the toymodel)
+
+    **Modification from the toymodel :** 
+
+    - In the aggregation phase the probaility of aggregation of two individuals 
+    is the geometric mean of the phenotypes.
+    - The social cost of an individual is -c*z
+    - The group benefit of an individual is b*\overline{z} (mean of the social
+    trait).
+
+    """
+
+    def __init__(self,param,tracked_values=[]):
+        """Constructor"""
+        model.Model.__init__(self,param,tracked_values)
+        self.model_name = "Continuous Toy Model"
+
+        # The probability of attachment between a za and a zs individual is:
+        self.param["pas"] = math.sqrt(self.param["pa"]*self.param["ps"])
+
+    def payoff(self):
+        """
+        Compute the payoff for each patch and each combinaison of repartition and phenotype.
+        
+        =========  ============================
+        **Read**   self.population.phenotype.
+                   self.population.repartition, 
+        **Write**  self.population.payoff.
+        =========  ============================
+        
+        .. note ::
+           By line in self.population.payoff:
+        
+           0. Payoff of zs individual in a group
+           1. Payoff of za individual in a group
+           2. Payoff of zs individual alone
+           3. Payoff of za individual alone
+        
+        """
+        ## For each patch
+        for patch in range(self.population.Npatch):
+
+            gb = self.group_benefits(patch)
+            cost_s = self.cost(self.param["ps"])
+            cost_a = self.cost(self.param["pa"])
+
+            # Payoff of zs individual in a group
+            
+            self.population.payoff[patch,0] = gb - cost_s
+            # Payoff of za individual in a group
+            self.population.payoff[patch,1] = gb - cost_a
+            
+            # Payoff of zs individual alone
+            self.population.payoff[patch,2] = -cost_s
+            # Payoff of za individual alone
+            self.population.payoff[patch,3] = -cost_a
+
+    def group_benefits(self,p):
+        """ Return the individual group-benefits in the p patch """
+        # The group benefit is b * \overline{z} the mean social trait.
+        meanZ = self.population.proportions[p,0]*self.param["ps"] 
+        meanZ += ((self.population.proportions[p,1] -
+                  self.population.proportions[p,0])*self.param["pa"]) 
+        meanZ /= self.population.proportions[p,1]  
+
+        return meanZ * self.b
+
+    def cost(self,z):
+        """ Return the individual cost of a z-social individual"""
+        return self.c * z
+
+class ContinuousSizeThreshold(ToyContinuous):
+    """ Continuous Toy Model with a group size threshold
+
+    **Modification from the toycontinuous :**
+    
+    - if groupsize is greater than param["t"]/param["T"] group benefits are null.
+    Default value for t is 0.75.
+
+    """
+
+    def __init__(self,param,tracked_values=[]):
+        """Constructor"""
+        model.Model.__init__(self,param,tracked_values)
+        self.model_name = """ContinuousSizeThreshold, 
+        Continuous Toy Model with a group size threshold """
+
+        # The probability of attachment between a za and a zs individual is:
+        self.param["pas"] = math.sqrt(self.param["pa"]*self.param["ps"])
+
+        # Default value for t is 0.75.
+        if not "t" in self.param:
+            self.param["t"] = 0.75
+
+    def group_benefits(self,p):
+        """ Return the individual group-benefits in the p patch """
+        # The group benefit is b * \overline{z} the mean social trait. if the 
+        # group is small enough.
+        if self.population.proportions[p,1] < self.param["t"]/self.param["T"]:
+
+            meanZ = self.population.proportions[p,0]*self.param["ps"] 
+            meanZ += ((self.population.proportions[p,1] -
+                      self.population.proportions[p,0])*self.param["pa"]) 
+            meanZ /= self.population.proportions[p,1]  
+
+            return meanZ * self.b
+
+        # Or it's null.
+        else:
+            return 0
+
 if __name__ == "__main__":
     import math
     param = {"N":100,
@@ -355,11 +482,15 @@ if __name__ == "__main__":
     tracked_values = ["population.proportions"]
 
     a = ToyDictyo(param, tracked_values)
+    #a = ContinuousSizeThreshold(param, tracked_values)
 
     print("\n Model:")
     print(a)
     print("\n Population:")
     print(a.population)
     print("\n Run:")
-    #    a.play(10)
+    #a.play(10)
     a.equilibrium()
+
+
+
