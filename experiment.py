@@ -5,7 +5,7 @@ PIMAD : Pimad Is Modeling Adaptive Dynamics
 A modeling tool for studying adaptive evolution of grouping by adhesion.
 
 Usage:
-  main.py <file> [-g=<number>] [-p=<parameters>] [-m=<modelName>]
+  main.py <file> [-g=<number>] [-p=<parameters>] [-m=<modelName>] [-e=<eqCondition>]
   main.py (-h | --help)
   main.py --version
   main.py --license
@@ -22,7 +22,8 @@ using the `data` object.
 Options:
   -g=<number>              Number of generations to run
   -p=<parameters>          Model parmeters in the format "p1=value p2=value p3=v"
-  -m=<modelName>           Model name (ToyModel or ToyDictyo)
+  -m=<modelName>           Model name (A subclass of Model)
+  -e=<eqCondition>         Halting condition if number of generation is not precised [default: 1000]
   -h --help                Show this screen.
   --version                Show version.
   --license                Show license information.
@@ -107,7 +108,7 @@ def main():
         print("\n Run:")
 
         if not args["-g"]:
-            m.equilibrium()
+            m.equilibrium(int(args["-e"]))
         else:
             m.play(int(args["-g"]))
 
