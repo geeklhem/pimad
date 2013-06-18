@@ -91,8 +91,12 @@ def main():
         loaded = trace.load_trace(args['<file>'])
     except:
         print("File {0} not found, creating one.".format(args["<file>"]))
-        if args["-m"] == "toydictyo":
-            m = toymodels.ToyDictyo(param, tracked_values)
+        if args["-m"]:
+            try:
+                m = getattr(toymodels,args["-m"])(param, tracked_values)
+            except:
+                print "model not found, using toymodel"
+                m = toymodels.ToyModel(param, tracked_values)
         else:
             m = toymodels.ToyModel(param, tracked_values)
         

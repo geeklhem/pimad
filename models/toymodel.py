@@ -6,7 +6,7 @@ import numpy
 import random
 
 import model
-
+import math
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Toy model
@@ -468,7 +468,6 @@ class ContinuousSizeThreshold(ToyContinuous):
             return 0
 
 if __name__ == "__main__":
-    import math
     param = {"N":100,
              "T":10,
              "ip":0.5,
