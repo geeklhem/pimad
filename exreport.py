@@ -19,9 +19,12 @@ def export(tr,name):
     with open(os.path.join("reports/",name+"_report.html"), 'w') as f:
         f.write(export_html(tr,name))
     with open(os.path.join("reports/","index.html"), 'w') as f:
-        page = """<html>  
+        page = """<html>  <head>
         <title>Experimental reports index</title>
-        <body>
+        <style type="text/css">
+        img {max-width:100%;}
+        </style>
+        </head><body>
         <h1>Experimental reports index</h1>
         <ul>
         """
@@ -90,8 +93,12 @@ def export_html(tr,name):
         p += "<li><strong>{0}</strong> :  {1}</li>".format(k,v)
     p += "</ul>"
 
-    page = """<html>  
+    page = """<html><head>  
     <title>{name}</title>
+    <style type="text/css">
+        img {max-width:100%;}
+        </style>
+        </head>
     <body><h1>Experimental report : {name}</h1>
     <h2>Informations</h2>
     <strong>Model name</strong> : {mn}<br/>
