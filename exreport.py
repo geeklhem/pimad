@@ -96,7 +96,7 @@ def export_html(tr,name):
     page = """<html><head>  
     <title>{name}</title>
     <style type="text/css">
-        img {max-width:100%;}
+        img {{max-width:100%;}}
         </style>
         </head>
     <body><h1>Experimental report : {name}</h1>
