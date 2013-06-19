@@ -35,8 +35,9 @@ import fitness_fct as fitness
 # Compute
 #~~~~~~~~~~~~~~~~~~~~~~~
 
-def array(p=0.1,T=100,b=20,c=1,fitness_func="s_simple",options=None):
+def array(p=0.1,T=100,b=20,c=1,fitness_func="s_simple",options={}):
     """ Compute the fitness for all values """
+    print(options)
     ff = getattr(fitness,fitness_func)
     size = int(1/p)
     a = np.zeros((size,size))
@@ -56,7 +57,7 @@ def routine(p=0.1,
         for T in Tlist:
             print("Computing PIP for b = {0}, T =  {1}".format(b,T)) 
             try :
-                arrays.append(array(p,T,b,c,ff,options=fitnessOptions))
+                arrays.append(array(p,T,b,c,ff,fitnessOptions))
             except :
                 exc_type, exc_value, exc_traceback = sys.exc_info() 
                 print("Error in b = {0}, T =  {1}".format(b,T))

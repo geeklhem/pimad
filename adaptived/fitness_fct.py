@@ -14,7 +14,7 @@ import math
 #########################################
 # DENSITY
 #########################################
-def g(n,z,r,T):
+def g(n,z,r,T,pmax=1):
     """Group size distribution experienced by rare z players in a r monomorphic population""
 
     :param n: Group size \in [0,T].
@@ -25,7 +25,15 @@ def g(n,z,r,T):
     :type r: float
     :param T: Patch size (Default = 100).
     :type T: int
+    :param pmax: Maximum attachment probability. 
+    :type pmax: float
     :return: (float) - proportion of rare z individuals experiencing a n-sized group in a r-monomorphic population."""
+
+    ## Highest probability possible
+    if pmax:
+        z *= pmax 
+        r *= pmax
+
     ## A mutant recruiter has a n group size when n-1 residents individuals
     # over the T-1 attached to it. 
     recruiter = sp.comb(T-1,n-1) * r ** (n-1) * (1-r) ** (T-n)
@@ -45,7 +53,7 @@ def g(n,z,r,T):
 # FITNESS FUNCTIONS
 #########################################################
 
-def s_simple(m,r,T=100,b=20,c=1,options={}):
+def s_simple(m,r,T=100,b=20,c=1,options={"pmax":1}):
     """Fitness of a m z = mutant trait in a z=r monomorphic population. Using exact analytical distributions.
     
     :param m: Value of the mutant social trait \in [0,1].
@@ -62,13 +70,14 @@ def s_simple(m,r,T=100,b=20,c=1,options={}):
 
     Based on *Garcia 2013 : Evolution of a continuous social trait* Equation (8)"""
     
+    
     # loners proportion
-    loners = g(1,r,r,T) - g(1,m,r,T)
+    loners = g(1,r,r,T,options["pmax"]) - g(1,m,r,T,options["pmax"])
 
     #Grouped individuals proportion 
     group_sum = 0
     for n in range(2,T+1):
-        group_sum += g(n,m,r,T)/n
+        group_sum += g(n,m,r,T,options["pmax"])/n
 
     ## Mean Individual Benefits
     benefits = (  r   *  b * loners + 
@@ -77,7 +86,6 @@ def s_simple(m,r,T=100,b=20,c=1,options={}):
     ## Individual Cost
     cost = c * (m-r)
     
-
     return benefits - cost
    
 
