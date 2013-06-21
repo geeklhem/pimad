@@ -37,7 +37,6 @@ import fitness_fct as fitness
 
 def array(p=0.1,T=100,b=20,c=1,fitness_func="s_simple",options={}):
     """ Compute the fitness for all values """
-    print(options)
     ff = getattr(fitness,fitness_func)
     size = int(1/p)
     a = np.zeros((size,size))

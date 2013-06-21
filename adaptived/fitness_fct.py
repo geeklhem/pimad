@@ -18,7 +18,7 @@ def g(n,z,r,T,pmax=1):
     """Group size distribution experienced by rare z players in a r monomorphic population""
 
     :param n: Group size \in [0,T].
-    :type n: int
+vv    :type n: int
     :param z: Value of the rare mutant social trait.
     :type z: float
     :param r: Value of the social trait in the monomorphic population \in [0,1].
@@ -127,3 +127,23 @@ def s_sizeThreshold(m,r,T=100,b=20,c=1,options={}):
     ## Individual Cost
     cost = c * (m-r)
     return benefits - cost
+
+if __name__ == "__main__":
+    import matplotlib.pylab as pl
+    
+    
+    def sigma(z,T):
+        s = 0
+        for n in range(2,T):
+            s += g(n,z,z,T)/n
+        return s
+
+    z = [x/100. for x in range(101)]
+    T = 100
+    for T in (10,50,100,500,1000):
+        y2 = [1/T for x in range(101)]
+        y = [sigma(r,T) for r in z]
+        pl.plot(z,y, label="T = {0}".format(T))
+        pl.plot(z,y2,label="T = {0} limit".format(T))
+    pl.show()
+    legend(loc="upper left")
