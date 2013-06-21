@@ -138,12 +138,29 @@ if __name__ == "__main__":
             s += g(n,z,z,T)/n
         return s
 
-    z = [x/100. for x in range(101)]
+    z = [x/1000. for x in range(1001)]
     T = 100
+
+    
+    def get_color():
+       for item in ['r', 'g', 'b', 'c', 'm', 'y', 'k']:
+          yield item
+
+
+
+    color = get_color()
+    
     for T in (10,50,100,500,1000):
-        y2 = [1/T for x in range(101)]
-        y = [sigma(r,T) for r in z]
-        pl.plot(z,y, label="T = {0}".format(T))
-        pl.plot(z,y2,label="T = {0} limit".format(T))
+        acolor = next(color)    
+        y = [1/sigma(r,T) for r in z]
+        y2 = [T for r in z]
+        pl.plot(z,y, color= acolor, label="T = {0}".format(T))
+        pl.plot(z,y2,'--', color=acolor)
+
+    y3 = [2/(r+0.0000000001)for r in z]
+    pl.plot(z,y3, color="k")
+
+    ax = pl.gca()
+    ax.axis((0,1,0,1250))
+    #legend(loc="upper left")
     pl.show()
-    legend(loc="upper left")
