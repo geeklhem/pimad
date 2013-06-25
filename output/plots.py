@@ -74,6 +74,18 @@ def proportions(trace_object,phenotype=True,group=True,show=True):
         plt.show()
 
 
+def epigenetic_trajectory(trace,show=True):
+    data = trace.traces[0]["global_proportions"]
+    plt.plot(data[0],data[1])
+    
+    plt.xlabel("Proportion of social genotype")
+    plt.ylabel("Proportion of social phenotype")
+    plt.xlim((0,1))
+    plt.ylim((0,1))
+    
+    if show:
+        plt.show()
+    
 
 def groupsize_surface(trace,show=True):
     generations=len(trace.traces[0]["population.proportions"])

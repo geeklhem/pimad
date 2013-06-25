@@ -77,7 +77,14 @@ def export_fig(tr,base_filename):
         plt.clf()
     if "global_proportions" in tr.traces[0]:
         print("Generating global_proportions plots...")
-
+        trace_plots.epigenetic_trajectory(tr,False)
+        f = plt.gcf()
+        f.set_dpi(150)
+        d = f.get_size_inches()
+        f.set_size_inches( (d[0]*1.5,d[1]) )
+        plt.savefig(base_filename+"_trajectory.png",bbox_inches="tight")
+        plt.clf()
+        
 def export_csv(tr,name):
     with open(os.path.join("reports/",name+"_parameters.csv"), 'w') as f:
         for k,v in sorted(tr.p.items()):    
