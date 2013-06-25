@@ -5,7 +5,7 @@ PIMAD : Pimad Is Modeling Adaptive Dynamics
 A modeling tool for studying adaptive evolution of grouping by adhesion.
 
 Usage:
-  main.py <file> [-g=<number>] [-p=<parameters>] [-m=<modelName>] [-e=<eqCondition>]
+  main.py <file> [-g=<number>] [-p=<parameters>] [-m=<modelName>] [-e=<eqCondition>] [-t=<trackedValues>]
   main.py (-h | --help)
   main.py --version
   main.py --license
@@ -24,6 +24,7 @@ Options:
   -p=<parameters>          Model parmeters in the format "p1=value p2=value p3=v"
   -m=<modelName>           Model name (A subclass of Model)
   -e=<eqCondition>         Halting condition if number of generation is not precised [default: 1000]
+  -t=<trackedValues>       Model attributes to save, separated by a comma [default: population.proportions]
   -h --help                Show this screen.
   --version                Show version.
   --license                Show license information.
@@ -86,7 +87,8 @@ def main():
             else:
                 param[p[0]]=p[1]
                 
-    tracked_values = ["population.proportions"]
+    tracked_values = args['-t'].split(",")
+    #print(tracked_values)
 
     try :
         loaded = trace.load_trace(args['<file>'])
