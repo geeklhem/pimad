@@ -6,6 +6,7 @@ import math
 from random import random
 import matplotlib.pyplot as plt
 import itertools
+import collections
 
 center = np.array(([int(random()*100) for x in range(5)],[int(random()*100) for x in range(5)]))
 colors = ["r","b","g","y","k"]
@@ -26,8 +27,21 @@ for k,x,y in itertools.izip(itertools.count(),points[0,:],points[1,:]):
           mdist = dist
           colorlist[k] = colors[i]
 
+
 plt.scatter(points[0,:],points[1,:],color=colorlist)
+
 ax = plt.gca()
 plt.xlim(0,100)
 plt.ylim(0,100) 
+plt.show()
+
+h = collections.Counter(colorlist)
+print h
+print h.keys()
+print h.values()
+plt.clf()
+ax = plt.gca()
+plt.bar(np.arange(len(h.values())),h.values(), color= h.keys())
+ax.set_xlabel("Center")
+ax.set_ylabel("Number of cells")
 plt.show()

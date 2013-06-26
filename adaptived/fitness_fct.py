@@ -133,7 +133,7 @@ def s_sizeThreshold(m,r,T=100,b=20,c=1,options={}):
 def sigma(z,T):
     s = 0
     for n in range(2,T):
-        s += g(n,z,z,T)/n
+        s += g(n,z+0.001,z,T)/n
     return s
 
 def get_color():
