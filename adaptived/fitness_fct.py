@@ -7,7 +7,7 @@ Invasion fitness functions for pairwise invasibility plots.
 import scipy.misc as sp
 import numpy as np
 import math
-
+import matplotlib.pylab as pl
 
 
 
@@ -128,25 +128,20 @@ def s_sizeThreshold(m,r,T=100,b=20,c=1,options={}):
     cost = c * (m-r)
     return benefits - cost
 
-if __name__ == "__main__":
-    import matplotlib.pylab as pl
-    
-    
-    def sigma(z,T):
-        s = 0
-        for n in range(2,T):
-            s += g(n,z,z,T)/n
-        return s
 
-    z = [x/1000. for x in range(1001)]
-    T = 100
 
-    
-    def get_color():
+def sigma(z,T):
+    s = 0
+    for n in range(2,T):
+        s += g(n,z,z,T)/n
+    return s
+
+def get_color():
        for item in ['r', 'g', 'b', 'c', 'm', 'y', 'k']:
           yield item
 
-
+def altruismConditions(p): 
+    z = [x/float(p) for x in range(p)]
 
     color = get_color()
     
@@ -162,5 +157,10 @@ if __name__ == "__main__":
 
     ax = pl.gca()
     ax.axis((0,1,0,1250))
-    #legend(loc="upper left")
     pl.show()
+
+#if __name__ == "__main__":
+altruismConditions(100)
+
+    
+    
