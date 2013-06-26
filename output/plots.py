@@ -73,18 +73,6 @@ def proportions(trace_object,phenotype=True,group=True,show=True):
     if show:
         plt.show()
 
-
-def epigenetic_trajectory(trace,show=True):
-    data = trace.traces[0]["global_proportions"]
-    plt.plot(data[0],data[1])
-    
-    plt.xlabel("Proportion of social genotype")
-    plt.ylabel("Proportion of social phenotype")
-    plt.xlim((0,1))
-    plt.ylim((0,1))
-    
-    if show:
-        plt.show()
     
 
 def groupsize_surface(trace,show=True):
@@ -133,12 +121,28 @@ def routine_graphes(tr):
     group_level_cov(tr)
 
 
+def epigenetic_trajectory(trace,show=True):
+    data = trace.traces[0]["global_proportions"]
+    data = np.array(data)
+    print(data)
+    plt.plot(data[:,0],data[:,1]) 
+    plt.xlabel("Proportion of social genotype")
+    plt.ylabel("Proportion of social phenotype")
+    plt.xlim((0,1))
+    plt.ylim((0,1))
+    
+    if show:
+        plt.show()
 
-if __name__ == "__main__":
+
+def main():
     import math
-    from toymodel import ToyModel
+    import sys
+    sys.path.append("../models")
+    import toymodel as tm
     import traces
 
+    
     param = {"N":1000,
              "T":100,
              "ip":0.5,
@@ -149,9 +153,10 @@ if __name__ == "__main__":
              "pas":math.sqrt(0.8*0.3),
              "mu":0.01}
 
-    tracked_values = ["population.proportions"]
+    #tracked_values = ["population.proportions"]
+    tracked_values = ["global_proportions"]
 
-    a = ToyModel(param, tracked_values)
+    a = tm.ToyEpigenetic(param, tracked_values)
 
     print("\n Model:")
     print(a)
@@ -161,4 +166,9 @@ if __name__ == "__main__":
     a.play(50)
     
     tr = traces.Trace(a)
-    routine_graphes(tr)
+    #routine_graphes(tr)
+    epigenetic_trajectory(tr)
+
+
+if __name__ == "__main__":
+    main()
