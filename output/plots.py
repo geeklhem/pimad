@@ -138,15 +138,13 @@ def global_proportions(trace,show=True):
     data = trace.traces[0]["global_proportions"]
     data = np.array(data)
     print(data)
-    plt.plot(data[:,0],range(len(data[:,0])),label="Genotype")
-    plt.plot(data[:,1],range(len(data[:,1])),label="Phenotype")
+    plt.plot(range(len(data[:,0])),data[:,0],label="Genotype")
+    plt.plot(range(len(data[:,1])),data[:,1],label="Phenotype")
     plt.xlabel("Generation")
     plt.ylabel("Proportion of social")
     plt.xlim((0,1))
-    plt.ylim((0,1))
     plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
            ncol=4, mode="expand", borderaxespad=0.)
-
     if show:
         plt.show()
 
