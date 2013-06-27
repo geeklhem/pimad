@@ -81,10 +81,16 @@ def export_fig(tr,base_filename):
         f = plt.gcf()
         f.set_dpi(150)
         d = f.get_size_inches()
-        f.set_size_inches( (d[0]*1.5,d[1]) )
-        plt.savefig(base_filename+"_trajectory.png",bbox_inches="tight")
+        f.set_size_inches( (d[0],d[0]) )
+        plt.savefig(base_filename+"_e_trajectory.png",bbox_inches="tight")
         plt.clf()
-        
+        f = plt.gcf()
+        f.set_dpi(150)
+        d = f.get_size_inches()
+        f.set_size_inches( (d[0]*1.5,d[1]) )
+        trace_plots.global_proportions(tr,False)        
+        plt.savefig(base_filename+"_e_gproportions.png",bbox_inches="tight")
+
 def export_csv(tr,name):
     with open(os.path.join("reports/",name+"_parameters.csv"), 'w') as f:
         for k,v in sorted(tr.p.items()):    
