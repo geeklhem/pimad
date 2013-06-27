@@ -124,7 +124,7 @@ def routine_graphes(tr):
 def epigenetic_trajectory(trace,show=True):
     data = trace.traces[0]["global_proportions"]
     data = np.array(data)
-    print(data)
+    
     plt.plot(data[:,0],data[:,1]) 
     plt.xlabel("Proportion of social genotype")
     plt.ylabel("Proportion of social phenotype")
@@ -137,7 +137,6 @@ def epigenetic_trajectory(trace,show=True):
 def global_proportions(trace,show=True):
     data = trace.traces[0]["global_proportions"]
     data = np.array(data)
-    print(data)
     plt.plot(range(len(data[:,0])),data[:,0],label="Genotype")
     plt.plot(range(len(data[:,1])),data[:,1],label="Phenotype")
     plt.xlabel("Generation")
