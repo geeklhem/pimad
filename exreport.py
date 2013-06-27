@@ -61,19 +61,19 @@ def export_fig(tr,base_filename):
         f.set_dpi(150)
         d = f.get_size_inches()
         f.set_size_inches( (d[0]*1.5,d[1]) )
-        plt.savefig(base_filename+"_repartitions.png",bbox_inches="tight")
+        plt.savefig(base_filename+"_p02_repartitions.png",bbox_inches="tight")
         plt.clf()
         trace_plots.proportions(tr,False,True,False)
-        plt.savefig(base_filename+"_phenotype.png",bbox_inches="tight")
+        plt.savefig(base_filename+"_p03_phenotype.png",bbox_inches="tight")
         plt.clf()
         trace_plots.proportions(tr,True,True,False)
-        plt.savefig(base_filename+"_proportions.png",bbox_inches="tight")
+        plt.savefig(base_filename+"_p01_proportions.png",bbox_inches="tight")
         plt.clf()
         trace_plots.group_level_cov(tr,False)
-        plt.savefig(base_filename+"_grpLvlCov.png",bbox_inches="tight")
+        plt.savefig(base_filename+"_p04_grpLvlCov.png",bbox_inches="tight")
         plt.clf()
         trace_plots.groupsize_surface(tr,False)
-        plt.savefig(base_filename+"_surface.png",bbox_inches="tight")
+        plt.savefig(base_filename+"_p00_surface.png",bbox_inches="tight")
         plt.clf()
     if "global_proportions" in tr.traces[0]:
         print("Generating global_proportions plots...")
@@ -82,14 +82,15 @@ def export_fig(tr,base_filename):
         f.set_dpi(150)
         d = f.get_size_inches()
         f.set_size_inches( (d[0],d[0]) )
-        plt.savefig(base_filename+"_e_trajectory.png",bbox_inches="tight")
+        plt.savefig(base_filename+"_e00_trajectory.png",bbox_inches="tight")
         plt.clf()
         f = plt.gcf()
         f.set_dpi(150)
         d = f.get_size_inches()
         f.set_size_inches( (d[0]*1.5,d[1]) )
         trace_plots.global_proportions(tr,False)        
-        plt.savefig(base_filename+"_e_gproportions.png",bbox_inches="tight")
+        plt.savefig(base_filename+"_e01_gproportions.png",bbox_inches="tight")
+        plt.clf()
 
 def export_csv(tr,name):
     with open(os.path.join("reports/",name+"_parameters.csv"), 'w') as f:
@@ -156,9 +157,9 @@ def export_html(tr,name):
     <strong>Parameters</strong> : {p}<br/>
    <strong>Raw data</strong> : {csv}<br/> <h2>Figures:</h2>""".format(name=name,p=p,mn=mname,date=date,g=g,version=version,host=host,csv=csv_list)
     
-    for i in sorted(glob.glob(os.path.join("reports/",name+"*.svg")),reverse=True):
+    for i in sorted(glob.glob(os.path.join("reports/",name+"*.svg"))):
         page += '\n<img src="{path}"/><br/>'.format(path=os.path.basename(i))
-    for i in sorted(glob.glob(os.path.join("reports/",name+"*.png")),reverse=True):
+    for i in sorted(glob.glob(os.path.join("reports/",name+"*.png"))):
         page += '\n<img src="{path}"/><br/>'.format(path=os.path.basename(i))
 
 
