@@ -111,8 +111,10 @@ def main(centerfile,pointsfilelist,csl=1000):
        
        #Center
        final = np.genfromtxt(centerfile,
-                             usecols=(1,5,6),
-                             skip_header=1,names=("area","x","y"))
+                             usecols=(1,2,3),
+                             skip_header=1,
+                             delimiter=",",
+                             names=("area","x","y"))
 
        center = np.transpose(np.array([(x,y) for ar,x,y in final if ar>csl]))
        center_size = np.array(([ar for ar,x,y in final if ar>csl]))
@@ -121,12 +123,24 @@ def main(centerfile,pointsfilelist,csl=1000):
        #Points for successives images
        #pointsfilelist.append(centerfile)
        points = []
-       for image in pointsfilelist:
-              pts = np.genfromtxt(image,
-                                  usecols=(1,5,6),
-                                  skip_header=1,
-                                  names=("area","x","y"))
-              points.append(np.transpose(np.array([(x,y) for ar,x,y in pts if ar < csl])))
+       images = np.genfromtxt(pointsfilelist,
+                              skip_header=1,
+                              delimiter=",",
+                              usecols=(1,2,3,4),
+                              names=("area","x","y","img"))
+
+       for img in range(int(images["img"][-1])):
+              points.append((np.transpose(np.array([(x,y) 
+                                                    for ar,x,y,sl 
+                                                    in images
+                                                    if (ar < csl and sl == img)]))))
+
+       #       for image in pointsfilelist:
+       #              pts = np.genfromtxt(image,
+       #                                  usecols=(1,5,6),
+       #                                  skip_header=1,
+       #                                  names=("area","x","y"))
+       #              points.append(np.transpose(np.array([(x,y) for ar,x,y in pts if ar < csl])))
        
        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
        # Export
