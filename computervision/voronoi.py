@@ -74,7 +74,7 @@ def groupsize_corr(center_size,groupsize,show=True):
         plt.show()
 
 
-def export_html(pointsfilelist):
+def export_html(pointsfilelist,CENTERS):
        page = """
        <html>
        <head>
@@ -85,13 +85,17 @@ def export_html(pointsfilelist):
        </head><body>
        <h1>Experimental picture analysis</h1>
        """
-       
+       # CENTER
+       center_html = """ <h2> Centers recognition</h2>
+       Center found : {0}""".format(CENTERS)
+       page += center_html
+
+       # IMAGES
        for img in pointsfilelist:
               pics = ""
               for i in sorted(glob.glob(os.path.join("{0}_*.png".format(img)))):
                      pics += '<img src ="{path}"/>'.format(path=os.path.basename(i))
                      
-
               page += """
               <h2>{title}</h2>
               {pics}
@@ -114,8 +118,8 @@ def main(centerfile,pointsfilelist,csl=1000):
        center_size = np.array(([ar for ar,x,y in final if ar>csl]))
        CENTERS = len(center[0,:])
 
-       # Points for successives images
-       pointsfilelist.append(centerfile)
+       #Points for successives images
+       #pointsfilelist.append(centerfile)
        points = []
        for image in pointsfilelist:
               pts = np.genfromtxt(image,
@@ -161,7 +165,7 @@ def main(centerfile,pointsfilelist,csl=1000):
        # Export HTML
        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-       export_html(pointsfilelist)
+       export_html(pointsfilelist,CENTERS)
        
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # DATA

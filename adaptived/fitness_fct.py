@@ -8,7 +8,7 @@ import scipy.misc as sp
 import numpy as np
 import math
 import matplotlib.pylab as pl
-
+from matplotlib import cm
 
 
 #########################################
@@ -28,6 +28,11 @@ vv    :type n: int
     :param pmax: Maximum attachment probability. 
     :type pmax: float
     :return: (float) - proportion of rare z individuals experiencing a n-sized group in a r-monomorphic population."""
+   # if z == 1:
+   #     if n == T:
+   #         return 1
+   #     else:
+   #         return 0
 
     ## Highest probability possible
     if pmax:
@@ -132,35 +137,69 @@ def s_sizeThreshold(m,r,T=100,b=20,c=1,options={}):
 
 def sigma(z,T):
     s = 0
-    for n in range(2,T):
-        s += g(n,z+0.001,z,T)/n
+    for n in range(2,T+1):
+        s += g(n,z,z,T)/n
     return s
 
 def get_color():
        for item in ['r', 'g', 'b', 'c', 'm', 'y', 'k']:
           yield item
 
-def altruismConditions(p): 
+def altruismConditions(p,Tlist=(50,100)): 
     z = [x/float(p) for x in range(p)]
 
     color = get_color()
-    
-    for T in (10,50,100,500,1000):
+
+    for T in Tlist:
         acolor = next(color)    
         y = [1/sigma(r,T) for r in z]
         y2 = [T for r in z]
+        
+
+        
         pl.plot(z,y, color= acolor, label="T = {0}".format(T))
         pl.plot(z,y2,'--', color=acolor)
 
-    y3 = [2/(r+0.0000000001)for r in z]
+    y3 = [2/(r+0.00000000000000001) for r in z]
     pl.plot(z,y3, color="k")
-
     ax = pl.gca()
     ax.axis((0,1,0,1250))
     pl.show()
 
 #if __name__ == "__main__":
-altruismConditions(100)
+#altruismConditions(100)
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
-    
-    
+def distributions(p,T,show=True):
+    distrib = np.zeros((p+1,T))
+    zlist = [x/float(p) for x in range(p)]
+    zlist.append(1)
+    for i,z in enumerate(zlist):
+        distrib[i,:] = np.array([g(n,z,z,T)/n for n in range(1,T+1)])
+
+    if show:
+        fig = pl.gcf()
+        ax = pl.gca()
+        ax = fig.gca(projection='3d')
+        Y = zlist
+        X = range(1,T+1)
+        X, Y = np.meshgrid(X, Y)
+        Z = distrib
+
+        surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.prism_r,
+                linewidth=0, antialiased=False)
+
+        pl.ylabel("Z")
+        pl.xlabel("Group size")
+
+        ax.zaxis.set_major_locator(LinearLocator(10))
+        ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+
+        ax.view_init(35,-50)
+        pl.show()
+        
+        
+    return distrib
+
+
