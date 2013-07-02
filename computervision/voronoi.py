@@ -59,7 +59,10 @@ def voronoi_scatter(center,points,center_size,attribution,show=True):
 def voronoi_hist(cell_by_center,show=True,title="Number of cells"):
     color_iter = get_color()
     colors = [next(color_iter) for c in range(len(cell_by_center))]
-    plt.bar(np.arange(len(cell_by_center)),cell_by_center,color=colors)
+    to_sort = zip(cell_by_center,colors)
+    to_sort.sort(key = lambda x: -x[0])
+    values, colors = zip(*to_sort)
+    plt.bar(np.arange(len(cell_by_center)),values,color=colors)
     ax = plt.gca()
     ax.set_xlabel("Center")
     ax.set_ylabel(title)
@@ -131,7 +134,7 @@ def main(centerfile,pointsfilelist,csl=1000):
                               usecols=(1,2,3,4),
                               names=("area","x","y","img"))
 
-       for img in range(1,int(images["img"][-1]+1)):
+       for img in range(1,int(images["img"][-1])+1):
               points.append((np.transpose(np.array([(x,y) 
                                                     for ar,x,y,sl 
                                                     in images
