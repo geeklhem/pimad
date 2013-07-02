@@ -50,14 +50,14 @@ def voronoi_scatter(center,points,center_size,attribution,show=True):
     for x,y,c,s in zip(center[0,:],center[1,:],colors,center_size):
            ax.add_artist(Circle(xy=(x,y),radius=math.sqrt(s/math.pi),facecolor=c,alpha=0.3))
         
-    plt.xlim(0,9744)
-    plt.ylim(0,7280) 
+    plt.xlim(0,9744*500/789)
+    plt.ylim(7280*500/789,0) 
     if show:
         plt.show()
 
 def voronoi_hist(cell_by_center,show=True,title="Number of cells"):
     color_iter = get_color()
-    colors = [next(color_iter) for c in center[0,:]]
+    colors = [next(color_iter) for c in range(len(cell_by_center))]
     plt.bar(np.arange(len(cell_by_center)),cell_by_center,color=colors)
     ax = plt.gca()
     ax.set_xlabel("Center")
@@ -186,6 +186,6 @@ loners = np.array(([int(random()*GRID) for x in range(POINTS/100)],
                    [int(random()*GRID) for x in range(POINTS/100)]))
 center_size = np.array([MINSIZE + int(random()*(MAXSIZE-MINSIZE)) for x in range(CENTERS)])"""
 
-main("35.xls",["15.xls"])
+
 
 
