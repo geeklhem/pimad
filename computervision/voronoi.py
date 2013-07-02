@@ -20,6 +20,7 @@ def d(a,b):
 
 
 def voronoi_attribution(center,points):
+    print(points)
     attribution = [0]*len(points[0,:])
     for k,x,y in itertools.izip(itertools.count(),points[0,:],points[1,:]):
         nearest = 0
@@ -123,18 +124,19 @@ def main(centerfile,pointsfilelist,csl=1000):
        #Points for successives images
        #pointsfilelist.append(centerfile)
        points = []
+       points_names = []
        images = np.genfromtxt(pointsfilelist,
                               skip_header=1,
                               delimiter=",",
                               usecols=(1,2,3,4),
                               names=("area","x","y","img"))
 
-       for img in range(int(images["img"][-1])):
+       for img in range(1,int(images["img"][-1]+1)):
               points.append((np.transpose(np.array([(x,y) 
                                                     for ar,x,y,sl 
                                                     in images
                                                     if (ar < csl and sl == img)]))))
-
+              points_names.append("slice_{}".format(img))
        #       for image in pointsfilelist:
        #              pts = np.genfromtxt(image,
        #                                  usecols=(1,5,6),
@@ -146,7 +148,7 @@ def main(centerfile,pointsfilelist,csl=1000):
        # Export
        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-       for name,pts in zip(pointsfilelist,points):
+       for name,pts in zip(points_names,points):
               print("Analysis of Image {0}\n--------------".format(name))
               
               attribution = voronoi_attribution(center,pts)
@@ -179,7 +181,7 @@ def main(centerfile,pointsfilelist,csl=1000):
        # Export HTML
        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-       export_html(pointsfilelist,CENTERS)
+       export_html(points_names,CENTERS)
        
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # DATA
