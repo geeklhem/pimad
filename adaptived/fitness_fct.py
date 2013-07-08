@@ -10,7 +10,6 @@ import math
 import matplotlib.pylab as pl
 
 
-
 #########################################
 # DENSITY
 #########################################
@@ -145,10 +144,10 @@ def altruismConditions(p):
 
     color = get_color()
     
-    for T in (10,50,100,500,1000):
+    for T in (100,):
         acolor = next(color)    
         y = [1/sigma(r,T) for r in z]
-        y2 = [T for r in z]
+        y2 = [T/(r+0.0000000000000000001) for r in z]
         pl.plot(z,y, color= acolor, label="T = {0}".format(T))
         pl.plot(z,y2,'--', color=acolor)
 

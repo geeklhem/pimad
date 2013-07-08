@@ -20,7 +20,7 @@ def d(a,b):
 
 
 def voronoi_attribution(center,points):
-    print(points)
+    #print(points)
     attribution = [0]*len(points[0,:])
     for k,x,y in itertools.izip(itertools.count(),points[0,:],points[1,:]):
         nearest = 0
@@ -140,24 +140,19 @@ def main(centerfile,pointsfilelist,csl=1000):
                                                     in images
                                                     if (ar < csl and sl == img)]))))
               points_names.append("slice_{}".format(img))
-       #       for image in pointsfilelist:
-       #              pts = np.genfromtxt(image,
-       #                                  usecols=(1,5,6),
-       #                                  skip_header=1,
-       #                                  names=("area","x","y"))
-       #              points.append(np.transpose(np.array([(x,y) for ar,x,y in pts if ar < csl])))
+
+
        
        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
        # Export
        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-       for name,pts in zip(points_names,points):
+       attributions = []
+       for pts in points:
               print("Analysis of Image {0}\n--------------".format(name))
-              
-              attribution = voronoi_attribution(center,pts)
-              
+              attributions.append(voronoi_attribution(center,pts))
+                     
+       for name,pts,attribution in zip(points_names,points,attributions):
               voronoi_scatter(center,pts,center_size,attribution,show=False)
-
               f = plt.gcf()
               f.set_dpi(150)
               d = f.get_size_inches()
@@ -185,7 +180,156 @@ def main(centerfile,pointsfilelist,csl=1000):
        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
        export_html(points_names,CENTERS)
-       
+
+
+class Experiment(object):
+       """Hold data about a film """
+       def __init__(self,centerfile,pointsfile,csl=1000):
+              # LOADING
+              self.X = 9744*500/789
+              self.Y = 7280*500/789
+              self.load_data(centerfile,pointsfile,csl=1000)
+              
+
+       def _topoints(self,x,y):
+              return np.transpose(np.array(zip(x,y)))
+      
+       def edges(self):
+              x = range(int(self.X))
+              y = range(int(self.Y))
+              x0 = [0] * int(self.X) 
+              y0 = [0] * int(self.Y)
+              xmax = [self.X] * int(self.X) 
+              ymax = [self.Y] * int(self.Y)
+              
+              # Set have only one occurance of each element
+              top = frozenset(voronoi_attribution(self.centers,self._topoints(x,ymax)))
+              left = frozenset(voronoi_attribution(self.centers,self._topoints(x0,y)))
+              right = frozenset(voronoi_attribution(self.centers,self._topoints(xmax,y)))
+              bottom = frozenset(voronoi_attribution(self.centers,self._topoints(x,y0)))
+              return list(frozenset().union(top,left,right,bottom))
+
+       def process(self):
+              self.edges_centers = self.edges()
+              self.attributions = []
+              self.cell_by_center = []
+
+              for pts,name in zip(self.points,self.frame_names):
+                     print("Analysis of Image {0}\n--------------".format(name))
+                     att = voronoi_attribution(self.centers,pts)
+                     self.attributions.append(att)
+                     self.cell_by_center.append(attribution_counter(att,self.C))
+                                  
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# LOAD  DATA
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+       def load_data(self,centerfile,pointsfile,csl=1000):
+
+              final = np.genfromtxt(centerfile,
+                                    usecols=(1,2,3),
+                                    skip_header=1,
+                                    delimiter=",",
+                                    names=("area","x","y"))
+
+              images = np.genfromtxt(pointsfile,
+                                     skip_header=1,
+                                     delimiter=",",
+                                     usecols=(1,2,3,4),
+                                     names=("area","x","y","img"))
+
+
+              # Centers
+              self.centers = np.transpose(np.array([(x,y) for ar,x,y in final if ar>csl]))
+              self.center_size = np.array(([ar for ar,x,y in final if ar>csl]))
+              self.C = len(self.centers[0,:])
+              
+              # Points for successives images
+              self.points = []
+              self.frame_names = []
+              self.N = []
+              
+              for img in range(1,int(images["img"][-1])+1):
+                     self.points.append((np.transpose(np.array([(x,y) 
+                                                           for ar,x,y,sl 
+                                                           in images
+                                                           if (ar < csl and sl == img)]))))
+                     self.frame_names.append("slice_{}".format(img))
+                     self.N.append(len(self.points[-1]))
+
+              self.frame_nb = len(self.frame_names)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# VISUALISATION
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+       def areaplot(self,exclude=[],show=True):
+              x = range(self.frame_nb)
+              y = []
+              for cbc in self.cell_by_center:
+                     y.append([c 
+                               for i,c in enumerate(cbc)
+                               if i not in exclude])
+              y = np.transpose(np.array(y))
+              print y
+              try : 
+                     plt.stackplot(x,y,colors=["k","w"])
+              except Exception:
+                     print "Error in creating stacked plot"
+              if show:
+                     self.show()
+ 
+       def graphs(self):
+             
+              self.areaplot(show=False)
+              f = plt.gcf()
+              f.set_dpi(150)
+              d = f.get_size_inches()
+              f.set_size_inches( (d[0],d[0]) )
+              plt.savefig("all.png",bbox_inches="tight")
+              self.areaplot(exclude=self.edges_center,show=False)
+              plt.savefig("edges_excluded.png",bbox_inches="tight")
+             
+              for name,pts,attribution,cbc in jhzip(self.frame_names,self.points,self.attributions,self.cell_by_center):
+                     voronoi_scatter(self.centers,pts,
+                                     self.center_size,
+                                     attribution,
+                                     show=False)
+                     plt.savefig("{}_00scatter.png".format(name),bbox_inches="tight")
+                     plt.clf()
+
+                     voronoi_hist(cbc,
+                                  show=False,
+                                  title="Number of cells")
+
+                     plt.savefig("{}_01bar.png".format(name),bbox_inches="tight")
+                     plt.clf()
+
+                     groupsize_corr(self.center_size,cbc,show=False)
+
+                     plt.savefig("{}_02corr.png".format(name),bbox_inches="tight")
+                     plt.clf()
+
+
+       def domains(self):
+              x = range(0,self.X,100)*100
+              
+              def ylist(maximum):
+                     y = 0
+                     while y < maximum:
+                            for n in range(100):
+                                   yield y
+                            y = y+100
+              
+              y = [i for i in ylist(self.Y)]
+
+              points = self._topoints(x,y)
+              attribution = voronoi_attribution(self.centers,points)
+              cz =  [0 if i in self.edges_centers 
+                     else x
+                     for i,x in enumerate(self.center_size)]
+              voronoi_scatter(self.centers,points,cz,attribution,True)
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # DATA
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

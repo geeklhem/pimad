@@ -10,3 +10,6 @@
 /#exreport.py#
 /.#exreport.py
 /adaptived/feh_030311_000001_filelist
+/reports/test_global_proportions.csv
+/reports/test_parameters.csv
+/models/#toymodel.py#
