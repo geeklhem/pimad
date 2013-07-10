@@ -9,6 +9,7 @@ import scipy as sp
 
 def cell_by_section(attribution,nb_sections):
     cc = collections.Counter(attribution)
+
     cell_by_center = [0] * nb_sections
     for k,v in cc.iteritems():
         cell_by_center[k] = v
@@ -16,12 +17,12 @@ def cell_by_section(attribution,nb_sections):
 
 
 def group_size_distrib(cellBySection,lonersBySection,nb_sections):
-    g = [0] * max(cellBySection)
+    g = [0] * (max(cellBySection)+1)
     g[1] = sum(lonersBySection)
 
     for c in cellBySection:
         g[c] += c
-    gs = [i./n if n
+    gs = [float(i)/float(n) if n
           else 0
           for n,i in enumerate(g)]
 
@@ -32,10 +33,9 @@ def group_size_distrib(cellBySection,lonersBySection,nb_sections):
 
 
 def lin_correlate(x,y):
+    (a,b)=sp.polyfit(x,y,1)
+    line=sp.polyval([a,b],x)
+    err=np.sqrt(sum((line-y)**2)/len(x))
+    corr = np.corrcoef(x,y)[0,1]
 
-    (a,b)=sp.polyfit(xy,1)
-    xr=sp.polyval([a,b],t)
-    #compute the mean square error
-    err=np.sqrt(sum((xr-xn)**2)/n)
-
-    return {"a":a,"b":b,"regline":xr,"rho":err}
+    return {"a":a,"b":b,"regline":line,"mse":err,"corrcoef":corr}

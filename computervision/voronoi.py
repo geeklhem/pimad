@@ -220,9 +220,6 @@ class Experiment(object):
                      self.attributions.append(att)
                      self.cell_by_center.append(attribution_counter(att,self.C))
                                   
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# LOAD  DATA
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
        def load_data(self,centerfile,pointsfile,csl=1000):
 
@@ -259,9 +256,6 @@ class Experiment(object):
 
               self.frame_nb = len(self.frame_names)
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# VISUALISATION
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
        def areaplot(self,exclude=[],show=True):
               x = range(self.frame_nb)

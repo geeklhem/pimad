@@ -4,6 +4,9 @@
 Always take a list of groups and a list of points and 
 return a len(points) list with the index of the group they belong to """
 
+import math
+import itertools
+
 def voronoi(center,points):
     def d(a,b):
         return math.sqrt((a[0]-b[0])**2+(a[1]-b[1])**2)

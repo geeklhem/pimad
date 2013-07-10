@@ -2,15 +2,16 @@
 # -*- coding: utf-8 -*-
 """Loading data"""
 
+import numpy as np
 
-class Experiment(object):
+class Data(object):
     """Hold data about a film """
     def __init__(self,pointsfile,csl=1000,
                     x=(9744*500/789),y=(7280*500/789)):
               self.X = x
               self.Y = y
               self.load_data(pointsfile,csl)
-
+              
     def load_data(self,pointsfile,csl):
         images = np.genfromtxt(pointsfile,
                                skip_header=1,

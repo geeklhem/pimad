@@ -55,7 +55,7 @@ def density(data,frame,threshold):
     return {"pos":[], "area":[], "N":0}
 
 def algo(data,frame):
-""" Import groups from a frame of the data object using an algorithmic method.
+    """ Import groups from a frame of the data object using an algorithmic method.
     :param centerfile: data object.
     :type centerfile: data.Data
     :param frame: Frame number
