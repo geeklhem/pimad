@@ -122,6 +122,7 @@ class PriorityQueue(object):
         except KeyError:
             return None
 
+## Test
 points = np.array([[ 15.,  70.],
                   [ 31.,  87.],
                   [ 45.,  32.],
@@ -133,28 +134,3 @@ points = np.array([[ 15.,  70.],
                   [ 43.,  97.],
                   [ 97.,   9.]])
 result = [0, 1, 5, 6, 2, 7, 8, 3, 4, 9]
-
-def attribution(reach,order,threshold):
-    c = 0
-    attr = [0]*(len(order)+1)
-    already = 0
-    for r,o in zip(reach,order):
-        if r > threshold and not already:
-            c += 1 
-            already = 1
-        else: 
-            already = 0
-        attr[o] = c
-    return attr
-        
-
-import data
-
-datum = data.Data("stack.csv")
-pts = np.transpose(datum.points[15])
-order,reach = optics(pts,500,5)
-attr = attribution(reach,order,200)
-
-import visual
-
-visual.plot_particle(datum.points[15],attr,8000,4000,show=True)

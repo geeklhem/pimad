@@ -6,6 +6,8 @@ return a len(points) list with the index of the group they belong to """
 
 import math
 import itertools
+import numpy as np
+import optics as op
 
 def voronoi(center,points):
     def d(a,b):
@@ -26,11 +28,21 @@ def voronoi(center,points):
                 attribution[k] = i
     return attribution
 
-def density(groups,points):
-    pass
 
-
-
-
-
-
+def optics(points,threshold):
+    pts = np.transpose(points)
+    order,reach = op.optics(pts,500,5)
+    c = 1
+    attr = [0]*(len(order)+1)
+    already = 0
+    for r,o in zip(reach,order):
+        if r > threshold and not already:
+            c += 1 
+            already = 1
+            attr[o] = 0
+        elif r>threshold and already: 
+            already = 0
+            attr[o] = 0
+        else:
+            attr[o] = c
+    return attr,reach
