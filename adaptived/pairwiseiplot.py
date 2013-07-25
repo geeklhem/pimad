@@ -27,7 +27,7 @@ import traceback
 import ast
 from docopt import docopt
 import fitness_fct as fitness
-
+from matplotlib.ticker import FuncFormatter
 
 
 
@@ -82,6 +82,18 @@ def draw_array(array,disp=True):
     cfin.set_alpha(.2)
     c = pl.contour(array,colors="k")
     pl.clabel(c)
+
+    def fraction_tick(y, pos=0):
+        return '{:0.1f}'.format(float(y)/(len(array)-1))
+
+    ax = pl.gca()
+    ax.yaxis.set_major_formatter(FuncFormatter(fraction_tick))
+    ax.xaxis.set_major_formatter(FuncFormatter(fraction_tick))
+    pl.xlabel("$\hat{z}$")
+    pl.ylabel("$z$")
+
+
+
     if disp:
         pl.show()
 

@@ -90,9 +90,10 @@ class Model:
             g +=1
         
     
-    def play(self,nb_generations):
+    def play(self,nb_generations,verbose=True):
         """Initialisation and call of the main loop"""
-        print("Playing for {0} generations".format(nb_generations))
+        if verbose:
+            print("Playing for {0} generations".format(nb_generations))
 
         #Create a new trace dict with a list by tracked values.
         self.traces.append({})
@@ -101,7 +102,8 @@ class Model:
 
         #Generation loop
         for g in range(nb_generations):
-            print("{0}/{1}".format(g+1,nb_generations))
+            if verbose:
+                print("{0}/{1}".format(g+1,nb_generations))
             self.step()
             # Add the values of tracked variable to the trace.
             for t in self.tracked:

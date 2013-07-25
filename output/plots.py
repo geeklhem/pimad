@@ -5,9 +5,21 @@
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
+from matplotlib.ticker import FuncFormatter
 
 import matplotlib.pyplot as plt
 import numpy as np
+
+def saveplot(name,fct,args,kargs={"show":False},p=(8,8)):
+    fct(*args,**kargs)
+    f = plt.gcf()
+    f.set_dpi(150)
+    #d = f.get_size_inches()
+    f.set_size_inches( p )
+    plt.savefig(name+".png",bbox_inches="tight")
+    plt.clf()
+
+
 
 def proportions(trace_object,phenotype=True,group=True,show=True):
     """Visualize population.proportions traces
@@ -31,6 +43,8 @@ def proportions(trace_object,phenotype=True,group=True,show=True):
         general[n,3] = sum(trace[:,3])
 
     X = range(len(traces))
+    names = ("Asocial","Social")
+    names = ("Resident","Mutant")
    
     if phenotype and group:
         Y1 = general[:,1] - general[:,0] 
@@ -38,38 +52,46 @@ def proportions(trace_object,phenotype=True,group=True,show=True):
         Y3 = general[:,0]
         Y4 = general[:,2]
         plt.bar(X,Y1,
-                facecolor='#9999ff', edgecolor='white',
-                label="Asocial in group")
+                facecolor='#9999ff', edgecolor='none',
+                label=names[0]+" in group")
         plt.bar(X,Y2,bottom=Y1
-                , facecolor='#ff9999', edgecolor='white',
-                label="Asocial alone")
+                , facecolor='#ff9999', edgecolor='none',
+                label=names[0]+" alone")
         plt.bar(X,Y3,bottom=Y2+Y1,
-                facecolor='#99ff99', edgecolor='white',
-                label="Social in group")
+                facecolor='#99ff99', edgecolor='none',
+                label=names[1]+" in group")
         plt.bar(X,Y4,bottom=Y3+Y2+Y1,
-                facecolor='#ffff99', edgecolor='white',
-                label="Social alone")
+                facecolor='#ffff99', edgecolor='none',
+                label=names[1]+" alone")
     
     elif phenotype and not group:
         Y1 = general[:,0]+general[:,2]
         Y2 = general[:,3]+general[:,1]-Y1
-        plt.bar(X,Y1, facecolor='#9999ff', edgecolor='white',label="Social")
-        plt.bar(X,Y2,bottom=Y1, facecolor='#ff9999', edgecolor='white',label="Asocial")
+        plt.bar(X,Y1, facecolor='#9999ff', edgecolor='none',label=names[1])
+        plt.bar(X,Y2,bottom=Y1, facecolor='#ff9999', edgecolor='none',label=names[0])
 
     elif not phenotype and  group:
         Y1 = general[:,1]
         Y2 = general[:,3]
 
-        plt.bar(X,Y1, facecolor='#9999ff', edgecolor='white',label="In group")
-        plt.bar(X,Y2,bottom=Y1, facecolor='#ff9999', edgecolor='white',label="Alone")
+        plt.bar(X,Y1, facecolor='#9999ff', edgecolor='none',label="In group")
+        plt.bar(X,Y2,bottom=Y1, facecolor='#ff9999', edgecolor='none',label="Alone")
 
 
     else:
         raise Exception("One of the boolean parameters must be True.")
 
+    def percent_tick(y, pos=0):
+        return '{:1.0f}%'.format(float(y)/trace_object.p["N"]*100)
+
+    ax = plt.gca()
+    ax.yaxis.set_major_formatter(FuncFormatter(percent_tick))
+    plt.xlim((0,len(general[:,2])))
+
     plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
            ncol=4, mode="expand", borderaxespad=0.)
     plt.xlabel("Generations")
+    plt.ylabel("Proportion")
     if show:
         plt.show()
 
@@ -92,8 +114,16 @@ def groupsize_surface(trace,show=True):
     plt.ylabel("Group size")
     plt.xlabel("Generation")
 
+
+
+    def percent_tick(y, pos=0):
+        return '{:1.0f}%'.format(float(y)*100)
+
+    ax = plt.gca()
+    
+
     ax.zaxis.set_major_locator(LinearLocator(10))
-    ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+    ax.zaxis.set_major_formatter(FuncFormatter(percent_tick))
 
     ax.view_init(35,50)
     if show:

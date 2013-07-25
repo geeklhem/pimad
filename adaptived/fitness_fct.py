@@ -158,8 +158,8 @@ def altruismConditions(p):
     ax.axis((0,1,0,1250))
     pl.show()
 
-#if __name__ == "__main__":
-altruismConditions(100)
+if __name__ == "__main__":
+    altruismConditions(100)
 
     
     
