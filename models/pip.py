@@ -32,11 +32,11 @@ def model_pip(p = 100,ip = 0.01,g=10):
             m = toymodels.ToyContinuous(param,[])
             m.play(g,verbose=False)
             pmutants = sum(m.population.phenotype)/m.param["N"]
-            if not pmutants:
-                fitness = -10
-            else :
-                fitness = math.log(pmutants,10)/math.log(ip,10)
-            s[int(hatz*p),int(z*p)] = fitness
+            if pmutants:
+                fitness = math.log(pmutants/ip,10)
+            else:
+                fitness = -1
+            s[int(z*p),int(hatz*p)] = fitness
     return s
 
 def main(f,p=100,ip=0.1,g=10):
