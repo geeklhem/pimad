@@ -4,7 +4,7 @@ import toymodel as toymodels
 import numpy as np
 import math
 
-def model_pip(p = 100,ip = 0.01,g=10):
+def model_pip(p = 100,ip = 0.01,g=10,N=100000):
     """Compute the pairwise invasibility plot by succesives runs
     of the continuous model 
     :param p: Precision
@@ -14,7 +14,7 @@ def model_pip(p = 100,ip = 0.01,g=10):
     z_range = [i/p for i in range(p+1)]
     s = np.zeros((p+1,p+1))
 
-    param = {"N":1000,
+    param = {"N":N,
              "T":100,
              "ip":ip,
              "b":20,
