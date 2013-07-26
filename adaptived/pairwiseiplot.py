@@ -11,7 +11,7 @@ Options:
   -p=<precision>           Precision [default: 0.1]
   -b=<bvalues>             b values to loop through [default: 4,8,20,40]
   -T=<tvalues>             t values to loop through [default: 50,100,500]
-  -o=<options>             Option for the fitness function [default:t=0.75]
+  -o=<options>             Option for the fitness function [default: t=0.75,nl=4,pmax=1]
   -h --help                Show this screen.
 """
 
@@ -54,7 +54,7 @@ def routine(p=0.1,
     T_real_list = []
     for b in blist:
         for T in Tlist:
-            print("Computing PIP for b = {0}, T =  {1}".format(b,T)) 
+            print("Computing PIP for b = {0}, T =  {1} ".format(b,T)) 
             try :
                 arrays.append(array(p,T,b,c,ff,fitnessOptions))
             except :
@@ -72,7 +72,7 @@ def routine(p=0.1,
 # Draw
 #~~~~~~~~~~~~~~~~~~~~~~~
 
-def draw_array(array,disp=True):
+def draw_array(array,show=True):
     
     cmap = mcolors.ListedColormap([(1, 1, 1), 
                                    (0.5, 0.5, 0.5)])
@@ -92,9 +92,9 @@ def draw_array(array,disp=True):
     pl.xlabel("$\hat{z}$")
     pl.ylabel("$z$")
 
+    
 
-
-    if disp:
+    if show:
         pl.show()
 
 
@@ -137,7 +137,7 @@ if __name__ == "__main__":
                 else:
                     options[p[0]]=p[1]
         
-
+        #print options
         blist = map(int, args["-b"].split(","))
         tlist = map(int, args["-T"].split(","))
         pre = float(args["-p"])

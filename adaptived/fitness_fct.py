@@ -86,6 +86,55 @@ def s_simple(m,r,T=100,b=20,c=1,options={"pmax":1}):
     cost = c * (m-r)
     
     return benefits - cost
+
+
+def s_nlcost(m,r,T=100,b=20,c=1,options={"pmax":1,"cl":4}):
+    """Fitness of a m z = mutant trait in a z=r monomorphic population. Using exact analytical distributions.
+    
+    :param m: Value of the mutant social trait \in [0,1].
+    :type m: float
+    :param r: Value of the social trait in the monomorphic population \in [0,1].
+    :type r: float
+    :param T: Patch size (Default = 100).
+    :type T: int
+    :param b: Benefits coefficient (Default = 20).
+    :type b: int
+    :param c: Cost coefficient (Default = 1).
+    :type c: int
+    :return: (float) - Fitness of a m z = mutant trait in a z=r monomorphic population.  
+
+    **Options :**
+ 
+    - pmax :
+    - cl : cost linearity. Higher cl means that the cost is  linear like for 
+    greater z before rocketing to infinty.
+    """
+    
+
+    
+    # loners proportion
+    loners = g(1,r,r,T,options["pmax"]) - g(1,m,r,T,options["pmax"])
+
+    #Grouped individuals proportion 
+    group_sum = 0
+    for n in range(2,T+1):
+        group_sum += g(n,m,r,T,options["pmax"])/n
+
+    ## Mean Individual Benefits
+    benefits = (  r   *  b * loners + 
+                (m-r) * b * group_sum)
+ 
+
+    def cost_function(c,nl,z):
+        """ Return the individual cost of a z-social individual"""
+        if z == 1:
+            z = 1-0.001
+        return c * z * math.exp(1/((1-z)**(1/float(nl))))
+
+    ## Individual Cost
+    cost = cost_function(c,options["nl"],m) - cost_function(c,options["nl"],r)
+    
+    return benefits - cost
    
 
 def s_sizeThreshold(m,r,T=100,b=20,c=1,options={}):
