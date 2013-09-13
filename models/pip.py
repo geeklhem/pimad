@@ -39,7 +39,7 @@ def model_pip(p = 100,ip = 0.01,g=10,N=100000):
             s[int(z*p),int(hatz*p)] = fitness
     return s
 
-def main(f,p=100,ip=0.1,g=10):
+def main(f,p=50,ip=0.1,g=10):
     s = model_pip(p,ip,g)
     np.savetxt(f,s)
-    return s
+    return s  

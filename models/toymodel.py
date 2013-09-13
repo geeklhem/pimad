@@ -537,7 +537,7 @@ class ContinuousNLCost(ToyContinuous):
 
     def cost(self,z):
         """ Return the individual cost of a z-social individual"""
-        return self.c * z * math.exp(1/(1-z)**(1/self.param["cl"])
+        return self.c * z * math.exp(1/(1-z)**(1/self.param["cl"]))
 
 
 class ContinuousSizeThreshold(ToyContinuous):
