@@ -5,6 +5,7 @@
 import numpy
 import copy
 import math
+import logging
 
 # Import custom modules
 import population
@@ -57,7 +58,7 @@ class Model:
     def equilibrium(self,condition):
         """play until the equilibrium"""
         condition = float(condition)
-        print("Playing until equilibrium (Criterion limit : {0} for 10 generations)".format(self.population.N/condition))
+        logging.info("Playing until equilibrium (Criterion limit : {0} for 10 generations)".format(self.population.N/condition))
 
         #Create a new trace dict with a list by tracked values.
         self.traces.append({})
@@ -80,7 +81,7 @@ class Model:
             coef =  math.fabs(criterion[0]-math.fabs(criterion[1]+criterion[2])/2)
             if coef < self.population.N/condition and g > 10:
                 c += 1
-            print("{0} | Halting criterion : {1} [{2}/10]".format(g+1,coef,c))
+            logging.debug("{0} | Halting criterion : {1} [{2}/10]".format(g+1,coef,c))
 
 
             # Add the values of tracked variable to the trace.
@@ -90,10 +91,9 @@ class Model:
             g +=1
         
     
-    def play(self,nb_generations,verbose=True):
+    def play(self,nb_generations):
         """Initialisation and call of the main loop"""
-        if verbose:
-            print("Playing for {0} generations".format(nb_generations))
+        logging.info("Playing for {0} generations".format(nb_generations))
 
         #Create a new trace dict with a list by tracked values.
         self.traces.append({})
@@ -102,8 +102,7 @@ class Model:
 
         #Generation loop
         for g in range(nb_generations):
-            if verbose:
-                print("{0}/{1}".format(g+1,nb_generations))
+            logging.info("{0}/{1}".format(g+1,nb_generations))
             self.step()
             # Add the values of tracked variable to the trace.
             for t in self.tracked:
@@ -117,30 +116,3 @@ class Model:
     def __repr__(self):
         return "{0}".format(self.model_name)
 
-###############
-## Test code ##
-###############
-# It will only run if the file is directly executed (>>python model.py)
-if __name__ == "__main__":
-
-    param = {"N":10000,
-             "T":100,
-             "b":3,
-             "c":1,
-             "ip":0.5,
-             "ps":0.3,
-             "pa":0.1,
-             "mu":0.001}
-
-    tracked_values = ["population.N"]
-
-    a = Model(param, tracked_values)
-
-    print("\n Model:")
-    print(a)
-    print("\n Population:")
-    print(a.population)
-    print("\n Run:")
-    #a.play(5)
-    a.equilibrium()
-    print(a.traces)

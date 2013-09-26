@@ -1,0 +1,39 @@
+#warp
+{
+width: 900px;
+margin: auto;
+}
+h1, h2, h3,h4, strong
+{
+font-family: 'Prociono', serif;
+}
+
+h2
+{
+display:inline;
+font-size:2em;
+}
+
+h1
+{
+display:inline;
+font-size:4em;
+}
+
+
+h3
+{
+border-top:1px solid black;
+border-bottom:1px solid black;
+}
+
+ul {
+    list-style-type: none;
+   
+   }
+
+ul li:before {
+    content: "-- ";
+    font-size:1em;
+    font-family: 'Prociono', serif;
+   }
