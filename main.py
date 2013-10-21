@@ -152,9 +152,9 @@ if __name__ == '__main__':
     args = docopt(__doc__, version=__version__)
     data = main(args)
 
-
+ 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Examples of inputs.
+# Examples of inputs. 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # These are fake values for the "args" arguments of main() (as outputted by docopt). 
 # Useful in interactive mode.
