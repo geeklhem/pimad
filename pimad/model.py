@@ -8,7 +8,7 @@ import math
 import logging
 
 # Import custom modules
-import population
+import pimad.population as population
 
 class Model(object):
     """A generic class that contains a model

@@ -6,7 +6,7 @@ import numpy
 import random
 import math
 
-import models.model as model
+import pimad.model as model
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

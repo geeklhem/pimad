@@ -6,8 +6,8 @@ import numpy
 import random
 import math
 
-import models.model as model
-from toymodel import ToyModel
+import pimad.model as model
+from pimad.models.toymodel import ToyModel
 
 class ToyContinuous(ToyModel):
     """ A model where the probability of attachment are conditioning both the

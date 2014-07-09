@@ -17,7 +17,7 @@ def g(n,z,r,T,pmax=1):
     """Group size distribution experienced by rare z players in a r monomorphic population""
 
     :param n: Group size \in [0,T].
-vv    :type n: int
+    :type n: int
     :param z: Value of the rare mutant social trait.
     :type z: float
     :param r: Value of the social trait in the monomorphic population \in [0,1].
