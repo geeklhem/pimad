@@ -231,5 +231,6 @@ class ToyModel(model.Model):
         """
         return genotype
 
+# Name of the model's Class (Required for import in main program)
 model_class = ToyModel
 

@@ -10,29 +10,32 @@ import logging
 # Import custom modules
 import population
 
-class Model:
-    """ A generic class that contains a model
+class Model(object):
+    """A generic class that contains a model
+    
+    You need to subclass this in the folder models to implement your
+    own models.
 
-    :param param: Parameters of the model. Must contain at least N, T, ip (for :class:`Population` initialisation) and c et b (cost and benfits).
-    :param tracked_values: Values to track at each re 
-    :type param: dict
-    :type tracked_values: list
-
-    **Example:**::
-
-        param = {"N":100000,
-                 "T":1000,
-                 "ip":0.5,
-                 "b":3,
-                 "c":1,
-                 "ps":0.3,
-                 "pa":0.1,
-                 "mu":0.001}
-
-"""
+    Attributes:
+        population (popualtion.Population): Population object. 
+        b (float): Benefits coefficient.
+        c (float): Cost coefficient.
+        param (dict): Model parameters.
+        traces (list): A list of dict, an entry of the list by generation,
+            an entry of the dict by tracked value.
+        tracked_values (list):
+    """
     
     def __init__(self,param,tracked_values=[]):
-        """ Model object constructor"""
+        """Model object constructor
+        
+        Args: 
+            param (dict): Parameters of the model. Must contain at
+                least N, T, ip (for population.Population initialisation)
+                and c et b (cost and benfits).
+            tracked_values (list): Values to recored.
+        """
+
         self.model_name = "Generic model"
 
         # Create a "Population" object with parameters given by the param dict.
@@ -41,10 +44,11 @@ class Model:
         # b and c are copied into the model namespace in order to access them with self.b 
         self.b = param["b"]
         self.c = param["c"]
+
         # Other parameters can be accessed by self.param["name"]
         self.param = param
 
-        # Creating a tracking dict. with an entry by tracked value.
+        # Creating a tracking list of dict with an entry by generation.
         self.traces = []
         self.tracked = tracked_values
         
@@ -55,10 +59,20 @@ class Model:
         Called by :class:`Population`.play at each generation """
         pass
 
-    def equilibrium(self,condition):
-        """play until the equilibrium"""
+    def equilibrium(self,condition,nb_gen=10):
+        """Play until the equilibrium
+        
+        Args: 
+            condition (float): The halting criterion is:
+                P(T) - 0.5(P(T-1)+P(T-2)) < N/condtition 
+            nb_gen (int): Number of generation the criterion must be
+            fullfilled for the simulation to stop.
+
+        """
         condition = float(condition)
-        logging.info("Playing until equilibrium (Criterion limit : {0} for 10 generations)".format(self.population.N/condition))
+        logging.info(("Playing until equilibrium (Criterion limit" 
+                      ": {0} for 10 generations)"
+                      "").format(self.population.N/condition))
 
         #Create a new trace dict with a list by tracked values.
         self.traces.append({})
@@ -75,8 +89,8 @@ class Model:
             self.step()
             
             # Compute halting cirterion.
-            criterion[2] =  criterion[1] #T+2
-            criterion[1] =  criterion[0]#T+1
+            criterion[2] =  criterion[1] #T-2
+            criterion[1] =  criterion[0] #T-1
             criterion[0] =  sum(self.population.proportions[:,1]) #T
             coef =  math.fabs(criterion[0]-math.fabs(criterion[1]+criterion[2])/2)
             if coef < self.population.N/condition and g > 10:
@@ -92,7 +106,12 @@ class Model:
         
     
     def play(self,nb_generations):
-        """Initialisation and call of the main loop"""
+        """Initialisation and call of the main loop.
+
+        Args:
+            nb_generation (int): Number of generation to play.
+        """
+
         logging.info("Playing for {0} generations".format(nb_generations))
 
         #Create a new trace dict with a list by tracked values.

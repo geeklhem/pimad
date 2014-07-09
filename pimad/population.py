@@ -4,7 +4,7 @@
 import numpy
 
 class Population:
-    """ A generic class that represents populations data.
+    """A generic class that represents populations data.
 
     :param N: Population size.
     :param T: Patch size.
@@ -34,17 +34,29 @@ class Population:
     :class:`Population`.payoff             Payoffs by patch (N/T*4 np.array float).
     ====================================== ===============================================
     
-    .. note ::
-      Nb. :class:`Population`.genealogy[i]  is the index of the individual i parent in the individuals arrays of precedent generation. If the individual survived for more than one generation, it's -1. 
+    .. note :: 
+      Nb. :class:`Population`.genealogy[i] is the index of
+      the individual i parent in the individuals arrays of precedent
+      generation. If the individual survived for more than one
+      generation, it's -1.
 
     """
 
     def __init__(self,N,T,ip=0.5):
-        """Population constructor."""
+        """Population constructor.
+
+        Args:
+            N (int): Population size.
+            T (int): Number of patches.
+            ip (int): Initial proportion of social individuals.
+        """
+
         self.N = N 
         self.T = T
-        self.Npatch = N/T
         self.ip = ip 
+
+        # Compute the number of patches 
+        self.Npatch = N/T
         if N%T:
             self.Npatch += 1
 

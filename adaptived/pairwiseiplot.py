@@ -4,7 +4,7 @@
 Pairwise invasibility plot functions
 
 Usage:
-  pairwiseiplot.py <file_name> [-p=<precision>] [-b=<bvalues>] [-T=<tvalues>]   [-f=<fitnessFunction>] [-o=<options>] 
+ pairwiseiplot.py <file_name> [-p=<precision>] [-b=<bvalues>] [-T=<tvalues>]   [-f=<fitnessFunction>] [-o=<options>] 
  pairwiseiplot.py <file_name> load
 Options:
   -f=<fitnessFunction>     Fitness function to use [default: s_simple] 
