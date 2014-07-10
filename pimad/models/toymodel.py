@@ -7,7 +7,7 @@ import random
 import math
 
 import pimad.model as model
-
+from numba import jit
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Toy model
@@ -191,7 +191,8 @@ class ToyModel(model.Model):
             self.population.phenotype[n] = newborn_phenotype[i]
             self.population.genotype[n]  = newborn_genotype[i]
             self.population.genealogy[n] = newborn_genealogy[i]
-                                         
+
+
     def dispersion(self):
         """Global shuffling and reset population.arrays
         

@@ -5,6 +5,7 @@
 import numpy
 import random
 import math
+from numba import jit
 
 import pimad.model as model
 from pimad.models.toymodel import ToyModel
@@ -33,6 +34,7 @@ class ToyContinuous(ToyModel):
 
         # The probability of attachment between a za and a zs individual is:
         self.param["pas"] = math.sqrt(self.param["pa"]*self.param["ps"])
+
 
     def payoff(self):
         """
@@ -70,6 +72,7 @@ class ToyContinuous(ToyModel):
             self.population.payoff[patch,2] = -cost_s
             # Payoff of za individual alone
             self.population.payoff[patch,3] = -cost_a
+
 
     def group_benefits(self,p):
         """ Return the individual group-benefits in the p patch """
