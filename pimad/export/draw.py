@@ -1,11 +1,11 @@
- """ Graphical functions for pairwise invasibility plots"""
+""" Graphical functions for pairwise invasibility plots"""
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.ticker import FuncFormatter
 import numpy as np
 
 
-def draw_pip(array,show=True):
+def pip(array,show=True):
     """
     Use matplotlib to draw a pairwise_invasibility plot.
 
@@ -37,15 +37,13 @@ def draw_pip(array,show=True):
         plt.show()
 
 
-def draw_array_of_pips(arrays,blist,Tlist,disp=False):
-    xmax = len(set(blist))
-    ymax = len(set(Tlist))
-    n = 0
-    for i, a in enumerate(arrays):
-        n += 1
-        plt.subplot(xmax,ymax,i+1)
-        ax = plt.gca()
-        draw_pip(a,False)
-        ax.set_title("PIP b = {0}, T =  {1}".format(blist[i],Tlist[i]))
-    if disp:
+def heatmap(array,show=True):
+    cmap = mcolors.ListedColormap([(1, 1, 1), 
+                                   (0.5, 0.5, 0.5)])
+    plt.contourf(array, cmap=cmap, levels=[-1000,0,1000])
+
+    plt.xlabel("$b/c$")
+    plt.ylabel("$T$")
+    
+    if show:
         plt.show()
