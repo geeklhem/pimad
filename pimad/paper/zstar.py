@@ -8,11 +8,11 @@ import matplotlib.pyplot as plt
 def agent_based_zstar(model=ToyContinuous,param={}):
     # Set the parameters.
     default = {
-        "N":10000,
+        "N":1000,
         "ip":0.01,
         "c":1,
         "mu":0,
-        "g":1000,
+        "g":100,
         "T":100
     }
 
@@ -32,7 +32,7 @@ def agent_based_zstar(model=ToyContinuous,param={}):
     for y,b in enumerate(b_range):
         #--- Display
         i +=1
-        print("{:0.2%}".format(i/imax))
+        print("{:0.2%}: b/c = {}".format(i/imax,b))
         #--- 
     
         param["b"] = b
@@ -41,6 +41,7 @@ def agent_based_zstar(model=ToyContinuous,param={}):
         ess = 0
         j = 0
         while ess != 1 and j<len(z_range):
+            print("Testing z={}".format(z_range[j]))
             param["pa"] = z_range[j]
             param["ps"] = z_range[j]+0.01
 

@@ -1,4 +1,4 @@
- """ Graphical functions for pairwise invasibility plots"""
+""" Graphical functions for pairwise invasibility plots"""
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.ticker import FuncFormatter

@@ -15,7 +15,7 @@ def agent_based_pip(model=ToyContinuous,param={},precision=0.1):
 
     # Set the parameters.
     default = {
-        "N":10000,
+        "N":3000,
         "T":100,
         "ip":0.01,
         "b":20,
@@ -59,13 +59,18 @@ def agent_based_pip(model=ToyContinuous,param={},precision=0.1):
 
 if __name__ == "__main__":
     import sys
-    import pimad.export.pip as draw
+
 
     if len(sys.argv) > 1:
         pip,param = agent_based_pip(precision=float(sys.argv[1]))
     else:    
         pip,param = agent_based_pip()
-    draw.draw_pip(pip)
     with open("pip_{}x{}.pkle".format(*pip.shape),"w") as fi:
         pickle.dump((pip,param),fi)
     print("saved pip_{}x{}.pkle".format(*pip.shape))
+
+    try:
+        import pimad.export.pip as draw
+        draw.draw_pip(pip)
+    except:
+        print("draw failed")
