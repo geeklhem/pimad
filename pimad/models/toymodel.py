@@ -7,7 +7,7 @@ import random
 import math
 
 import pimad.model as model
-from numba import jit
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Toy model

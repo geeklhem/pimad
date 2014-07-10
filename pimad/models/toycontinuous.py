@@ -5,7 +5,7 @@
 import numpy
 import random
 import math
-from numba import jit
+
 
 import pimad.model as model
 from pimad.models.toymodel import ToyModel
