@@ -38,14 +38,23 @@ class Model(object):
 
         self.model_name = "Generic model"
 
+        # Parameters can be accessed by self.p["name"]
+        self.p = param
+
+
+        required_param = [("n","Number of patches."),
+                          ("T","Patch size."),
+                          ("ip","Initial proportion of mutants.")]
+        for p in required_param:
+            if p[0] not in self.p:
+                raise ValueError("Missing parameter: {0[0]} ({0[1]})".format(p))
+            
         # Create a "Population" object with parameters given by the param dict.
         self.population = population.Population(n=param["n"],
                                                 T=param["T"],
                                                 ip=param["ip"])
         
                                     
-        # Parameters can be accessed by self.p["name"]
-        self.p = param
 
         # Creating a tracking list of dict with an entry by generation.
         self.traces = []

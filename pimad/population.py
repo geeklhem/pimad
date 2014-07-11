@@ -1,6 +1,7 @@
 #!/usr/bin/env/ python
 # -*- coding: utf-8 -*-
 """Class to represent poulations data."""
+from __future__ import division
 import numpy as np
 
 class Population:
@@ -59,26 +60,64 @@ class Population:
         self.ip = ip 
 
         #Individuals data
-        self.genotype = np.zeros((self.T,self.n))
-        self.genotype.flat[0:int(self.N*self.ip)] = 1
+        self.genotype = np.zeros((self.T,self.n),dtype=bool)
+        self.genotype.flat[0:int(self.N*self.ip)] = True
         np.random.shuffle(self.genotype.flat)
         
-        self.phenotype = np.zeros((self.T,self.n))
-        self.phenotype.flat[0:int(self.N*self.ip)] = 1
+        self.phenotype = np.zeros((self.T,self.n),dtype=bool)
+        self.phenotype.flat[0:int(self.N*self.ip)] = True
         np.random.shuffle(self.phenotype.flat)
 
-        self.repartition = np.zeros((self.T,self.n),dtype=np.bool)
+        self.aggregated = np.zeros((self.T,self.n),dtype=bool)
         self.genealogy = np.zeros((self.T,self.n))
         
-        #Patch data
-        self.payoff = np.zeros((self.n,4),dtype=np.float)
-        self.proportions = np.zeros((self.n,4),dtype=np.float)
+    @property
+    def residents(self):
+        return np.logical_not(self.phenotype)
+
+    @property
+    def mutants(self):
+        return self.phenotype
+    
+    @property
+    def loners(self):
+        return np.logical_not(self.aggregated)
+
+    @property
+    def aggregated_mutants(self):
+        return np.logical_and(self.aggregated,self.mutants)
+    
+    @property
+    def aggregated_residents(self):
+        return np.logical_and(self.aggregated,self.residents)
+
+    @property
+    def loner_mutants(self):
+        return np.logical_and(self.loners,self.mutants)
+    
+    @property
+    def loner_residents(self):
+        return np.logical_and(self.loners,self.residents)
+
+    
+    @property
+    def aggregated_by_patch(self):
+        return self.aggregated.sum(0)/self.T
+
+    @property
+    def loners_by_patch(self):
+        return self.loners.sum(0)/self.T
 
     @property
     def mutants_by_patch(self):
-        return self.phenotype.sum(0)
+        return self.phenotype.sum(0)/self.T
 
+    @property
+    def residents_by_patch(self):
+        return self.residents.sum(0)/self.T
     
+
+
     def __str__(self):
         s = "Generic population: \n"
         s += "Population size: {0:1.0e}\n".format(self.N)

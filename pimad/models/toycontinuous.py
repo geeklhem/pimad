@@ -2,91 +2,144 @@
 # -*- coding: utf-8 -*-
 """Continuous toy model"""
 
-import numpy
-import random
-import math
+from __future__ import division
+import numpy as np
+from pimad.model import Model
 
 
-import pimad.model as model
-from pimad.models.toymodel import ToyModel
-
-class ToyContinuous(ToyModel):
+class ToyContinuous(Model):
     """ A model where the probability of attachment are conditioning both the
     payoff and the social cost.
-
-    In this model there's still only two phenotypes at a time a resident 
-    (the asocial of the toymodel) and a mutant (the social of the toymodel)
-
-    **Modification from the toymodel :** 
-
-    - In the aggregation phase the probaility of aggregation of two individuals 
-    is the geometric mean of the phenotypes.
-    - The social cost of an individual is -c*z
-    - The group benefit of an individual is b*\overline{z} (mean of the social
-    trait).
-
     """
 
     def __init__(self,param,tracked_values=[]):
         """Constructor"""
-        model.Model.__init__(self,param,tracked_values)
-        self.model_name = "Continuous Toy Model"
+        super(ToyContinuous,self).__init__(param,tracked_values)
+        self.model_name = "Continuous Toy Model [Doulcier, Garcia & De Monte 2014]"
 
-        # The probability of attachment between a za and a zs individual is:
-        self.param["pas"] = math.sqrt(self.param["pa"]*self.param["ps"])
+        required_param = [("r","Resident trait value in [0,1]."),
+                          ("m","Mutant trait value in [0,1].")]
+        for p in required_param:
+            if p[0] not in self.p:
+                raise ValueError("Missing parameter: {0[0]} ({0[1]})".format(p))
+
+            
+    def step(self):
+        """Runs one generation of the model
+    
+        Called by :model.play at each generation """
+        
+        self.dispersion()
+        self.aggregation()
+        payoffs = self.payoff()
+        self.demographic(payoffs)
+        
+
+    
+    def dispersion(self):
+        """ Shuffle individuals and reset aggregation status. 
+        
+        """ 
+
+        ## Reset of the individuals population arrays
+        self.population.aggregated[:] = 0
+        self.population.genealogy[:] = -1
+
+        ## Shuffling the individuals ! 
+        p = np.random.permutation(self.population.N)
+        self.population.phenotype.flat = self.population.phenotype.flat[p] 
+        self.population.genotype.flat = self.population.genotype.flat[p]
+
+                   
+    def aggregation(self):
+        """ One shot aggregation process.
+        """
 
 
+        # Choose a random recruiter by patch:
+        recruiter = np.random.randint(self.population.T,size=self.population.n)
+        # Get its phenotype 
+        recruiter_phenotype = self.population.phenotype[recruiter,range(self.population.n)]
+
+        # The recruiters are always aggregated. 
+        self.population.aggregated[recruiter,range(self.population.n)] = 1 
+                                   
+        ### One shot attachment process...
+
+        ## residents 
+        number = self.population.loner_residents.sum(0)
+        proba = np.sqrt( self.p["r"] * (self.p["r"] * np.logical_not(recruiter_phenotype)
+                                        + self.p["m"] * recruiter_phenotype))
+        # Number of individual aggregated by patch... 
+        attached = np.array([np.random.binomial(n,p) for n,p in zip(number,proba)])
+
+        # in each column, attach the n first of this phenotype
+        for i,n in enumerate(attached):
+            x = np.nonzero(self.population.loner_residents[:,i])
+            self.population.aggregated[x[:n],i] = 1
+
+        # mutants 
+        number = self.population.loner_mutants.sum(0)
+        proba = np.sqrt( self.p["m"] * (self.p["r"] * np.logical_not(recruiter_phenotype)
+                                        + self.p["m"] * recruiter_phenotype))
+        attached = np.array([np.random.binomial(n,p) for n,p in zip(number,proba)])
+        for i,n in enumerate(attached):
+            x = np.nonzero(self.population.loner_mutants[:,i])
+            self.population.aggregated[x[:n],i] = 1
+        
     def payoff(self):
         """
         Compute the payoff for each patch and each combinaison of repartition and phenotype.
-        
-        =========  ============================
-        **Read**   self.population.phenotype.
-                   self.population.repartition, 
-        **Write**  self.population.payoff.
-        =========  ============================
-        
-        .. note ::
-           By line in self.population.payoff:
-        
-           0. Payoff of zs individual in a group
-           1. Payoff of za individual in a group
-           2. Payoff of zs individual alone
-           3. Payoff of za individual alone
-        
         """
-        ## For each patch
-        for patch in range(self.population.Npatch):
+        
+        average_z = (self.population.aggregated_residents.sum(0) * self.p["r"]
+                     + self.population.aggregated_mutants.sum(0) * self.p["m"]) / self.population.T
+        group_benefits = self.p["b"] * average_z
 
-            gb = self.group_benefits(patch)
-            cost_s = self.cost(self.param["ps"])
-            cost_a = self.cost(self.param["pa"])
-
-            # Payoff of zs individual in a group
-            
-            self.population.payoff[patch,0] = gb - cost_s
-            # Payoff of za individual in a group
-            self.population.payoff[patch,1] = gb - cost_a
-            
-            # Payoff of zs individual alone
-            self.population.payoff[patch,2] = -cost_s
-            # Payoff of za individual alone
-            self.population.payoff[patch,3] = -cost_a
+        return {"aggregated":{"resident":group_benefits-self.p["c"]*self.p["r"],
+                                "mutant":group_benefits-self.p["c"]*self.p["m"]},
+                  "loner":{"resident":[-self.p["c"]*self.p["r"]]*self.p["n"],
+                           "mutant":[-self.p["c"]*self.p["m"]]*self.p["n"]},
+        }
+    
 
 
-    def group_benefits(self,p):
-        """ Return the individual group-benefits in the p patch """
-        # The group benefit is b * \overline{z} the mean social trait.
-        meanZ = self.population.proportions[p,0]*self.param["ps"] 
-        meanZ += ((self.population.proportions[p,1] -
-                  self.population.proportions[p,0])*self.param["pa"]) 
-        meanZ /= self.population.proportions[p,1]  
+    def demographic(self,payoff):
+        """Life & Death.
+        """     
+        
+        ## Normalize the payoff to give the fitness.
+        fitness = np.array([payoff["aggregated"]["resident"],
+                            payoff["aggregated"]["mutant"],
+                            payoff["loner"]["resident"],
+                            payoff["loner"]["mutant"]])
 
-        return meanZ * self.b
+        fitness -= np.min(fitness.flat)
+        fitness /= np.max(fitness.flat)
+        
 
-    def cost(self,z):
-        """ Return the individual cost of a z-social individual"""
-        return self.c * z
+        ## Count the number of individual in each fitness category.
+        number = np.array([self.population.aggregated_residents.sum(0),
+                           self.population.aggregated_mutants.sum(0),
+                           self.population.loner_residents.sum(0),
+                           self.population.loner_mutants.sum(0)])
 
+
+
+        ## Each individual is allowed to try to reproduce once.
+        offspring = np.array([np.random.binomial(n,p) for n,p in zip(number.flat,
+                                                                     fitness.flat)],
+                         ).reshape(number.shape)
+
+        
+        ## Death process : newborn are inserted in random position
+        ## inside the new population, thus killing the one whose place
+        ## they take.
+        positions = np.random.randint(self.population.N,size=offspring.sum())
+        offspring = offspring.sum(1)
+
+        self.population.phenotype.flat[positions[:(offspring[0] + offspring[2])]] = 0
+        self.population.phenotype.flat[positions[(offspring[0] + offspring[2]):]] = 1 
+        
 # Name of the model's Class (Required for import in main program)
 model_class = ToyContinuous
