@@ -69,7 +69,7 @@ if __name__ == "__main__":
     print("saved pip_{}x{}.pkle".format(*pip.shape))
 
     try:
-        import pimad.export.pip as draw
+        import pimad.export.draw as draw
         draw.draw_pip(pip)
-    except:
-        print("draw failed")
+    except Exception as e:
+        print("draw failed {}".format(e))

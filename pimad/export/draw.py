@@ -47,3 +47,21 @@ def heatmap(array,show=True):
     
     if show:
         plt.show()
+
+
+def empirical_zstar(points):
+
+    z = np.arange(0.001,1.001,0.001)
+
+    theo = 2.0/z
+    plt.plot(z,theo, color="k",label="Analytical prediction")
+
+    x,y = zip(*points)
+    plt.scatter(x,y,label="Experimental threshold",color="red")
+    plt.legend()
+    plt.xlabel("z")
+    plt.ylabel("b/c")
+    plt.xlim((0,1))
+    plt.ylim((0,100))
+    plt.show()
+    

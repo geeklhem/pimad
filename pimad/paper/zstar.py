@@ -8,12 +8,11 @@ import matplotlib.pyplot as plt
 def agent_based_zstar(model=ToyContinuous,param={}):
     # Set the parameters.
     default = {
-        "N":1000,
+        "n":100,
         "ip":0.01,
         "c":1,
-        "mu":0,
         "g":100,
-        "T":100
+        "T":100,
     }
 
     for k,v in default.items():
@@ -21,7 +20,7 @@ def agent_based_zstar(model=ToyContinuous,param={}):
             param[k] = v
 
     
-    b_range = np.arange(1,105,20) 
+    b_range = np.arange(2,105,20) 
     out = []
 
     #--- Display
@@ -37,49 +36,39 @@ def agent_based_zstar(model=ToyContinuous,param={}):
     
         param["b"] = b
         
-        z_range = np.arange(min(0.01,(2.0/b)-0.1),max(1,(2.0/b)-0.1),0.01)
+        z_range = np.arange(max(0.01,(2.0/b)-0.1), min(1,(2.0/b)+0.1),0.01)
         ess = 0
         j = 0
         while ess != 1 and j<len(z_range):
             print("Testing z={}".format(z_range[j]))
-            param["pa"] = z_range[j]
-            param["ps"] = z_range[j]+0.01
+            param["r"] = z_range[j]
+            param["m"] = z_range[j]+0.01
 
             m = ToyContinuous(param,[])
             m.play(param["g"])
 
-            pmutants = np.sum(m.population.phenotype)/float(m.param["ip"])
-
+            pmutants = np.sum(m.population.phenotype)/float(len(m.population.phenotype.flat))
             if pmutants>param["ip"]:
                 ess = 1
                 out.append((z_range[j],b))
-
+                print "ess !"
             j += 1
     return out
 
 
-def draw(points):
-
-    z = np.arange(0.001,1.001,0.001)
-
-    theo = 2.0/z
-    plt.plot(z,theo, color="k",label="Analytical prediction")
-
-    x,y = zip(*points)
-    plt.scatter(x,y,label="Experimental threshold",color="red")
-    plt.legend()
-    plt.xlabel("z")
-    plt.ylabel("b/c")
-    plt.xlim((0,1))
-    plt.ylim((0,100))
-    plt.show()
-    
 
 if __name__ == "__main__":
     import sys
 
     points = agent_based_zstar()
-    draw(points)
+
+
+    try:
+        import pimad.export.draw as draw
+        draw.empirical_zstar(points)
+    except Exception as e:
+        print("draw failed {}".format(e))
+
 
     #heatmap,param = agent_based_heatmap()
     #with open("heatmap_{}x{}.pkle".format(*heatmap.shape),"w") as fi:

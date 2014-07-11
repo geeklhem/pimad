@@ -58,3 +58,10 @@ if __name__ == "__main__":
     with open("heatmap_{}x{}.pkle".format(*heatmap.shape),"w") as fi:
         pickle.dump((heatmap,param),fi)
     print("saved heatmap_{}x{}.pkle".format(*heatmap.shape))
+
+    try:
+        import pimad.export.draw as draw
+        draw.heatmap(heatmap)
+    except Exception as e:
+        print("draw failed {}".format(e))
+
