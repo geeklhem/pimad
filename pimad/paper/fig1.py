@@ -28,10 +28,6 @@ arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))
 #ax.annotate(r'$\hat{z}T$', xy=(z*T,0),xycoords="data", textcoords="offset points", xytext=(-5,-20),
 #arrowprops=dict(arrowstyle="-", connectionstyle="arc3,rad=.2"))
 
-
-
-
-
 ax.axis([-5,T,0,1-0.33+0.1])
 ax.spines['right'].set_color("none")
 ax.spines['top'].set_color("none")

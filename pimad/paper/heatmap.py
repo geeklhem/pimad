@@ -7,13 +7,12 @@ import cPickle as pickle
 def agent_based_heatmap(model=ToyContinuous,param={}):
     # Set the parameters.
     default = {
-        "N":10000,
-        "ip":0.01,
-        "c":1,
-        "mu":0,
+        "n":100,
+        "ip":0.1,
         "g":50,
-        "pa":0.1,
-        "ps":0.11
+        "r":0.2,
+        "m":0.21,
+        "c":1,
     }
 
     for k,v in default.items():
@@ -37,14 +36,14 @@ def agent_based_heatmap(model=ToyContinuous,param={}):
             
             #--- Display
             i +=1
-            print("{:0.2%}".format(i/imax))
+            print("{:0.2%} - T:{},b:{}".format(i/imax,T,b))
             #--- 
     
             param["b"] = b
 
             m = ToyContinuous(param,[])
             m.play(param["g"])
-            pmutants = np.sum(m.population.phenotype)/float(m.param["N"])
+            pmutants = np.sum(m.population.phenotype)/float(len(m.population.phenotype.flat))
             if pmutants>param["ip"]:
                 ess = 1
             else:
