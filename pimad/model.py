@@ -1,10 +1,10 @@
 #!/usr/bin/env/ python
 # -*- coding: utf-8 -*-
 """Class to represent poulations data."""
+
 # Import built-in modules
-import numpy
+import numpy as np
 import copy
-import math
 import logging
 
 # Import custom modules
@@ -39,14 +39,13 @@ class Model(object):
         self.model_name = "Generic model"
 
         # Create a "Population" object with parameters given by the param dict.
-        self.population = population.Population(param["N"],param["T"],param["ip"])
+        self.population = population.Population(n=param["n"],
+                                                T=param["T"],
+                                                ip=param["ip"])
         
-        # b and c are copied into the model namespace in order to access them with self.b 
-        self.b = param["b"]
-        self.c = param["c"]
-
-        # Other parameters can be accessed by self.param["name"]
-        self.param = param
+                                    
+        # Parameters can be accessed by self.p["name"]
+        self.p = param
 
         # Creating a tracking list of dict with an entry by generation.
         self.traces = []
@@ -59,7 +58,8 @@ class Model(object):
         Called by :class:`Population`.play at each generation """
         pass
 
-    def equilibrium(self,condition,nb_gen=10):
+    
+    '''    def equilibrium(self,condition,nb_gen=10):
         """Play until the equilibrium
         
         Args: 
@@ -102,7 +102,7 @@ class Model(object):
             for t in self.tracked:
                 self.traces[-1][t].append(copy.copy(reduce(getattr,t.split("."),self)))
             
-            g +=1
+            g +=1'''
         
     
     def play(self,nb_generations):
