@@ -15,12 +15,11 @@ def agent_based_pip(model=ToyContinuous,param={},precision=0.1):
 
     # Set the parameters.
     default = {
-        "N":3000,
+        "n":100,
         "T":100,
         "ip":0.01,
         "b":20,
         "c":1,
-        "mu":0,
         "g":10,
     }
 
@@ -37,7 +36,7 @@ def agent_based_pip(model=ToyContinuous,param={},precision=0.1):
     #---
 
     for x,hatz in enumerate(z_range):
-        param["pa"] = hatz
+        param["r"] = hatz
         for y,z in enumerate(z_range):
             
             #--- Display
@@ -45,11 +44,11 @@ def agent_based_pip(model=ToyContinuous,param={},precision=0.1):
             print("{:0.2%}".format(i/imax))
             #--- 
     
-            param["ps"] = z
+            param["m"] = z
 
             m = ToyContinuous(param,[])
             m.play(param["g"])
-            pmutants = np.sum(m.population.phenotype)/float(m.param["N"])
+            pmutants = np.sum(m.population.phenotype)/float(len(m.population.phenotype.flat))
             if pmutants:
                 fitness = np.log10(pmutants/param["ip"])
             else:
