@@ -27,11 +27,18 @@ class ToyContinuous(Model):
     def step(self):
         """Runs one generation of the model
     
-        Called by :model.play at each generation """
+        Called by model.play at each generation """
         
         self.dispersion()
         self.aggregation()
         payoffs = self.payoff()
+        mutants =  self.population.mutants.sum()/len(self.population.mutants.flat)
+        residents =  self.population.residents.sum()/len(self.population.mutants.flat)
+        loners =  self.population.loners.sum()/len(self.population.mutants.flat)
+        lonersmutants =  self.population.loner_mutants.sum()/len(self.population.mutants.flat)
+        #print ("Mutants : {:^7.2%} - Residents {:^7.2%} - Loners {:^7.1%} (dont {:^7.2%} mutants)"
+        #       "").format(mutants,residents,loners,lonersmutants)
+ 
         self.demographic(payoffs)
         
 
@@ -61,8 +68,9 @@ class ToyContinuous(Model):
         # Get its phenotype 
         recruiter_phenotype = self.population.phenotype[recruiter,range(self.population.n)]
 
-        # The recruiters are always aggregated. 
-        self.population.aggregated[recruiter,range(self.population.n)] = 1 
+        # The recruiters are always aggregated.
+        self.population.aggregated[recruiter,range(self.population.n)] = (self.p["r"] * np.logical_not(recruiter_phenotype) 
+                                                                          + self.p["m"] * recruiter_phenotype ) >0
                                    
         ### One shot attachment process...
 
@@ -70,21 +78,28 @@ class ToyContinuous(Model):
         number = self.population.loner_residents.sum(0)
         proba = np.sqrt( self.p["r"] * (self.p["r"] * np.logical_not(recruiter_phenotype)
                                         + self.p["m"] * recruiter_phenotype))
+        #print "recruiter", recruiter_phenotype[:5]
+        #print "n", number[:5]
+        #print "r", proba[:5]
         # Number of individual aggregated by patch... 
         attached = np.array([np.random.binomial(n,p) for n,p in zip(number,proba)])
-
+        #print "a", attached[:5]
         # in each column, attach the n first of this phenotype
         for i,n in enumerate(attached):
-            x = np.nonzero(self.population.loner_residents[:,i])
+            x = np.nonzero(self.population.loner_residents[:,i])[0]
             self.population.aggregated[x[:n],i] = 1
 
         # mutants 
         number = self.population.loner_mutants.sum(0)
+        
         proba = np.sqrt( self.p["m"] * (self.p["r"] * np.logical_not(recruiter_phenotype)
                                         + self.p["m"] * recruiter_phenotype))
+        #print "m", proba[:5]
+        #print "n", number[:5]
         attached = np.array([np.random.binomial(n,p) for n,p in zip(number,proba)])
+        #print "a", attached[:5]
         for i,n in enumerate(attached):
-            x = np.nonzero(self.population.loner_mutants[:,i])
+            x = np.nonzero(self.population.loner_mutants[:,i])[0]
             self.population.aggregated[x[:n],i] = 1
         
     def payoff(self):
@@ -116,7 +131,8 @@ class ToyContinuous(Model):
 
         fitness -= np.min(fitness.flat)
         fitness /= np.max(fitness.flat)
-        
+        #print payoff
+        #print fitness[:,:2]
 
         ## Count the number of individual in each fitness category.
         number = np.array([self.population.aggregated_residents.sum(0),
@@ -124,7 +140,7 @@ class ToyContinuous(Model):
                            self.population.loner_residents.sum(0),
                            self.population.loner_mutants.sum(0)])
 
-
+        #print "n", number.sum(1)
 
         ## Each individual is allowed to try to reproduce once.
         offspring = np.array([np.random.binomial(n,p) for n,p in zip(number.flat,
@@ -135,11 +151,12 @@ class ToyContinuous(Model):
         ## Death process : newborn are inserted in random position
         ## inside the new population, thus killing the one whose place
         ## they take.
-        positions = np.random.randint(self.population.N,size=offspring.sum())
+        positions = np.random.permutation(self.population.N)[:offspring.sum()]
         offspring = offspring.sum(1)
 
         self.population.phenotype.flat[positions[:(offspring[0] + offspring[2])]] = 0
         self.population.phenotype.flat[positions[(offspring[0] + offspring[2]):]] = 1 
+
         
 # Name of the model's Class (Required for import in main program)
 model_class = ToyContinuous

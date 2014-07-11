@@ -98,7 +98,6 @@ class Population:
     @property
     def loner_residents(self):
         return np.logical_and(self.loners,self.residents)
-
     
     @property
     def aggregated_by_patch(self):

@@ -36,7 +36,7 @@ def agent_based_zstar(model=ToyContinuous,param={}):
     
         param["b"] = b
         
-        z_range = np.arange(max(0.01,(2.0/b)-0.1), min(1,(2.0/b)+0.1),0.01)
+        z_range = np.arange(max(0.025,(2.0/b)-0.2), min(1,(2.0/b)+0.2),0.025)
         ess = 0
         j = 0
         while ess != 1 and j<len(z_range):

@@ -17,11 +17,11 @@ def agent_based_pip(model=ToyContinuous,param={},precision=0.1):
     default = {
         "n":100,
         "T":100,
-        "ip":0.01,
+        "ip":0.1,
         "b":20,
         "c":1,
         "g":10,
-    }
+    } 
 
     for k,v in default.items():
         if k not in param:
@@ -35,9 +35,9 @@ def agent_based_pip(model=ToyContinuous,param={},precision=0.1):
     imax = float(len(z_range)**2)
     #---
 
-    for x,hatz in enumerate(z_range):
+    for y,hatz in enumerate(z_range):
         param["r"] = hatz
-        for y,z in enumerate(z_range):
+        for x,z in enumerate(z_range):
             
             #--- Display
             i +=1
@@ -54,6 +54,7 @@ def agent_based_pip(model=ToyContinuous,param={},precision=0.1):
             else:
                 fitness = -1
             pip[x,y] = fitness
+         
     return pip,param
 
 if __name__ == "__main__":
@@ -70,6 +71,6 @@ if __name__ == "__main__":
 
     try:
         import pimad.export.draw as draw
-        draw.draw_pip(pip)
+        draw.pip(pip)
     except Exception as e:
         print("draw failed {}".format(e))

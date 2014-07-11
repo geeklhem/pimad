@@ -219,18 +219,6 @@ class ToyModel(model.Model):
         self.population.genotype = self.population.genotype[p]
 
                    
-    def phenotype_heredity(self,phenotype,genotype):
-        """Return the phenotype of the child cell given the one of the parent.
-        
-        :param phenotype: Phenotype of the parent. 
-        :type phenotype: bool
-        :param genotype: genotype of the parent. 
-        :type genotype: bool
-        :return: (bool) - Phenotype of the child. 
-        .. note ::
-          Here it's an identity, this method should be overrided in a inherited model.
-        """
-        return genotype
 
 # Name of the model's Class (Required for import in main program)
 model_class = ToyModel
