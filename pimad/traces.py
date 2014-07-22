@@ -124,6 +124,6 @@ if __name__ == "__main__":
     print("\n Run:")
     a.play(10)
     test = Trace(a)
-    #save_trace(test,"test2.data")
+    save_trace(test,"test2.data")
 
     

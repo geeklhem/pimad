@@ -12,7 +12,7 @@ x = np.linspace(0,T,T)
 z=1/3.0
 y = [(sp.comb(T,k) * z**k * (1-z)**(T-k)) for k in x]
 y[1] = 1-z
-plt.plot(x,y,color="red",label="$\hat{z}_1=2/3$")
+plt.plot(x,y,color="red",label="$\hat{z}_1=1/3$")
 
 ax.annotate(r'$1-\hat{z}_1$', xy=(0,1-z),xycoords="data", textcoords="offset points", xytext=(+40,0),
 arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))
@@ -21,7 +21,7 @@ arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))
 z=2/3.0
 y = [(sp.comb(T,k) * z**k * (1-z)**(T-k)) for k in x]
 y[1] = 1-z
-plt.plot(x,y,color="blue",label="$\hat{z}_2=1/3$")
+plt.plot(x,y,color="blue",label="$\hat{z}_2=2/3$")
 
 ax.annotate(r'$1-\hat{z}_2$', xy=(0,1-z),xycoords="data", textcoords="offset points", xytext=(+40,0),
 arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))

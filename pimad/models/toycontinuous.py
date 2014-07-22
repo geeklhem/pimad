@@ -12,7 +12,7 @@ class ToyContinuous(Model):
     payoff and the social cost.
     """
 
-    def __init__(self,param,tracked_values=[]):
+    def __init__(self,param,tracked_values=()):
         """Constructor"""
         super(ToyContinuous,self).__init__(param,tracked_values)
         self.model_name = "Continuous Toy Model [Doulcier, Garcia & De Monte 2014]"
@@ -32,12 +32,11 @@ class ToyContinuous(Model):
         self.dispersion()
         self.aggregation()
         payoffs = self.payoff()
-        mutants =  self.population.mutants.sum()/len(self.population.mutants.flat)
-        residents =  self.population.residents.sum()/len(self.population.mutants.flat)
-        loners =  self.population.loners.sum()/len(self.population.mutants.flat)
-        lonersmutants =  self.population.loner_mutants.sum()/len(self.population.mutants.flat)
-        #print ("Mutants : {:^7.2%} - Residents {:^7.2%} - Loners {:^7.1%} (dont {:^7.2%} mutants)"
-        #       "").format(mutants,residents,loners,lonersmutants)
+
+        #mutants =  self.population.mutants.sum()/len(self.population.mutants.flat)
+        #residents =  self.population.residents.sum()/len(self.population.mutants.flat)
+        #loners =  self.population.loners.sum()/len(self.population.mutants.flat)
+        #lonersmutants =  self.population.loner_mutants.sum()/len(self.population.mutants.flat)
  
         self.demographic(payoffs)
         
@@ -67,41 +66,31 @@ class ToyContinuous(Model):
         recruiter = np.random.randint(self.population.T,size=self.population.n)
         # Get its phenotype 
         recruiter_phenotype = self.population.phenotype[recruiter,range(self.population.n)]
+        attch_proba_recruiter = (  self.p["r"] * np.logical_not(recruiter_phenotype)
+                                   + self.p["m"] * recruiter_phenotype)
 
-        # The recruiters are always aggregated.
-        self.population.aggregated[recruiter,range(self.population.n)] = (self.p["r"] * np.logical_not(recruiter_phenotype) 
-                                                                          + self.p["m"] * recruiter_phenotype ) >0
-                                   
+        # The recruiters are always aggregated. 
+        self.population.aggregated[recruiter,range(self.population.n)] = 1
+        
+        
+        # Alternative: the recruiter is aggregated only if its social trait is >0. 
+        #(self.p["r"] * np.logical_not(recruiter_phenotype) + self.p["m"] * recruiter_phenotype ) >0
+
         ### One shot attachment process...
+        for z,loners in [(self.p["r"],self.population.loner_residents),
+                         (self.p["m"],self.population.loner_mutants)]:
+            
+            number = loners.sum(0)
+            proba = np.sqrt(z * attch_proba_recruiter)
 
-        ## residents 
-        number = self.population.loner_residents.sum(0)
-        proba = np.sqrt( self.p["r"] * (self.p["r"] * np.logical_not(recruiter_phenotype)
-                                        + self.p["m"] * recruiter_phenotype))
-        #print "recruiter", recruiter_phenotype[:5]
-        #print "n", number[:5]
-        #print "r", proba[:5]
-        # Number of individual aggregated by patch... 
-        attached = np.array([np.random.binomial(n,p) for n,p in zip(number,proba)])
-        #print "a", attached[:5]
-        # in each column, attach the n first of this phenotype
-        for i,n in enumerate(attached):
-            x = np.nonzero(self.population.loner_residents[:,i])[0]
-            self.population.aggregated[x[:n],i] = 1
+            # Number of individual aggregated by patch... 
+            attached = np.array([np.random.binomial(n,p) for n,p in zip(number,proba)])
 
-        # mutants 
-        number = self.population.loner_mutants.sum(0)
-        
-        proba = np.sqrt( self.p["m"] * (self.p["r"] * np.logical_not(recruiter_phenotype)
-                                        + self.p["m"] * recruiter_phenotype))
-        #print "m", proba[:5]
-        #print "n", number[:5]
-        attached = np.array([np.random.binomial(n,p) for n,p in zip(number,proba)])
-        #print "a", attached[:5]
-        for i,n in enumerate(attached):
-            x = np.nonzero(self.population.loner_mutants[:,i])[0]
-            self.population.aggregated[x[:n],i] = 1
-        
+            # in each column, attach the n first of this phenotype
+            for i,n in enumerate(attached):
+                x = np.nonzero(loners[:,i])[0]
+                self.population.aggregated[x[:n],i] = 1
+      
     def payoff(self):
         """
         Compute the payoff for each patch and each combinaison of repartition and phenotype.
@@ -131,8 +120,6 @@ class ToyContinuous(Model):
 
         fitness -= np.min(fitness.flat)
         fitness /= np.max(fitness.flat)
-        #print payoff
-        #print fitness[:,:2]
 
         ## Count the number of individual in each fitness category.
         number = np.array([self.population.aggregated_residents.sum(0),
@@ -140,12 +127,11 @@ class ToyContinuous(Model):
                            self.population.loner_residents.sum(0),
                            self.population.loner_mutants.sum(0)])
 
-        #print "n", number.sum(1)
 
         ## Each individual is allowed to try to reproduce once.
         offspring = np.array([np.random.binomial(n,p) for n,p in zip(number.flat,
                                                                      fitness.flat)],
-                         ).reshape(number.shape)
+        ).reshape(number.shape)
 
         
         ## Death process : newborn are inserted in random position
