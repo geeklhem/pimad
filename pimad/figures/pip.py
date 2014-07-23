@@ -34,8 +34,8 @@ def agent_based_pip(model=ToyContinuous,param={},precision=0.1):
     # Set the parameters.
     default = {
         "n":100,
-        "T":100,
-        "ip":0.1,
+        "T":1000,
+        "ip":0.01,
         "b":20,
         "c":1,
         "g":10,
