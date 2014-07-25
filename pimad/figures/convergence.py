@@ -152,7 +152,43 @@ def main():
     n_range = np.arange(2,1000,1)
     print n_range
     convergence(n_range)
+
+
+def figure1():
+    x = range(101)
+    z = 1/3
+    T = 100
+    y = analytical({"m":1/3,"r":1/3})
+    plt.plot(x,y,color="red",label="$\hat{z}_2=1/3$")
     
+    ax = plt.gca()
+    ax.annotate(r'$1-\hat{z}_1$', xy=(0,1-z),xycoords="data", textcoords="offset points",
+                xytext=(+40,0),
+                arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))
+    z = 2/3
+    y = analytical({"m":2/3,"r":2/3})
+    plt.plot(x,y,color="blue",label="$\hat{z}_2=2/3$")
+    
+    
+    ax.annotate(r'$1-\hat{z}_2$', xy=(0,1-z),xycoords="data", textcoords="offset points", xytext=(+40,0),
+                arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))
+    #ax.annotate(r'$\hat{z}T$', xy=(z*T,0),xycoords="data", textcoords="offset points", xytext=(-5,-20),
+    #arrowprops=dict(arrowstyle="-", connectionstyle="arc3,rad=.2"))
+
+    ax.axis([-5,T,0,1-0.33+0.1])
+    ax.spines['right'].set_color("none")
+    ax.spines['top'].set_color("none")
+    ax.xaxis.set_ticks([1/3.0*T,2/3.0*T])
+    ax.set_xticklabels([r'$\hat{z}_1T$',r'$\hat{z}_2T$'])
+    ax.yaxis.set_ticks([])
+    ax.xaxis.set_ticks_position('bottom')
+    ax.xaxis.set_label_coords(.45, -0.025)
+    ax.set_xlabel("Group size")
+    ax.set_ylabel("Density")
+    plt.legend()
+    plt.savefig("sizedistr.eps")
+    
+
 
 if __name__ == "__main__":
     main()

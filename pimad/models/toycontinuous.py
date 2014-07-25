@@ -132,16 +132,23 @@ class ToyContinuous(Model):
         offspring = np.array([np.random.binomial(n,p) for n,p in zip(number.flat,
                                                                      fitness.flat)],
         ).reshape(number.shape)
+        offspring = offspring.sum(1)        
+        offspring_residents = offspring[0] + offspring[2] #No of new Aggregated & loners residents.
+        offspring = offspring.sum() #total offspring        
+        
+
+        # Mutations
+        offspring_residents += (np.random.binomial(offspring - offspring_residents,self.p["mu"]) #reverse mutation
+                                - np.random.binomial(offspring_residents,self.p["mu"])) #forward mutation
 
         
         ## Death process : newborn are inserted in random position
         ## inside the new population, thus killing the one whose place
         ## they take.
-        positions = np.random.permutation(self.population.N)[:offspring.sum()]
-        offspring = offspring.sum(1)
-
-        self.population.phenotype.flat[positions[:(offspring[0] + offspring[2])]] = 0
-        self.population.phenotype.flat[positions[(offspring[0] + offspring[2]):]] = 1 
+        positions = np.random.permutation(self.population.N)[:offspring]
+   
+        self.population.phenotype.flat[positions[:offspring_residents]] = 0
+        self.population.phenotype.flat[positions[offspring_residents:]] = 1 
 
         
 # Name of the model's Class (Required for import in main program)

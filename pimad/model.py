@@ -26,7 +26,7 @@ class Model(object):
         tracked_values (list):
     """
     
-    def __init__(self,param,tracked_values=[]):
+    def __init__(self,param,tracked_values=()):
         """Model object constructor
         
         Args: 
@@ -44,7 +44,8 @@ class Model(object):
 
         required_param = [("n","Number of patches."),
                           ("T","Patch size."),
-                          ("ip","Initial proportion of mutants.")]
+                          ("ip","Initial proportion of mutants."),
+                          ("mu","Mutation rate.")]
         for p in required_param:
             if p[0] not in self.p:
                 raise ValueError("Missing parameter: {0[0]} ({0[1]})".format(p))

@@ -9,11 +9,13 @@ import matplotlib.pyplot as plt
 def agent_based_zstar(model=ToyContinuous,param={}):
     # Set the parameters.
     default = {
-        "n":1000,
+        "n":100,
         "ip":0.01,
         "c":1,
-        "g":5,
-        "T":100,
+        "g":10,
+        "T":1000,
+        "dz":0.01,
+        "mu":0
     }
 
     for k,v in default.items():
@@ -46,12 +48,11 @@ def agent_based_zstar(model=ToyContinuous,param={}):
         test_zone[0].append(b)
         while ess != 1 and j<len(z_range):
             param["r"] = z_range[j]
-            param["m"] = z_range[j]+0.01
+            param["m"] = z_range[j]+param["dz"]
 
             m = ToyContinuous(param,[])
 
             pmutants = np.sum(m.population.phenotype)/float(len(m.population.phenotype.flat))
-            #print("init {}/{}".format(pmutants,param["ip"]))
             
             m.play(param["g"])
 
@@ -62,24 +63,30 @@ def agent_based_zstar(model=ToyContinuous,param={}):
                 out.append((z_range[j],b))
                 print "point !"
             j += 1
-    return out, test_zone
+    return out
 
 
 
 if __name__ == "__main__":
     import sys
 
-    points,test_zone = agent_based_zstar()
-    
-    with open("zstar_{}.pkle".format(len(points)),"w") as fi:
-        pickle.dump(points,fi)
-    print("saved zstar_{}.pkle".format(len(points)))
 
     
+    points = {}
+    for T in [10,100,1000,10000]:
+        points[T] =  agent_based_zstar(param={"T":T})
+    
+    fname = "zstar_T{}.pkle".format("-".join([str(x) for x in points.keys()]))
+    with open(fname,"w") as fi:
+        pickle.dump(points,fi)
+    print("saved {}".format(fname))
+
 
     try:
         import pimad.export.draw as draw
-        draw.empirical_zstar(points,test_zone)
+        draw.empirical_zstar(points)
+        plt.savefig(fname.split(".")[0]+".eps")
+        plt.show()
     except Exception as e:
         print("draw failed {}".format(e))
 

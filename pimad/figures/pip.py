@@ -36,15 +36,19 @@ def agent_based_pip(model=ToyContinuous,param={},precision=0.1):
         "n":100,
         "T":1000,
         "ip":0.01,
+        "mu":0,
         "b":20,
         "c":1,
-        "g":10,
+        "g":100,
     } 
 
     for k,v in default.items():
         if k not in param:
             param[k] = v
         
+    param["model_name"] = str(model)
+    param["pip_step"] = precision
+
     z_range = np.arange(0,1+precision,precision) 
     pip = np.zeros((len(z_range),len(z_range)))
 
