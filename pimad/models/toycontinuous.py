@@ -11,6 +11,17 @@ class ToyContinuous(Model):
     """ A model where the probability of attachment are conditioning both the
     payoff and the social cost.
     """
+    EXAMPLE_PARAMETERS =  {"n":100,  # Number of patches
+                           "T":1000, # Patch size
+                           "ip":0,   # Initial proportions of mutants
+                           "m":0.5,  # Mutant trait value
+                           "r":0.5,  # Resident trait value
+                           "mu":0,   # Mutation rate
+                           "b":20,   # Benefits coefficient
+                           "c":1,    # Cost coefficient
+                           "g":100,   # Number of generations
+                       }
+
 
     def __init__(self,param,tracked_values=()):
         """Constructor"""
