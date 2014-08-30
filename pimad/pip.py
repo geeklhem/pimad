@@ -11,18 +11,18 @@ import os
 def mp_pip(repl=4,model=ToyContinuous,param={},precision=0.1):
     args = itertools.repeat((model,param,precision),repl)
     pool = mp.Pool()
-    out = pool.map(agent_star,args)
+    out = pool.map(pip_star,args)
     pips = [x[0] for x in out]
     param = out[0][1]
     param["replica"] = repl
     output = np.sum(pips,axis=0)/len(pips)
     return output,param
 
-def agent_star(args):
+def pip_star(args):
     print "PID =", os.getpid(),
-    return agent_based_pip(*args)
+    return pip(*args)
             
-def agent_based_pip(model=ToyContinuous,param={},precision=0.1):
+def pip(model=ToyContinuous,param={},precision=0.1):
     """
     Comute th pairwise invasibility plot by successives runs
     of a model.
