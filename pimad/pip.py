@@ -8,48 +8,30 @@ import multiprocessing as mp
 import itertools
 import os
 
-def mp_pip(repl=4,model=ToyContinuous,param={},precision=0.1):
-    args = itertools.repeat((model,param,precision),repl)
-    pool = mp.Pool()
-    out = pool.map(pip_star,args)
-    pips = [x[0] for x in out]
-    param = out[0][1]
-    param["replica"] = repl
-    output = np.sum(pips,axis=0)/len(pips)
-    return output,param
-
-def pip_star(args):
-    print "PID =", os.getpid(),
-    return pip(*args)
-            
-def pip(model=ToyContinuous,param={},precision=0.1):
-    """
-    Comute th pairwise invasibility plot by successives runs
-    of a model.
-    
-    Args:
-    
-    """
-    print "go"
-    # Set the parameters.
-    default = {
-        "n":100,
-        "T":1000,
-        "ip":0.01,
-        "mu":0,
-        "b":20,
-        "c":1,
-        "g":100,
-    } 
-
-    for k,v in default.items():
-        if k not in param:
-            param[k] = v
-        
+def mp_pip(model=ToyContinuous,param={},precision=0.1):
     param["model_name"] = str(model)
     param["pip_step"] = precision
 
-    z_range = np.arange(0,1+precision,precision) 
+    args = itertools.repeat((model,param),param["replica"])
+
+    pool = mp.Pool()
+    pips = pool.map(pip,args)
+
+    #Average over the different replicas 
+    output = np.sum(pips,axis=0)/len(pips)
+
+    return output,param
+ 
+def pip(args):
+    """
+    Compute the pairwise invasibility plot by successives runs
+    of a model.
+    """
+    model = args[0]
+    param = args[1]
+    
+
+    z_range = np.arange(0,1+param["pip_step"],param["pip_step"]) 
     pip = np.zeros((len(z_range),len(z_range)))
 
     #--- Display
@@ -63,12 +45,13 @@ def pip(model=ToyContinuous,param={},precision=0.1):
             
             #--- Display
             i +=1
-            #print("{:0.2%}".format(i/imax))
+            if i % int(imax/10)== 0:
+                print("{:0.2%}".format(i/imax))
             #--- 
     
             param["m"] = z
 
-            m = ToyContinuous(param,[])
+            m = model(param,[])
             m.play(param["g"])
             pmutants = np.sum(m.population.phenotype)/float(len(m.population.phenotype.flat))
             if pmutants:
@@ -77,28 +60,5 @@ def pip(model=ToyContinuous,param={},precision=0.1):
                 fitness = -1
             pip[x,y] = fitness
          
-    return pip,param
-
-if __name__ == "__main__":
-    import sys
-    r = ''
-    if len(sys.argv) == 3:
-        repl = int(sys.argv[2])
-        r = '_{}repl'.format(repl)
-        pip,param = mp_pip(repl=repl,precision=float(sys.argv[1]))
-
-    elif len(sys.argv) == 2:
-        pip,param = agent_based_pip(precision=float(sys.argv[1]))
-    else:    
-        pip,param = agent_based_pip()
-
-    fname = "pip_{0[1]}x{0[1]}{1}.pkle".format(pip.shape,r)
-    with open(fname,"w") as fi:
-        pickle.dump((pip,param),fi)
-    print(fname.format(*pip.shape))
-
-    try:
-        import pimad.export.draw as draw
-        draw.pip(pip)
-    except Exception as e:
-        print("draw failed {}".format(e))
+    return pip
+ 

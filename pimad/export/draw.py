@@ -56,7 +56,7 @@ def heatmap(array,param, show=True):
         plt.show()
 
 
-def empirical_zstar(points):
+def threshold(points):
 
     z = np.arange(0.001,1.001,0.001)
    
