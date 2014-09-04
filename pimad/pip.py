@@ -20,6 +20,9 @@ def mp_pip(model=ToyContinuous,param={},precision=0.1):
     #Average over the different replicas 
     output = np.sum(pips,axis=0)/len(pips)
 
+    del param["r"]
+    del param["m"]
+
     return output,param
  
 def pip(args):

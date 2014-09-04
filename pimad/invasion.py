@@ -49,6 +49,9 @@ def heatmap(model=ToyContinuous,param={}):
     
             param["b"] = b
             out[x,y] = mp_invasion(model,param)
+
+    del param["T"]
+    del param["b"]
     return out,param
 
 
@@ -74,3 +77,21 @@ def threshold_dicho(model,param,kmax=10):
             zleft = param["r"]
     
     return 0.5*(zright+zleft)
+
+
+def threshold(model,param):
+    data = {}
+
+    for T in param["T_range"]:
+        data[T] = []
+        param["T"] = T 
+        for b in param["b_range"]:
+            param["b"] = b
+            zstar = threshold_dicho(model,param,param["kmax"])
+            data[T].append((zstar,b))
+
+    del param["T"]
+    del param["b"]
+    del param["r"]
+    del param["m"]
+    return data, param
