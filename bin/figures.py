@@ -11,17 +11,17 @@ from pimad import invasion
 import pimad.export.draw as draw 
 from pimad.models.toycontinuous import ToyContinuous
 
-PRECISION_PIP = 0.05 #0.01
+PRECISION_PIP = 0.01 #0.01
 PRECISION_HEATMAP = 0.1
 PRECISION_THRESHOLD = 0.1
 STEP_THRESHOLD_DICHO = 10
 MODEL = ToyContinuous
-T_RANGE_THRES = [100,1000,5000]
+T_RANGE_THRES = [100,101]
 T_RANGE = [50,100,200,500,1000,3000,5000]
 B_RANGE = [2 ,5 ,10 ,20 ,40 ,80,  100]
-B_RANGE_THRES = [10 ,20 ,40 ,80,  100]
-param =  {"n": 500,  # Number of patches
-          "T": 1000, #5000, # Patch size
+B_RANGE_THRES = [10 ,20]
+param =  {"n": 5000, # Number of patches
+          "T": 100,  # Patch size
           "ip":0.01,   # Initial proportions of mutants
           "m":0.5,  # Mutant trait value
           "r":0.5,  # Resident trait value
@@ -30,7 +30,7 @@ param =  {"n": 500,  # Number of patches
           "c":1,    # Cost coefficient
           "g":10,   # Number of generations
           "dz":0.01, 
-          "replica": 3 #4 
+          "replica": 2 #4 
 }
 
 def get_definition(model,param,pre="%",su=""):
@@ -46,11 +46,12 @@ if __name__ == "__main__":
     ## Figure 2: Numerical PIP ##
     if DO == "pip" or DO == "ALL":
         print "{:-^80}".format(" PIP ")
-        pip_file = "pip_T{}_n{}_step{}_repl_{}".format(param["T"],param["n"],PRECISION_PIP,param["replica"])
+        pip_file = "pip_T{}_n{}_step{}_repl_{}_b{}_ip{}".format(param["T"],param["n"],PRECISION_PIP,param["replica"],param["b"],param["ip"])
         if not os.path.exists(pip_file+".pkle"):
             pip_data,pip_param = pip.mp_pip(MODEL,param.copy(),PRECISION_PIP)
             with open(pip_file+".pkle","w") as fi:
                 pickle.dump((pip_data,pip_param),fi)
+                print "saved {}.pkle".format(pip_file)
         else:
             with open(pip_file+".pkle","r") as fi:
                 pip_data,pip_param = pickle.load(fi) 
@@ -59,9 +60,8 @@ if __name__ == "__main__":
             draw.pip(pip_data,False)
             plt.savefig(pip_file+".eps")
             with open(pip_file+".eps","a") as fi:
-                print get_definition(MODEL,pip_param)
                 fi.write(get_definition(MODEL,pip_param))
-
+            print "saved {}.eps".format(pip_file)
 
     ## Figure 3: INVASION Heatmap ##
     if DO == "heatmap" or DO == "ALL":
