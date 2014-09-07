@@ -108,7 +108,7 @@ class ToyContinuous(Model):
         """
         
         average_z = (self.population.aggregated_residents.sum(0) * self.p["r"]
-                     + self.population.aggregated_mutants.sum(0) * self.p["m"]) / self.population.T
+                     + self.population.aggregated_mutants.sum(0) * self.p["m"])/self.population.aggregated.sum(0)
         group_benefits = self.p["b"] * average_z
 
         return {"aggregated":{"resident":group_benefits-self.p["c"]*self.p["r"],
