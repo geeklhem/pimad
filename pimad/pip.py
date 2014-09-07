@@ -12,7 +12,7 @@ def mp_pip(model=ToyContinuous,param={},precision=0.1):
     param["model_name"] = str(model)
     param["pip_step"] = precision
 
-    args = itertools.repeat((model,param),param["replica"])
+    args = itertools.repeat((model,param.copy()),param["replica"])
 
     pool = mp.Pool()
     pips = pool.map(pip,args)

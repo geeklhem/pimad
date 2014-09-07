@@ -1,3 +1,4 @@
+from __future__ import division
 from pimad.models.toycontinuous import ToyContinuous
 import numpy as np
 
@@ -20,7 +21,7 @@ def invasion_test(args):
     return pmutants>param["ip"]
 
 def mp_invasion(model,param):
-    args = itertools.repeat((model,param),param["replica"])
+    args = itertools.repeat((model,param.copy()),param["replica"])
     pool = mp.Pool()
     k = pool.map(invasion_test,args)
     return np.median(k)
@@ -43,8 +44,8 @@ def heatmap(model=ToyContinuous,param={}):
         for y,b in enumerate(b_range):
             
             #--- Display
-            i +=1
-            print("{:0.2%} - T:{},b:{}".format(i/imax,T,b))
+            i += 1
+            print("{:0.2%} T:{},b:{}".format(i/imax,T,b))
             #--- 
     
             param["b"] = b
@@ -56,7 +57,7 @@ def heatmap(model=ToyContinuous,param={}):
 
 
 def threshold_dicho(model,param,kmax=10):
-    """ Dichotomic computation of the invasion threshold
+    """Dichotomic computation of the social mutant invasion threshold
 
     Args: 
         model (pimad.model.Model): Model.
@@ -67,11 +68,10 @@ def threshold_dicho(model,param,kmax=10):
     zright = 1.0
     zleft = 0.0
     for k in np.linspace(1,kmax,kmax):
-        print("{} {:0.2}<z*<{:0.2}".format(k,zright,zleft))
         param["r"] = 0.5*(zright+zleft)
         param["m"] = param["r"]+param["dz"]
-
-        if mp_invasion(model,param):
+        invade = mp_invasion(model,param) 
+        if invade:
             zright = param["r"]
         else:
             zleft = param["r"]
@@ -82,11 +82,22 @@ def threshold_dicho(model,param,kmax=10):
 def threshold(model,param):
     data = {}
 
+    ## Display
+    imax = len(param["T_range"])*len(param["b_range"])
+    i = 0
+    ##
+
     for T in param["T_range"]:
         data[T] = []
         param["T"] = T 
         for b in param["b_range"]:
             param["b"] = b
+
+            ## Display
+            i += 1
+            print("{:0.2%} | T: {}, b: {}".format(i/imax,T,b))
+            ##
+
             zstar = threshold_dicho(model,param,param["kmax"])
             data[T].append((zstar,b))
 
