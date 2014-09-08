@@ -16,11 +16,11 @@ PRECISION_HEATMAP = 0.1
 PRECISION_THRESHOLD = 0.1
 STEP_THRESHOLD_DICHO = 10
 MODEL = ToyContinuous
-T_RANGE_THRES = [100,101]
+T_RANGE_THRES = [100,200,500,1000,3000]
 T_RANGE = [50,100,200,500,1000,3000,5000]
 B_RANGE = [2 ,5 ,10 ,20 ,40 ,80,  100]
-B_RANGE_THRES = [10 ,20]
-param =  {"n": 5000, # Number of patches
+B_RANGE_THRES = [2,4,8,10,20,40,]
+param =  {"n": 500, # Number of patches
           "T": 100,  # Patch size
           "ip":0.01,   # Initial proportions of mutants
           "m":0.5,  # Mutant trait value
@@ -30,7 +30,7 @@ param =  {"n": 5000, # Number of patches
           "c":1,    # Cost coefficient
           "g":10,   # Number of generations
           "dz":0.01, 
-          "replica": 2 #4 
+          "replica": 5 #4 
 }
 
 def get_definition(model,param,pre="%",su=""):
@@ -43,10 +43,14 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         DO = sys.argv[1]
     print("DO: {}".format(DO))
+    
+
     ## Figure 2: Numerical PIP ##
     if DO == "pip" or DO == "ALL":
         print "{:-^80}".format(" PIP ")
+        
         pip_file = "pip_T{}_n{}_step{}_repl_{}_b{}_ip{}".format(param["T"],param["n"],PRECISION_PIP,param["replica"],param["b"],param["ip"])
+        print pip_file
         if not os.path.exists(pip_file+".pkle"):
             pip_data,pip_param = pip.mp_pip(MODEL,param.copy(),PRECISION_PIP)
             with open(pip_file+".pkle","w") as fi:
