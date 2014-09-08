@@ -7,6 +7,7 @@ import multiprocessing as mp
 import itertools
 import os
 
+
 def invasion_test(args):
     model = args[0]
     param = args[1]
@@ -22,8 +23,8 @@ def invasion_test(args):
 
 def mp_invasion(model,param):
     args = itertools.repeat((model,param.copy()),param["replica"])
-    pool = mp.Pool()
-    k = pool.map(invasion_test,args)
+    k = POOL.map(invasion_test,args)
+
     return np.median(k)
     
 def heatmap(model=ToyContinuous,param={}):
@@ -79,7 +80,7 @@ def threshold_dicho(model,param,kmax=10):
     return 0.5*(zright+zleft)
 
 
-def threshold(model,param):
+def threshold(model=ToyContinuous,param={}):
     data = {}
 
     ## Display
@@ -106,3 +107,4 @@ def threshold(model,param):
     del param["r"]
     del param["m"]
     return data, param
+POOL = mp.Pool()
