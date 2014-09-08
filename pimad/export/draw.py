@@ -16,13 +16,8 @@ def pip(array,show=True):
     """
     
     cmap = mcolors.ListedColormap([(1, 1, 1), 
-                                   (0.5, 0.5, 0.5)])
+                                   (0.2, 0.2, 0.2)])
     plt.contourf(array, cmap=cmap, levels=[-1000,0,1000])
-
-    #cfin = plt.contour(array,np.arange(np.amin(array), np.amax(array)+1, 1),colors="0.1")
-    #cfin.set_alpha(.2)
-    c = plt.contour(array,np.arange(np.amin(array), np.amax(array)+1, 1),colors="k")
-    plt.clabel(c)
 
     def fraction_tick(y, pos=0):
         return '{:0.1f}'.format(float(y)/(len(array)-1))
