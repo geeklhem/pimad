@@ -70,13 +70,12 @@ if __name__ == "__main__":
     ## Figure 3: INVASION Heatmap ##
     if DO == "heatmap" or DO == "ALL":
         print "{:-^80}".format(" HEATMAP ")
-        heatmap_file = "heatmap_{}".format(PRECISION_HEATMAP,REPLICAS_HEATMAP)
-
         param["r"] = 0.2 
         param["m"] = 0.21
         param["T_range"] = T_RANGE
         param["b_range"] = B_RANGE
-
+        heatmap_file = "heatmap_r_{}_m{}_repl{}".format(param["r"],param["m"],param["replica"])
+        
         if not os.path.exists(heatmap_file+".pkle"):
             data,out_param = invasion.heatmap(MODEL,param.copy())
             with open(heatmap_file+".pkle","w") as fi:
