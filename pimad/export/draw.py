@@ -58,7 +58,7 @@ def threshold(points):
     theo = 2.0/z
     plt.plot(z,theo, color="k",label="Analytical prediction")
 
-    c = ["red","green","blue"]
+    c = ["red","green","blue","orange","purple","pink"]
     for n,(k) in enumerate(sorted(points.keys())):
         x,y = zip(*points[k])
         plt.scatter(x,y,label='Experimental threshold, $T={}$'.format(k),
