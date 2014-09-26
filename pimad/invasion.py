@@ -6,27 +6,57 @@ import numpy as np
 import multiprocessing as mp
 import itertools
 import os
+POOL = mp.Pool()
 
 
-def invasion_test(args):
+
+def mp_invasion_fitness(model,param):
+    """Run the simulation for param["g"] generation (default = 100) and
+    compute the exponential growth rate in the param["invfitness_g"]
+    (default = 10) generations for the ones that are not extinct.
+    
+    Returns a tuple (invasion fitness, proportion of extinct simulations).
+    If all are extinct return (0,1). 
+
+    Args:
+        model (pimad.Model): The model to run.
+        param (dict): model parameters.
+    """
+    default = {
+        "g": 100,
+        "invfitness_g":10}
+    for k,v in default:
+        if k not in param:
+            param[k] = v
+    args = itertools.repeat((model,param.copy()),param["replica"])
+    k = POOL.map(invasion_fitness,args)
+    fitness, proportion = zip(*k)
+    proportion = np.mean(proportion)
+    fitness = np.mean(fitness)
+        
+    return fitness, proportion 
+
+def invasion_fitness(args):
     model = args[0]
     param = args[1]
 
     np.random.seed()
     m = model(param,[])
-    
-    m.play(param["g"])
 
+    m.play(param["invfitness_g"])
     pmutants = np.sum(m.population.phenotype)/float(len(m.population.phenotype.flat))
+    m.play(param["g"]-param["invfitness_g"])
 
-    return pmutants>param["ip"]
+    invaded = bool(np.sum(m.population.phenotype))
 
-def mp_invasion(model,param):
-    args = itertools.repeat((model,param.copy()),param["replica"])
-    k = POOL.map(invasion_test,args)
-
-    return np.median(k)
+    if invaded:
+        fitness = np.log10(pmutants/param["ip"])
+    else:
+        fitness = 0 
     
+    return fitness, invaded 
+
+
 def heatmap(model=ToyContinuous,param={}):
     # Set the parameters
     T_range = param["T_range"] 
@@ -50,7 +80,7 @@ def heatmap(model=ToyContinuous,param={}):
             #--- 
     
             param["b"] = b
-            out[x,y] = mp_invasion(model,param)
+            out[x,y] = mp_invasion_fitness(model,param)[1]
 
     del param["T"]
     del param["b"]
@@ -64,6 +94,8 @@ def threshold_dicho(model,param,kmax=10):
         model (pimad.model.Model): Model.
         param (dict): Model parameters.
         kmax (int): number of steps.
+    Returns:
+        (float) z*_approx
     """
 
     zright = 1.0
@@ -71,12 +103,11 @@ def threshold_dicho(model,param,kmax=10):
     for k in np.linspace(1,kmax,kmax):
         param["r"] = 0.5*(zright+zleft)
         param["m"] = param["r"]+param["dz"]
-        invade = mp_invasion(model,param) 
+        invade = mp_invasion_fitness(model,param)[1]
         if invade:
             zright = param["r"]
         else:
             zleft = param["r"]
-    
     return 0.5*(zright+zleft)
 
 
@@ -107,4 +138,3 @@ def threshold(model=ToyContinuous,param={}):
     del param["r"]
     del param["m"]
     return data, param
-POOL = mp.Pool()

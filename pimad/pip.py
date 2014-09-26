@@ -2,6 +2,7 @@
 
 from __future__ import division
 from pimad.models.toycontinuous import ToyContinuous
+from pimad.invasion import invasion_fitness
 import numpy as np
 import cPickle as pickle
 import multiprocessing as mp
@@ -53,15 +54,7 @@ def pip(args):
             #--- 
     
             param["m"] = z
-
-            m = model(param,[])
-            m.play(param["g"])
-            pmutants = np.sum(m.population.phenotype)/float(len(m.population.phenotype.flat))
-            if pmutants:
-                fitness = np.log10(pmutants/param["ip"])
-            else:
-                fitness = -1
-            pip[x,y] = fitness
+            pip[x,y] = invasion_fitness((model,param))[0]
          
     return pip
  
