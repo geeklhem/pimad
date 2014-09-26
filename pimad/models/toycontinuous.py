@@ -164,3 +164,64 @@ class ToyContinuous(Model):
         
 # Name of the model's Class (Required for import in main program)
 model_class = ToyContinuous
+
+class ToyContinuousGST(ToyContinuous):
+    """Toy continuous with a group size threshold"""
+    def __init__(self,param,tracked_values=()):
+        """Constructor"""
+        super(ToyContinuousGST,self).__init__(param,tracked_values)
+        self.model_name = "Continuous Toy Model with group-size threshold [Doulcier, Garcia & De Monte 2014]"
+
+        required_param = [("alpha","Group size threshold (as a proportion of T) in [0,1]."),]
+        EXAMPLE_PARAMETERS["alpha"] = 0.75
+
+        for p in required_param:
+            if p[0] not in self.p:
+                raise ValueError("Missing parameter: {0[0]} ({0[1]})".format(p))
+    def payoff(self):
+        """
+        Compute the payoff for each patch and each combinaison of repartition and phenotype.
+        """
+        
+        average_z = (self.population.aggregated_residents.sum(0) * self.p["r"]
+                     + self.population.aggregated_mutants.sum(0) * self.p["m"])/self.population.aggregated.sum(0)
+        group_benefits = self.p["b"] * average_z * (self.population.aggregated<=self.p["alpha"]*self.p["T"])
+
+        return {"aggregated":{"resident":group_benefits-self.p["c"]*self.p["r"],
+                                "mutant":group_benefits-self.p["c"]*self.p["m"]},
+                  "loner":{"resident":[-self.p["c"]*self.p["r"]]*self.p["n"],
+                           "mutant":[-self.p["c"]*self.p["m"]]*self.p["n"]},
+        }
+
+class ToyContinuousNLC(ToyContinuous):
+    """Toy continuous with a non linear cost function"""
+    def __init__(self,param,tracked_values=()):
+        """Constructor"""
+        super(ToyContinuousNLC,self).__init__(param,tracked_values)
+        self.model_name = "Continuous Toy Model with a non linear cost function [Doulcier, Garcia & De Monte 2014]"
+
+        required_param = [("chi","Linearity parameter, >0"),]
+        EXAMPLE_PARAMETERS["chi"] = 2
+
+        for p in required_param:
+            if p[0] not in self.p:
+                raise ValueError("Missing parameter: {0[0]} ({0[1]}), Example value = {}".format(p,EXAMPLE_PARAMETERS[p[0]]))
+    def payoff(self):
+        """
+        Compute the payoff for each patch and each combinaison of repartition and phenotype.
+        """
+        
+        average_z = (self.population.aggregated_residents.sum(0) * self.p["r"]
+                     + self.population.aggregated_mutants.sum(0) * self.p["m"])/self.population.aggregated.sum(0)
+        group_benefits = self.p["b"] * average_z 
+
+        def cost(z):
+            """ Non linear cost """
+            return self.p["c"]* z * np.exp( (1-z)**(1.0/self.p["chi"]) ) 
+            
+        return {"aggregated":{"resident":group_benefits+cost(self.p["r"]),
+                              "mutant":group_benefits+cost(self.p["m"])},
+                  "loner":{"resident":[cost(self.p["r"])]*self.p["n"],
+                           "mutant":[cost(self.p["m"])]*self.p["n"]},
+        }
+
