@@ -71,3 +71,24 @@ def threshold(points):
     plt.ylim((0,100))
 
     
+def trajectories(data,param):
+    """ 
+    Args:
+       data (2-tuple of np.array)
+    """
+
+    
+    plt.subplot(2,1,1)
+    plt.title("Proportion of non extinct trajectories")
+    plt.plot(data[1])
+    plt.legend(param["range_g"],title="Number of generations")
+    plt.xticks(range(len(param["range_ip"])),param["range_ip"])
+    plt.xlabel("Initial proportion")
+
+    plt.subplot(2,1,2)
+    plt.title("Invasion fitness on the 10 first generation of the non extinct trajectories")
+    plt.plot(data[0])
+    plt.legend(param["range_g"],title="Number of generations")
+
+    plt.xticks(range(len(param["range_ip"])),param["range_ip"])
+    plt.tight_layout()

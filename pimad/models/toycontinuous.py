@@ -21,12 +21,12 @@ class ToyContinuous(Model):
                            "c":1,    # Cost coefficient
                            "g":100,   # Number of generations
                        }
-
+    model_name = "Continuous Toy Model [Doulcier, Garcia & De Monte 2014]"
 
     def __init__(self,param,tracked_values=()):
         """Constructor"""
         super(ToyContinuous,self).__init__(param,tracked_values)
-        self.model_name = "Continuous Toy Model [Doulcier, Garcia & De Monte 2014]"
+
 
         required_param = [("r","Resident trait value in [0,1]."),
                           ("m","Mutant trait value in [0,1].")]
@@ -167,13 +167,17 @@ model_class = ToyContinuous
 
 class ToyContinuousGST(ToyContinuous):
     """Toy continuous with a group size threshold"""
+    model_name = "Continuous Toy Model with group-size threshold [Doulcier, Garcia & De Monte 2014]"
+    EXAMPLE_PARAMETERS = ToyContinuous.EXAMPLE_PARAMETERS
+    EXAMPLE_PARAMETERS["alpha"] = 0.75
+        
     def __init__(self,param,tracked_values=()):
         """Constructor"""
         super(ToyContinuousGST,self).__init__(param,tracked_values)
-        self.model_name = "Continuous Toy Model with group-size threshold [Doulcier, Garcia & De Monte 2014]"
+        
 
         required_param = [("alpha","Group size threshold (as a proportion of T) in [0,1]."),]
-        EXAMPLE_PARAMETERS["alpha"] = 0.75
+
 
         for p in required_param:
             if p[0] not in self.p:
@@ -195,13 +199,17 @@ class ToyContinuousGST(ToyContinuous):
 
 class ToyContinuousNLC(ToyContinuous):
     """Toy continuous with a non linear cost function"""
+    model_name = "Continuous Toy Model with a non linear cost function [Doulcier, Garcia & De Monte 2014]"
+    EXAMPLE_PARAMETERS = ToyContinuous.EXAMPLE_PARAMETERS
+    EXAMPLE_PARAMETERS["chi"] = 2
+
     def __init__(self,param,tracked_values=()):
         """Constructor"""
         super(ToyContinuousNLC,self).__init__(param,tracked_values)
-        self.model_name = "Continuous Toy Model with a non linear cost function [Doulcier, Garcia & De Monte 2014]"
+
 
         required_param = [("chi","Linearity parameter, >0"),]
-        EXAMPLE_PARAMETERS["chi"] = 2
+        
 
         for p in required_param:
             if p[0] not in self.p:

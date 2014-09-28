@@ -6,35 +6,8 @@ import numpy as np
 import multiprocessing as mp
 import itertools
 import os
-POOL = mp.Pool()
 
 
-
-def mp_invasion_fitness(model,param):
-    """Run the simulation for param["g"] generation (default = 100) and
-    compute the exponential growth rate in the param["invfitness_g"]
-    (default = 10) generations for the ones that are not extinct.
-    
-    Returns a tuple (invasion fitness, proportion of extinct simulations).
-    If all are extinct return (0,1). 
-
-    Args:
-        model (pimad.Model): The model to run.
-        param (dict): model parameters.
-    """
-    default = {
-        "g": 100,
-        "invfitness_g":10}
-    for k,v in default:
-        if k not in param:
-            param[k] = v
-    args = itertools.repeat((model,param.copy()),param["replica"])
-    k = POOL.map(invasion_fitness,args)
-    fitness, proportion = zip(*k)
-    proportion = np.mean(proportion)
-    fitness = np.mean(fitness)
-        
-    return fitness, proportion 
 
 def invasion_fitness(args):
     model = args[0]
@@ -55,6 +28,35 @@ def invasion_fitness(args):
         fitness = 0 
     
     return fitness, invaded 
+
+
+def mp_invasion_fitness(model,param):
+    """Run the simulation for param["g"] generation (default = 100) and
+    compute the exponential growth rate in the param["invfitness_g"]
+    (default = 10) generations for the ones that are not extinct.
+    
+    Returns a tuple (invasion fitness, proportion of extinct simulations).
+    If all are extinct return (0,1). 
+
+    Args:
+        model (pimad.Model): The model to run.
+        param (dict): model parameters.
+    """
+    default = {
+        "g": 100,
+        "invfitness_g":10
+    }
+    for k,v in default.items():
+        if k not in param:
+            param[k] = v
+    args = itertools.repeat((model,param.copy()),param["replica"])
+    k = POOL.map(invasion_fitness,args)
+    fitness, proportion = zip(*k)
+    proportion = np.mean(proportion)
+    fitness = np.mean(fitness)
+        
+    return fitness, proportion 
+
 
 
 def heatmap(model=ToyContinuous,param={}):
@@ -103,7 +105,7 @@ def threshold_dicho(model,param,kmax=10):
     for k in np.linspace(1,kmax,kmax):
         param["r"] = 0.5*(zright+zleft)
         param["m"] = param["r"]+param["dz"]
-        invade = mp_invasion_fitness(model,param)[1]
+        invade = (mp_invasion_fitness(model,param))[1]
         if invade:
             zright = param["r"]
         else:
@@ -138,3 +140,6 @@ def threshold(model=ToyContinuous,param={}):
     del param["r"]
     del param["m"]
     return data, param
+
+## POOL 
+POOL = mp.Pool()

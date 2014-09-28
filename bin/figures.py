@@ -5,54 +5,85 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cPickle as pickle
 import sys 
+import platform
+import time
 
 from pimad import pip 
 from pimad import invasion
 import pimad.export.draw as draw 
-from pimad.models.toycontinuous import ToyContinuous
-
-PRECISION_PIP = 0.01 #0.01
-PRECISION_HEATMAP = 0.1
-PRECISION_THRESHOLD = 0.1
-STEP_THRESHOLD_DICHO = 10
+from pimad.models.toycontinuous import ToyContinuous, ToyContinuousNLC, ToyContinuousGST
 MODEL = ToyContinuous
-T_RANGE_THRES = [100,200,500,1000,3000]
+MODEL_CODE = "TOY"
+            
 T_RANGE = [50,100,200,500,1000,3000,5000]
 B_RANGE = [2 ,5 ,10 ,20 ,40 ,80,  100]
-B_RANGE_THRES = [2,4,8,10,20,40,]
 param =  {"n": 500, # Number of patches
           "T": 100,  # Patch size
           "ip":0.01,   # Initial proportions of mutants
-          "m":0.5,  # Mutant trait value
           "r":0.5,  # Resident trait value
           "mu":0,   # Mutation rate
           "b":20,   # Benefits coefficient
           "c":1,    # Cost coefficient
-          "g":10,   # Number of generations
+          "g":20,   # Number of generations
           "dz":0.01, 
-          "replica": 5 #4 
-}
+          "replica": 5, #4
+          "time": time.asctime(),
+          "host": "|".join(platform.uname()),
+          "precision":0.01,
+          "invfitness_g":10,
+          
+          # Specific to threshold 
+          "T_range": [100,200,500,1000,3000],
+          "b_range": [2, 5, 10, 20, 40, 80,  100],
+          "kmax":10,
+
+          #Specific to trajectories
+          "range_ip":[0.001,0.005,0.01,0.05,0.1],
+          "range_g":[10,50,100,200],
+
+          #NLC & GST
+          "chi":2,
+          "alpha":0.75,
+      }
+param["m"] = param["r"] + param["dz"]
+
 
 def get_definition(model,param,pre="%",su=""):
-    s = "\n".join(["{} {}={} {}".format(pre,k,v,su)for k,v in param.items()])
+    s = "% MODEL: " + model.model_name+"\n %PARAMETERS:\n"
+    s += "\n".join(["{} {}={} {}".format(pre,k,v,su)for k,v in param.items()])
     return s 
-
 
 if __name__ == "__main__":
     DO = "ALL"
-    if len(sys.argv) == 2:
+    if len(sys.argv) >= 2:
         DO = sys.argv[1]
-    print("DO: {}".format(DO))
     
-
+    if len(sys.argv) >= 3:
+        par = sys.argv[2].split("&")
+        #print par
+        for st in par:
+            k,v = st.split("=")
+            param[k] = eval(v)
+            #print "{} set to {}".format(k,v)
+    if len(sys.argv) >= 4:
+        MODEL_CODE = sys.argv[3]
+        if sys.argv[3] == "NLC":
+            MODEL = ToyContinuousNLC
+        if sys.argv[3] == "GST":
+            MODEL = ToyContinuousGST
+    print("DO: {} with model {}".format(DO,MODEL_CODE))
+            
     ## Figure 2: Numerical PIP ##
     if DO == "pip" or DO == "ALL":
         print "{:-^80}".format(" PIP ")
         
-        pip_file = "pip_T{}_n{}_step{}_repl_{}_b{}_ip{}".format(param["T"],param["n"],PRECISION_PIP,param["replica"],param["b"],param["ip"])
+        pip_file = "pip{}_T{}_n{}_step{}_repl_{}_b{}_ip{}".format(MODEL_CODE, param["T"],
+                                                                  param["n"], param["precision"],
+                                                                  param["replica"], param["b"],
+                                                                  param["ip"])
         print pip_file
         if not os.path.exists(pip_file+".pkle"):
-            pip_data,pip_param = pip.mp_pip(MODEL,param.copy(),PRECISION_PIP)
+            pip_data,pip_param = pip.mp_pip(MODEL,param.copy(),param["precision"])
             with open(pip_file+".pkle","w") as fi:
                 pickle.dump((pip_data,pip_param),fi)
                 print "saved {}.pkle".format(pip_file)
@@ -70,10 +101,6 @@ if __name__ == "__main__":
     ## Figure 3: INVASION Heatmap ##
     if DO == "heatmap" or DO == "ALL":
         print "{:-^80}".format(" HEATMAP ")
-        param["r"] = 0.2 
-        param["m"] = 0.21
-        param["T_range"] = T_RANGE
-        param["b_range"] = B_RANGE
         heatmap_file = "heatmap_r_{}_m{}_repl{}".format(param["r"],param["m"],param["replica"])
         
         if not os.path.exists(heatmap_file+".pkle"):
@@ -95,12 +122,8 @@ if __name__ == "__main__":
     ## Figure 4: Sociality threshold ##
     if DO == "threshold" or DO == "ALL":
         print "{:-^80}".format(" SCORE THRESHOLD ")
-        threshold_file = "threshold_{}".format(PRECISION_THRESHOLD,)
+        threshold_file = "threshold_{}".format(param["precision"])
         if not os.path.exists(threshold_file+".pkle"):
-            param["T_range"] = T_RANGE_THRES
-            param["b_range"] = B_RANGE_THRES
-            param["kmax"] = STEP_THRESHOLD_DICHO
-
             data,out_param = invasion.threshold(MODEL,param.copy())
             with open(threshold_file+".pkle","w") as fi:
                 pickle.dump((data,out_param),fi)
@@ -115,7 +138,32 @@ if __name__ == "__main__":
             with open(threshold_file+".eps","a") as fi:
                 fi.write(get_definition(MODEL,out_param))
 
+    ## Figure S1: Quelques trajectoires d'invasion (different ip) ## 
+    if DO == "trajectoires":
+        print "{:-^80}".format(" Trajectories ")
+ 
 
-## Figure 5: Altruism threshold ##
-## Figure 6: Numerical PIP with size-threshold ##
-
+        traj_file = "trajectories_{}ip_{}g".format(len(param["range_ip"]),len(param["range_g"]))
+        if not os.path.exists(traj_file+".pkle"):
+            data = [np.zeros((len(param["range_ip"]), len(param["range_g"]))),
+                    np.zeros((len(param["range_ip"]), len(param["range_g"])))]
+            for j,g in enumerate(param["range_g"]):
+                for i,ip in enumerate(param["range_ip"]):
+                    print i,j,data[0].shape,data[1].shape
+                    param["g"] = g
+                    param["ip"] = ip
+                    data[0][i,j],data[1][i,j] = invasion.mp_invasion_fitness(MODEL,param)
+                    
+            with open(traj_file+".pkle","w") as fi:
+                del param["g"]
+                del param["ip"]
+                pickle.dump((data,param),fi)
+        else:
+            with open(traj_file+".pkle","r") as fi:
+                data,param = pickle.load(fi) 
+                     
+        if not os.path.exists(traj_file+"eps"):
+            draw.trajectories(data,param)
+            plt.savefig(traj_file+".eps")
+            with open(traj_file+".eps","a") as fi:
+                fi.write(get_definition(MODEL,param))
