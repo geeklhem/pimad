@@ -18,7 +18,7 @@ pip_GST:
 	python figures.py pip
 
 pip_NLC:
-	python figures.py pip
+	python figures.py pip mdl=0 NLC
 
 trajectoires:
 	python figures.py trajectoires

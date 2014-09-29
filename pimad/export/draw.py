@@ -77,18 +77,21 @@ def trajectories(data,param):
        data (2-tuple of np.array)
     """
 
-    
+    plt.figure(figsize=(10,6))
     plt.subplot(2,1,1)
-    plt.title("Proportion of non extinct trajectories")
-    plt.plot(data[1])
-    plt.legend(param["range_g"],title="Number of generations")
-    plt.xticks(range(len(param["range_ip"])),param["range_ip"])
-    plt.xlabel("Initial proportion")
+    plt.title("Proportion of non extinct trajectories ($\hatz={}, z={}$)".format(param["r"],param["m"]))
+    plt.plot(data[1]*100)
 
+    plt.legend(param["range_g"],title="Number of generations" ,
+               prop={'size':6},loc="lower right")
+
+    plt.xticks(range(len(param["range_ip"])),param["range_ip"])
+    plt.xlabel("Initial proportion of mutants")
+    plt.ylim(50,101)
     plt.subplot(2,1,2)
     plt.title("Invasion fitness on the 10 first generation of the non extinct trajectories")
     plt.plot(data[0])
-    plt.legend(param["range_g"],title="Number of generations")
-
+    #plt.legend(param["range_g"],title="Number of generations")
+    plt.xlabel("Initial proportion of mutants")
     plt.xticks(range(len(param["range_ip"])),param["range_ip"])
     plt.tight_layout()

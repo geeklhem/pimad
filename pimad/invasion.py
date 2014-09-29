@@ -105,8 +105,8 @@ def threshold_dicho(model,param,kmax=10):
     for k in np.linspace(1,kmax,kmax):
         param["r"] = 0.5*(zright+zleft)
         param["m"] = param["r"]+param["dz"]
-        invade = (mp_invasion_fitness(model,param))[1]
-        if invade:
+        _,prop = mp_invasion_fitness(model,param)
+        if prop==1:
             zright = param["r"]
         else:
             zleft = param["r"]
