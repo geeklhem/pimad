@@ -87,7 +87,7 @@ def trajectories(data,param):
 
     plt.xticks(range(len(param["range_ip"])),param["range_ip"])
     plt.xlabel("Initial proportion of mutants")
-    plt.ylim(50,101)
+    plt.ylim(-1,101)
     plt.subplot(2,1,2)
     plt.title("Invasion fitness on the 10 first generation of the non extinct trajectories")
     plt.plot(data[0])

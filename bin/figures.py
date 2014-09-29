@@ -24,7 +24,7 @@ param =  {"n": 500, # Number of patches
           "mu":0,   # Mutation rate
           "b":20,   # Benefits coefficient
           "c":1,    # Cost coefficient
-          "g":20,   # Number of generations
+          "g":100,   # Number of generations
           "dz":0.01, 
           "replica": 5, #4
           "time": time.asctime(),
@@ -45,7 +45,7 @@ param =  {"n": 500, # Number of patches
           "chi":2,
           "alpha":0.75,
       }
-param["m"] = param["r"] + param["dz"]
+
 
 
 def get_definition(model,param,pre="%",su=""):
@@ -64,7 +64,7 @@ if __name__ == "__main__":
         for st in par:
             k,v = st.split("=")
             param[k] = eval(v)
-            #print "{} set to {}".format(k,v)
+            print "{} set to {}".format(k,v)
     if len(sys.argv) >= 4:
         MODEL_CODE = sys.argv[3]
         if sys.argv[3] == "NLC":
@@ -72,7 +72,8 @@ if __name__ == "__main__":
         if sys.argv[3] == "GST":
             MODEL = ToyContinuousGST
     print("DO: {} with model {}".format(DO,MODEL_CODE))
-            
+    param["m"] = param["r"] + param["dz"]
+    
     ## Figure 2: Numerical PIP ##
     if DO == "pip" or DO == "ALL":
         print "{:-^80}".format(" PIP ")
@@ -122,7 +123,9 @@ if __name__ == "__main__":
     ## Figure 4: Sociality threshold ##
     if DO == "threshold" or DO == "ALL":
         print "{:-^80}".format(" SCORE THRESHOLD ")
-        threshold_file = "threshold_{}".format(param["precision"])
+        threshold_file = "threshold_kmax{}_{}T_{}b".format(param["kmax"],
+                                                           len(param["T_range"]),
+                                                           len(param["b_range"]))
         if not os.path.exists(threshold_file+".pkle"):
             data,out_param = invasion.threshold(MODEL,param.copy())
             with open(threshold_file+".pkle","w") as fi:
@@ -143,7 +146,7 @@ if __name__ == "__main__":
         print "{:-^80}".format(" Trajectories ")
  
 
-        traj_file = "trajectories_{}ip_{}g".format(len(param["range_ip"]),len(param["range_g"]))
+        traj_file = "trajectories_m{}_{}ip_{}g".format(param["m"],len(param["range_ip"]),len(param["range_g"]))
         if not os.path.exists(traj_file+".pkle"):
             data = [np.zeros((len(param["range_ip"]), len(param["range_g"]))),
                     np.zeros((len(param["range_ip"]), len(param["range_g"])))]

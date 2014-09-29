@@ -82,7 +82,7 @@ def heatmap(model=ToyContinuous,param={}):
             #--- 
     
             param["b"] = b
-            out[x,y] = mp_invasion_fitness(model,param)[1]
+            out[x,y] = (mp_invasion_fitness(model,param)[1] == 1)
 
     del param["T"]
     del param["b"]

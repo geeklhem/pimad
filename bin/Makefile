@@ -22,6 +22,7 @@ pip_NLC:
 
 trajectoires:
 	python figures.py trajectoires
+	python figures.py trajectoires dz=-0.1
 
 quick := n=100&T=100&replica=2 
 
@@ -44,6 +45,5 @@ pip_NLC_quick:
 	python figures.py pip precision=0.1&$(quick) NLC
 
 trajectoires_quick:
+	python figures.py trajectoires dz=-0.1&range_ip=[0.001,0.01,0.1]&range_g=[10,50]&$(quick)
 	python figures.py trajectoires range_ip=[0.001,0.01,0.1]&range_g=[10,50]&$(quick)
-
-
