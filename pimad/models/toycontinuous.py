@@ -189,7 +189,7 @@ class ToyContinuousGST(ToyContinuous):
         
         average_z = (self.population.aggregated_residents.sum(0) * self.p["r"]
                      + self.population.aggregated_mutants.sum(0) * self.p["m"])/self.population.aggregated.sum(0)
-        group_benefits = self.p["b"] * average_z * (self.population.aggregated<=(self.p["alpha"]*self.p["T"]))
+        group_benefits = self.p["b"] * average_z * (self.population.aggregated<= [self.p["alpha"]*self.p["T"]]*self.p["n"])
 
         return {"aggregated":{"resident":group_benefits-self.p["c"]*self.p["r"],
                                 "mutant":group_benefits-self.p["c"]*self.p["m"]},
@@ -225,11 +225,10 @@ class ToyContinuousNLC(ToyContinuous):
 
         def cost(z):
             """ Non linear cost """
-            return - self.p["c"]* z * np.exp( (1-z)**(1.0/self.p["chi"]) ) 
+            return - self.p["c"]* z * np.exp( (1-z)**(-1.0/self.p["chi"]) ) 
             
         return {"aggregated":{"resident":group_benefits+cost(self.p["r"]),
                               "mutant":group_benefits+cost(self.p["m"])},
                   "loner":{"resident":[cost(self.p["r"])]*self.p["n"],
                            "mutant":[cost(self.p["m"])]*self.p["n"]},
         }
-

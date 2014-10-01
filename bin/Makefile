@@ -28,26 +28,26 @@ trajectoires:
 	python figures.py trajectoires
 	python figures.py trajectoires dz=-0.1
 
-quick := n=100&T=100&replica=2 
+quick :=n=100ANDT=100ANDreplica=2
 
 pip_quick:
-	python figures.py pip precision=0.1&$(quick)
+	python figures.py pip precision=0.1AND$(quick)
 
 heatmap_quick:
-	python figures.py heatmap precision=0.1&$(quick)
+	python figures.py heatmap precision=0.1AND$(quick)
 
 threshold_quick:
-	python figures.py threshold kmax=3&$(quick)
+	python figures.py threshold kmax=3AND$(quick)
 
 sizedistr.eps:
 	python distr.py
 
 pip_GST_quick:
-	python figures.py pip precision=0.1&$(quick) GST
+	python figures.py pip precision=0.1AND$(quick) GST
 
 pip_NLC_quick:
-	python figures.py pip precision=0.1&$(quick) NLC
+	python figures.py pip $(quick)ANDprecision=0.1 NLC
 
 trajectoires_quick:
-	python figures.py trajectoires dz=-0.1&range_ip=[0.001,0.01,0.1]&range_g=[10,50]&$(quick)
-	python figures.py trajectoires range_ip=[0.001,0.01,0.1]&range_g=[10,50]&$(quick)
+	python figures.py trajectoires dz=-0.1ANDrange_ip=[0.001,0.01,0.1]ANDrange_g=[10,50]AND$(quick)
+	python figures.py trajectoires range_ip=[0.001,0.01,0.1]ANDrange_g=[10,50]AND$(quick)

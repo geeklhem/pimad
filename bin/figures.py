@@ -42,7 +42,7 @@ param =  {"n": 500, # Number of patches
           "range_g":[10,50,100,200],
 
           #NLC & GST
-          "chi":2,
+          "chi": 4,
           "alpha":0.75,
       }
 
@@ -55,22 +55,24 @@ def get_definition(model,param,pre="%",su=""):
 
 if __name__ == "__main__":
     DO = "ALL"
+    print sys.argv
     if len(sys.argv) >= 2:
         DO = sys.argv[1]
     
     if len(sys.argv) >= 3:
-        par = sys.argv[2].split("&")
+        par = sys.argv[2].split("AND")
         #print par
         for st in par:
             k,v = st.split("=")
             param[k] = eval(v)
             print "{} set to {}".format(k,v)
     if len(sys.argv) >= 4:
-        MODEL_CODE = sys.argv[3]
         if sys.argv[3] == "NLC":
             MODEL = ToyContinuousNLC
+            MODEL_CODE = sys.argv[3]
         if sys.argv[3] == "GST":
             MODEL = ToyContinuousGST
+            MODEL_CODE = sys.argv[3]
     print("DO: {} with model {}".format(DO,MODEL_CODE))
     param["m"] = param["r"] + param["dz"]
     

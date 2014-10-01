@@ -20,7 +20,7 @@ if not os.path.exists("sizedistr.eps"):
     z = 1/3
     T = 100
     y = analytical({"m":1/3,"r":1/3})
-    plt.plot(x,y,color="red",label="$\hat{z}_1=1/3$",ls = "steps")
+    plt.plot(x,y,color="red",label="$\hat{z}_1=1/3T$",ls = "steps")
 
     ax = plt.gca()
     ax.annotate(r'$1-\hat{z}_1$', xy=(0,1-z),xycoords="data", textcoords="offset points",
@@ -28,7 +28,7 @@ if not os.path.exists("sizedistr.eps"):
                 arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))
     z = 2/3
     y = analytical({"m":2/3,"r":2/3})
-    plt.plot(x,y,color="blue",label="$\hat{z}_2=2/3$",ls = "steps")
+    plt.plot(x,y,color="blue",label="$\hat{z}_2=2/3T$",ls = "steps")
 
 
     ax.annotate(r'$1-\hat{z}_2$', xy=(0,1-z),xycoords="data", textcoords="offset points", xytext=(+40,0),
@@ -68,12 +68,12 @@ if not os.path.exists("altruism.eps"):
 
     plt.plot(z,minz, "r",label="$z_{min}$")
     plt.plot(z,maxz, "g",label="$z_{max}$")
-    plt.hlines(T,color="b",*plt.xlim(),label="T")
+    plt.hlines(T,color="b",*plt.xlim(),label="$T$")
 
     bbox = dict(boxstyle="round,pad=0.3", fc="white", ec="k", lw=0.5)
 
-    plt.xlabel("z")
-    plt.ylabel("b/c")
+    plt.xlabel("$\hat z$")
+    plt.ylabel("$b/c$")
     plt.xlim((0,1))
     plt.ylim((0,200))
     plt.legend(title="$T={}$".format(T))
