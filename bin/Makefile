@@ -9,10 +9,10 @@ pip_TOY:
 	python figures.py pip
 
 heatmap:
-	python figures.py heatmap
+	python figures.py heatmap r=0.22ANDg=500
 
 threshold:
-	python figures.py threshold
+	python figures.py threshold g=500
 
 altruism:
 	python figures.py altruism
@@ -34,10 +34,10 @@ pip_quick:
 	python figures.py pip precision=0.1AND$(quick)
 
 heatmap_quick:
-	python figures.py heatmap precision=0.1AND$(quick)
+	python figures.py heatmap precision=0.1AND$(quick)ANDr=0.22ANDT_range=[100,500,1000]ANDg=500
 
 threshold_quick:
-	python figures.py threshold kmax=3AND$(quick)
+	python figures.py threshold kmax=5AND$(quick)ANDT_range=[100,500]ANDb_range=[2,10,20]ANDg=500
 
 sizedistr.eps:
 	python distr.py

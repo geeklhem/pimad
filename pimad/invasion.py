@@ -63,7 +63,7 @@ def heatmap(model=ToyContinuous,param={}):
     # Set the parameters
     T_range = param["T_range"] 
     b_range = param["b_range"]
-
+    param["prop"] = np.zeros((len(T_range),len(b_range)))
     out = np.zeros((len(T_range),len(b_range)))
 
 
@@ -75,14 +75,16 @@ def heatmap(model=ToyContinuous,param={}):
     for x,T in enumerate(T_range):
         param["T"] = T
         for y,b in enumerate(b_range):
-            
+             
             #--- Display
             i += 1
             print("{:0.2%} T:{},b:{}".format(i/imax,T,b))
             #--- 
     
             param["b"] = b
-            out[x,y] = (mp_invasion_fitness(model,param)[1] == 1)
+            fitness, prop = mp_invasion_fitness(model,param)
+            out[x,y] = fitness
+            param["prop"][x,y] = prop
 
     del param["T"]
     del param["b"]
@@ -105,11 +107,14 @@ def threshold_dicho(model,param,kmax=10):
     for k in np.linspace(1,kmax,kmax):
         param["r"] = 0.5*(zright+zleft)
         param["m"] = param["r"]+param["dz"]
-        _,prop = mp_invasion_fitness(model,param)
-        if prop==1:
+        ftnss,prop = mp_invasion_fitness(model,param)
+        print "({}-{}) zmean: {} prop: {}  fitness: {}".format(zleft,zright,param["r"],prop,ftnss)
+        if ftnss>0:
             zright = param["r"]
         else:
             zleft = param["r"]
+
+
     return 0.5*(zright+zleft)
 
 

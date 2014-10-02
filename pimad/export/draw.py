@@ -36,16 +36,24 @@ def heatmap(array,param, show=True):
     plt.rc('text', fontsize=15) 
     cmap = mcolors.ListedColormap([(1, 1, 1), 
                                    (0, 0, 0)])
-    array[0,0] = 1
-    plt.imshow(array, cmap=cmap, vmin=0,vmax=1,interpolation='none')
 
-    plt.xticks(range(array.shape[1]),param["b_range"],rotation=90)
+    plt.imshow(array>0, cmap="binary", vmin=0, interpolation='none')
+    
+    
+    plt.xticks(range(array.shape[1]),param["b_range"],rotation=45)
     plt.yticks(range(array.shape[0]),param["T_range"])
 
     plt.xlabel("$b/c$")
     plt.ylabel("$T$")
     mi,ma = plt.ylim()
     plt.ylim(ma,mi)
+
+    txtcolor = ["k","w"]
+    for x,T in enumerate(param['T_range']):
+        for y,b in enumerate(param['b_range']):
+            plt.text(y,x,"{}/{}".format(int(param["prop"][x,y]*param["replica"]),
+                                        param["replica"]),size=10,
+                     color=txtcolor[array[x,y]>0])
     
     if show:
         plt.show()
