@@ -110,6 +110,7 @@ class ToyContinuous(Model):
         average_z = (self.population.aggregated_residents.sum(0) * self.p["r"]
                      + self.population.aggregated_mutants.sum(0) * self.p["m"])/self.population.aggregated.sum(0)
         group_benefits = self.p["b"] * average_z
+        #print group_benefits.shape
 
         return {"aggregated":{"resident":group_benefits-self.p["c"]*self.p["r"],
                                 "mutant":group_benefits-self.p["c"]*self.p["m"]},
@@ -124,11 +125,12 @@ class ToyContinuous(Model):
         """     
         
         ## Normalize the payoff to give the fitness.
+        #print "Payoff:\n", payoff
         fitness = np.array([payoff["aggregated"]["resident"],
                             payoff["aggregated"]["mutant"],
                             payoff["loner"]["resident"],
                             payoff["loner"]["mutant"]])
-
+        #print fitness.shape
         fitness -= np.min(fitness.flat)
         fitness /= np.max(fitness.flat)
 
@@ -189,7 +191,8 @@ class ToyContinuousGST(ToyContinuous):
         
         average_z = (self.population.aggregated_residents.sum(0) * self.p["r"]
                      + self.population.aggregated_mutants.sum(0) * self.p["m"])/self.population.aggregated.sum(0)
-        group_benefits = self.p["b"] * average_z * (self.population.aggregated<= [self.p["alpha"]*self.p["T"]]*self.p["n"])
+        group_benefits = self.p["b"] * average_z * (self.population.aggregated.sum(0)<= [self.p["alpha"]*self.p["T"]]*self.p["n"])
+        #print group_benefits.shape
 
         return {"aggregated":{"resident":group_benefits-self.p["c"]*self.p["r"],
                                 "mutant":group_benefits-self.p["c"]*self.p["m"]},
