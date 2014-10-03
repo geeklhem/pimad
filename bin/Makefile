@@ -39,6 +39,10 @@ heatmap_quick:
 threshold_quick:
 	python figures.py threshold kmax=5AND$(quick)ANDT_range=[100,500]ANDb_range=[2,10,20]ANDg=500
 
+threshold_100:
+	python figures.py threshold kmax=10ANDT_range=[100]ANDb_range=[2,4,8,10,20,30,40,50,60,70,80]ANDg=500ANDreplica=10
+
+
 sizedistr.eps:
 	python distr.py
 

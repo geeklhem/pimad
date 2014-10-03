@@ -69,7 +69,7 @@ def threshold(points):
     c = ["red","green","blue","orange","purple","pink"]
     for n,(k) in enumerate(sorted(points.keys())):
         x,y = zip(*points[k])
-        plt.scatter(x,y,label='Experimental threshold, $T={}$'.format(k),
+        plt.scatter(x,y,label='$T={}$'.format(k),
                     color=c[n],marker=".",s=20)
 
     plt.legend()
