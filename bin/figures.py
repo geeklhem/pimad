@@ -31,7 +31,7 @@ param =  {"n": 500, # Number of patches
           "invfitness_g":10,
           
           # Specific to threshold 
-          "T_range": [20,100] #[100,200,500,1000,3000],
+          "T_range": [20,100], #[100,200,500,1000,3000],
           "b_range": [2, 5, 10, 15 , 20, 25, 30, 35, 40],
           "kmax":10,
 
