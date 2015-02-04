@@ -15,8 +15,6 @@ from pimad.models.toycontinuous import ToyContinuous, ToyContinuousNLC, ToyConti
 MODEL = ToyContinuous
 MODEL_CODE = "TOY"
             
-T_RANGE = [50,100,200,500,1000,3000,5000]
-B_RANGE = [2 ,5 ,10 ,20 ,40 ,80,  100]
 param =  {"n": 500, # Number of patches
           "T": 100,  # Patch size
           "ip":0.01,   # Initial proportions of mutants
@@ -33,8 +31,8 @@ param =  {"n": 500, # Number of patches
           "invfitness_g":10,
           
           # Specific to threshold 
-          "T_range": [100,200,500,1000,3000],
-          "b_range": [2, 5, 10, 20, 40, 80,  100],
+          "T_range": [20,100] #[100,200,500,1000,3000],
+          "b_range": [2, 5, 10, 15 , 20, 25, 30, 35, 40],
           "kmax":10,
 
           #Specific to trajectories
