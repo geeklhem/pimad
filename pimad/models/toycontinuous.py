@@ -271,7 +271,7 @@ class ToyContinuousSigB(ToyContinuous):
         #print "alpha(0)={}".format(alpha(zero))
         #print "alpha(T)={}".format(alpha(zero+self.p["T"]))
         group_benefits = self.p["b"] * average_z * (alpha(i) - alpha(zero)) / (alpha(zero + self.p["T"]) - alpha(zero))
-
+        group_benefits /= i
 
         
         return {"aggregated":{"resident":group_benefits-self.p["c"]*self.p["r"],
