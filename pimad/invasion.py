@@ -52,8 +52,8 @@ def mp_invasion_fitness(model,param):
     args = itertools.repeat((model,param.copy()),param["replica"])
     k = POOL.map(invasion_fitness,args)
     fitness, proportion = zip(*k)
-    proportion = np.median(proportion)
-    fitness = np.median(fitness)
+    proportion = np.mean(proportion)
+    fitness = np.mean(fitness)
     return fitness, proportion 
 
 
