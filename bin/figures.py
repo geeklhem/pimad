@@ -42,8 +42,8 @@ param =  {"n": 500, # Number of patches
           #NLC & GST & SIG
           "chi": 4,
           "alpha":0.75,
-          "k":.6,
-          "s":1
+          "k":.3,
+          "s":.1
       }
 
 
