@@ -11,7 +11,7 @@ import time
 from pimad import pip 
 from pimad import invasion
 import pimad.export.draw as draw 
-from pimad.models.toycontinuous import ToyContinuous, ToyContinuousNLC, ToyContinuousGST
+from pimad.models.toycontinuous import ToyContinuous, ToyContinuousNLC, ToyContinuousGST, ToyContinuousSigB
 MODEL = ToyContinuous
 MODEL_CODE = "TOY"
             
@@ -39,9 +39,11 @@ param =  {"n": 500, # Number of patches
           "range_ip":[0.001,0.005,0.01,0.05,0.1],
           "range_g":[10,50,100,200],
 
-          #NLC & GST
+          #NLC & GST & SIG
           "chi": 4,
           "alpha":0.75,
+          "k":.6,
+          "s":1
       }
 
 
@@ -71,6 +73,10 @@ if __name__ == "__main__":
         if sys.argv[3] == "GST":
             MODEL = ToyContinuousGST
             MODEL_CODE = sys.argv[3]
+        if sys.argv[3] == "SIG":
+            MODEL = ToyContinuousSigB
+            MODEL_CODE = sys.argv[3]
+
     print("DO: {} with model {}".format(DO,MODEL_CODE))
     param["m"] = param["r"] + param["dz"]
     

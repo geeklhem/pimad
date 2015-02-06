@@ -34,7 +34,6 @@ def pip(args):
     model = args[0]
     param = args[1]
     
-
     z_range = np.arange(0,1+param["pip_step"],param["pip_step"]) 
     pip = np.zeros((len(z_range),len(z_range)))
 

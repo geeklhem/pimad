@@ -210,10 +210,8 @@ class ToyContinuousNLC(ToyContinuous):
         """Constructor"""
         super(ToyContinuousNLC,self).__init__(param,tracked_values)
 
-
         required_param = [("chi","Linearity parameter, >0"),]
         
-
         for p in required_param:
             if p[0] not in self.p:
                 raise ValueError("Missing parameter: {0[0]} ({0[1]}), Example value = {}".format(p,EXAMPLE_PARAMETERS[p[0]]))
@@ -234,4 +232,50 @@ class ToyContinuousNLC(ToyContinuous):
                               "mutant":group_benefits+cost(self.p["m"])},
                   "loner":{"resident":[cost(self.p["r"])]*self.p["n"],
                            "mutant":[cost(self.p["m"])]*self.p["n"]},
+        }
+
+    
+class ToyContinuousSigB(ToyContinuous):
+    """Toy continuous with group benefits are following a sigmoïd cruve as
+      defined in [Archetti et al 2011, Ecology Letters].
+    """
+    model_name = "Continuous Toy Model with a  sigmoïd benefits function"
+    EXAMPLE_PARAMETERS = ToyContinuous.EXAMPLE_PARAMETERS
+    EXAMPLE_PARAMETERS["s"] = 1
+    EXAMPLE_PARAMETERS["k"] = .6
+
+    def __init__(self,param,tracked_values=()):
+        """Constructor"""
+        super(ToyContinuousSigB,self).__init__(param,tracked_values)
+
+        required_param = [("s","steepness at the inflection point."),
+                          ("k","inflection point as a proportion of T, in ]0,1[."),]
+        
+        for p in required_param:
+            if p[0] not in self.p:
+                raise ValueError("Missing parameter: {0[0]} ({0[1]}), Example value = {}".format(p,EXAMPLE_PARAMETERS[p[0]]))
+
+    def payoff(self):
+        """
+        Compute the payoff for each patch and each combinaison of repartition and phenotype.
+        """
+        
+        average_z = (self.population.aggregated_residents.sum(0) * self.p["r"]
+                     + self.population.aggregated_mutants.sum(0) * self.p["m"])/self.population.aggregated.sum(0)
+
+
+        # i is the number of cooperators. 
+        i = self.population.aggregated.sum(0)
+        alpha = lambda x: (1 + np.exp(self.p["s"]*self.p["k"]*self.p["T"]-x))**(-1)
+        zero = np.zeros(self.p["n"])
+        #print "alpha(0)={}".format(alpha(zero))
+        #print "alpha(T)={}".format(alpha(zero+self.p["T"]))
+        group_benefits = self.p["b"] * average_z * (alpha(i) - alpha(zero)) / (alpha(zero + self.p["T"]) - alpha(zero))
+
+
+        
+        return {"aggregated":{"resident":group_benefits-self.p["c"]*self.p["r"],
+                                "mutant":group_benefits-self.p["c"]*self.p["m"]},
+                  "loner":{"resident":[-self.p["c"]*self.p["r"]]*self.p["n"],
+                           "mutant":[-self.p["c"]*self.p["m"]]*self.p["n"]},
         }
