@@ -7,8 +7,6 @@ import multiprocessing as mp
 import itertools
 import os
 
-
-
 def invasion_fitness(args):
     model = args[0]
     param = args[1]
@@ -19,7 +17,8 @@ def invasion_fitness(args):
     m.play(param["invfitness_g"])
     pmutants = np.sum(m.population.phenotype)/float(len(m.population.phenotype.flat))
     m.play(param["g"]-param["invfitness_g"])
-
+    
+    
     invaded = bool(np.sum(m.population.phenotype))
 
     if invaded:
@@ -42,13 +41,13 @@ def mp_invasion_fitness(model,param):
         model (pimad.Model): The model to run.
         param (dict): model parameters.
     """
-    default = {
-        "g": 100,
-        "invfitness_g":10
-    }
-    for k,v in default.items():
-        if k not in param:
-            param[k] = v
+    required_param = [("g","Number of generations."),
+                      ("T","Generation used to compute invasion fitness."),
+                      ("replica","Number of replica")]    
+    for p in required_param:
+        if p[0] not in param:
+            raise ValueError("Missing parameter: {0[0]} ({0[1]})".format(p))
+
     args = itertools.repeat((model,param.copy()),param["replica"])
     k = POOL.map(invasion_fitness,args)
     fitness, proportion = zip(*k)
@@ -56,64 +55,33 @@ def mp_invasion_fitness(model,param):
     fitness = np.mean(fitness)
     return fitness, proportion 
 
-
-
-def heatmap(model=ToyContinuous,param={}):
-    # Set the parameters
-    T_range = param["T_range"] 
-    b_range = param["b_range"]
-    param["prop"] = np.zeros((len(T_range),len(b_range)))
-    out = np.zeros((len(T_range),len(b_range)))
-
-
-    #--- Display
-    i = 0
-    imax = float(len(T_range)*len(b_range))
-    #---
-
-    for x,T in enumerate(T_range):
-        param["T"] = T
-        for y,b in enumerate(b_range):
-             
-            #--- Display
-            i += 1
-            print("{:0.2%} T:{},b:{}".format(i/imax,T,b))
-            #--- 
-    
-            param["b"] = b
-            fitness, prop = mp_invasion_fitness(model,param)
-            out[x,y] = fitness
-            param["prop"][x,y] = prop
-
-    del param["T"]
-    del param["b"]
-    return out,param
-
-
-def threshold_dicho(model,param,kmax=10):
+def threshold_dicho(model,param):
     """Dichotomic computation of the social mutant invasion threshold
 
     Args: 
         model (pimad.model.Model): Model.
         param (dict): Model parameters.
-        kmax (int): number of steps.
     Returns:
         (float) z*_approx
     """
+    required_param = [("kmax","Number of step for the dichotomic threshold measure.")]
+    for p in required_param:
+        if p[0] not in param:
+            raise ValueError("Missing parameter: {0[0]} ({0[1]})".format(p))
 
     zright = 1.0
     zleft = 0.0
-    for k in np.linspace(1,kmax,kmax):
+    for _ in range(param["kmax"]):
         param["r"] = 0.5*(zright+zleft)
         param["m"] = param["r"]+param["dz"]
         ftnss,prop = mp_invasion_fitness(model,param)
-        print "({}-{}) zmean: {} prop: {}  fitness: {}".format(zleft,zright,param["r"],prop,ftnss)
+        print(("({:2.2}-{:2.2}) Resident: {:2.2}, Mutants: {:2.2}. "
+               "{:2.2%} of invasion.  Fitness: {:2.3}").format(zleft, zright, param["r"],
+                                                               param["m"], prop, ftnss))
         if ftnss>0:
             zright = param["r"]
         else:
             zleft = param["r"]
-
-
     return 0.5*(zright+zleft)
 
 
@@ -135,8 +103,10 @@ def threshold(model=ToyContinuous,param={}):
             i += 1
             print("{:0.2%} | T: {}, b: {}".format(i/imax,T,b))
             ##
-
-            zstar = threshold_dicho(model,param,param["kmax"])
+            
+            args = itertools.repeat((model,param.copy()),param["replica"])
+            zstar = [threshold_dicho(*a) for a in args]
+            zstar = np.mean(zstar)
             data[T].append((zstar,b))
 
     del param["T"]

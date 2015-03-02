@@ -64,19 +64,28 @@ def threshold(points):
     z = np.arange(0.001,1.001,0.001)
    
     theo = 2.0/z
-    plt.plot(z,theo, color="k",label="Analytical prediction")
+    plt.plot(theo,z, color="k",label="Analytical prediction $z^*=2b/c$")
 
+    markers=[".","+"]
     c = ["red","green","blue","orange","purple","pink"]
     for n,(k) in enumerate(sorted(points.keys())):
-        x,y = zip(*points[k])
-        plt.scatter(x,y,label='$T={}$'.format(k),
-                    color=c[n],marker=".",s=20)
+        x,y= zip(*points[k])
+        if len(points) <= 2:
+            plt.plot(y,x,color="k",alpha=.1)
+            plt.scatter(y,x,label='$T={}$'.format(k),
+                        color="k",marker=markers[n],s=20)
+        else:
+            plt.plot(y,x,color=c[n],alpha=.1)
+            plt.scatter(x,y,label='$T={}$'.format(k),
+                        color=c[n],marker=".",s=20)
 
+
+        
     plt.legend()
-    plt.xlabel("z")
-    plt.ylabel("b/c")
-    plt.xlim((0,1))
-    plt.ylim((0,100))
+    plt.ylabel("z")
+    plt.xlabel("b/c")
+    plt.ylim((0,1))
+    plt.xlim((0,50))
 
     
 def trajectories(data,param):

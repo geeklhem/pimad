@@ -15,7 +15,7 @@ from pimad.models.toycontinuous import ToyContinuous, ToyContinuousNLC, ToyConti
 MODEL = ToyContinuous
 MODEL_CODE = "TOY"
             
-param =  {"n": 500, # Number of patches
+param =  {"n": 5000, # Number of patches
           "T": 100,  # Patch size
           "ip":0.01,   # Initial proportions of mutants
           "r":0.5,  # Resident trait value
@@ -31,8 +31,8 @@ param =  {"n": 500, # Number of patches
           "invfitness_g":10,
           
           # Specific to threshold 
-          "T_range": [20,100], #[100,200,500,1000,3000],
-          "b_range": [2, 5, 10, 15 , 20, 25, 30, 35, 40],
+          "T_range": [20,100],
+          "b_range": [2,3,4,5,6,7,8,9,10,15,20,25,30,35,40],
           "kmax":10,
 
           #Specific to trajectories
@@ -129,9 +129,11 @@ if __name__ == "__main__":
     ## Figure 4: Sociality threshold ##
     if DO == "threshold" or DO == "ALL":
         print "{:-^80}".format(" SCORE THRESHOLD ")
-        threshold_file = "threshold_kmax{}_{}T_{}b".format(param["kmax"],
-                                                           len(param["T_range"]),
-                                                           len(param["b_range"]))
+        threshold_file = "threshold_kmax{}_{}T_{}b_g{}_{}repl".format(param["kmax"],
+                                                                  len(param["T_range"]),
+                                                                  len(param["b_range"]),
+                                                                  param["g"],
+                                                                  param["replica"])
         if not os.path.exists(threshold_file+".pkle"):
             data,out_param = invasion.threshold(MODEL,param.copy())
             with open(threshold_file+".pkle","w") as fi:
