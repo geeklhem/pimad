@@ -29,11 +29,13 @@ param =  {"n": 5000, # Number of patches
           "host": "|".join(platform.uname()),
           "precision":0.01,
           "invfitness_g":10,
+          "lk_R":1000,
           
           # Specific to threshold 
           "T_range": [20,100],
           "b_range": [2,3,4,5,6,7,8,9,10,15,20,25,30,35,40],
           "kmax":10,
+          "thres_r":1,
 
           #Specific to trajectories
           "range_ip":[0.001,0.005,0.01,0.05,0.1],

@@ -7,29 +7,64 @@ import multiprocessing as mp
 import itertools
 import os
 
+def lk_estimate(observed,svalues,simul):
+    """ Give the likelihood estimate of the invasion fitness 
+    
+    Args:
+        observed (np.array): number of mutants observed in different trajectories.
+        svalues (np.array): values of the invasion fitness used in distrib.
+        simul (np.array): results of simulations.
+        
+    Returns:
+        (float): maximum likelihood estimate of the invasion fitness
+    """
+
+    lk = np.zeros(len(svalues))
+    for i,s in enumerate(svalues):
+        Pmax = 0
+
+        for o in observed:
+            p = np.sum(simul[i,:]==o)
+
+            if p > Pmax:
+                Pmax = p
+            if Pmax:
+                lk[i] += np.log(Pmax)
+            else:
+                lk[i] = -np.inf
+                break
+
+    s_estimate = svalues[np.argmax(lk)]
+
+    return s_estimate
+
+
+def simulated(R,N,g,ip,step=200):
+    """Return simulated number of mutants"""
+    generation = lambda M,s,N: np.random.binomial(N,((M/N)*s)/(1+(M/N)*(s-1)))
+    out = np.zeros((step,R))
+    svalues = np.linspace(0,2,num=step)
+    for i,s in enumerate(svalues):
+        for r in range(R):
+            M = int(ip*N)
+            for _ in range(10):
+                p = generation(M,s,N)
+            out[i,r] = p
+    return out,svalues
+
+
 def invasion_fitness(args):
     model = args[0]
     param = args[1]
-
     np.random.seed()
     m = model(param,[])
-
     m.play(param["invfitness_g"])
-    pmutants = np.sum(m.population.phenotype)/float(len(m.population.phenotype.flat))
-    m.play(param["g"]-param["invfitness_g"])
-    
-    
-    invaded = bool(np.sum(m.population.phenotype))
-
-    if invaded:
-        fitness = np.log10(pmutants/param["ip"])
-    else:
-        fitness = 0 
-    
-    return fitness, invaded 
+    mutants = np.sum(m.population.phenotype)
+    return mutants 
 
 
-def mp_invasion_fitness(model,param):
+
+def mp_invasion_fitness(model,param,s_cache=None):
     """Run the simulation for param["g"] generation (default = 100) and
     compute the exponential growth rate in the param["invfitness_g"]
     (default = 10) generations for the ones that are not extinct.
@@ -49,13 +84,19 @@ def mp_invasion_fitness(model,param):
             raise ValueError("Missing parameter: {0[0]} ({0[1]})".format(p))
 
     args = itertools.repeat((model,param.copy()),param["replica"])
-    k = POOL.map(invasion_fitness,args)
-    fitness, proportion = zip(*k)
-    proportion = np.mean(proportion)
-    fitness = np.mean(fitness)
-    return fitness, proportion 
+    observed = POOL.map(invasion_fitness,args)
 
-def threshold_dicho(model,param):
+    if s_cache is None:
+        simul, svalues = simulated(param["lk_R"],param["n"]*param["T"],
+                                   param["invfitness_g"],param["ip"])
+    else:
+        simul, svalues = s_cache
+
+    fitness = lk_estimate(observed,svalues,simul)
+    
+    return fitness
+
+def threshold_dicho(model,param,s_cache=None):
     """Dichotomic computation of the social mutant invasion threshold
 
     Args: 
@@ -74,11 +115,11 @@ def threshold_dicho(model,param):
     for _ in range(param["kmax"]):
         param["r"] = 0.5*(zright+zleft)
         param["m"] = param["r"]+param["dz"]
-        ftnss,prop = mp_invasion_fitness(model,param)
+        ftnss = mp_invasion_fitness(model,param,s_cache)
         print(("({:2.2}-{:2.2}) Resident: {:2.2}, Mutants: {:2.2}. "
-               "{:2.2%} of invasion.  Fitness: {:2.3}").format(zleft, zright, param["r"],
-                                                               param["m"], prop, ftnss))
-        if ftnss>0:
+               "  Fitness: {:2.3}").format(zleft, zright, param["r"],
+                                           param["m"],  ftnss))
+        if ftnss>=1:
             zright = param["r"]
         else:
             zleft = param["r"]
@@ -95,7 +136,11 @@ def threshold(model=ToyContinuous,param={}):
 
     for T in param["T_range"]:
         data[T] = []
-        param["T"] = T 
+        param["T"] = T
+        print("Computing likelihood cache (T={})...").format(T) 
+        s_cache = simulated(param["lk_R"],param["n"]*param["T"],
+                            param["invfitness_g"],param["ip"])
+
         for b in param["b_range"]:
             param["b"] = b
 
@@ -104,7 +149,7 @@ def threshold(model=ToyContinuous,param={}):
             print("{:0.2%} | T: {}, b: {}".format(i/imax,T,b))
             ##
             
-            args = itertools.repeat((model,param.copy()),param["replica"])
+            args = itertools.repeat((model,param.copy(),s_cache),param["thres_r"])
             zstar = [threshold_dicho(*a) for a in args]
             zstar = np.mean(zstar)
             data[T].append((zstar,b))

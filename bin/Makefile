@@ -29,7 +29,7 @@ trajectoires:
 	ipython figures.py trajectoires
 	ipython figures.py trajectoires dz=-0.1
 
-quick :=n=100ANDT=100ANDreplica=2
+quick :=n=100ANDT=100ANDreplica=2ANDlk_R=500
 
 pip_SIG_quick:
 	ipython figures.py pip precision=0.1AND$(quick) SIG
