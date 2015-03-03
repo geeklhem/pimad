@@ -1,7 +1,7 @@
 from __future__ import division
 from pimad.models.toycontinuous import ToyContinuous
 import numpy as np
-
+import scipy.stats 
 
 import multiprocessing as mp
 import itertools
@@ -19,37 +19,53 @@ def lk_estimate(observed,svalues,simul):
         (float): maximum likelihood estimate of the invasion fitness
     """
 
-    lk = np.zeros(len(svalues))
-    for i,s in enumerate(svalues):
-        Pmax = 0
-
-        for o in observed:
-            p = np.sum(simul[i,:]==o)
-
-            if p > Pmax:
-                Pmax = p
-            if Pmax:
-                lk[i] += np.log(Pmax)
-            else:
-                lk[i] = -np.inf
-                break
-
+    lk = [likelihood(observed,sim) for sim in simul]
     s_estimate = svalues[np.argmax(lk)]
-
     return s_estimate
+
+def likelihood(observed,sim):
+    """Return the likelihood of the parameters wich gave the distribution
+    sim given the data.
+
+    Args:
+        observed (np.array): number of mutants observed in different observed
+            trajectories.
+        simul (np.array):  number of mutants observed in different simulated 
+            trajectories.
+
+    Returns:
+        (float) likelihood. 
+    """
+    if np.std(sim):
+        pdf = scipy.stats.distributions.norm(np.mean(sim),np.std(sim)).pdf
+    else:
+        pdf = lambda x: x == np.mean(sim)
+        
+    return np.sum(np.log(pdf(observed)))
+                  
+    # L = 0
+
+    # for o in observed:
+    #     p = np.sum(sim==o)/len(sim)
+    #     if p:
+    #         L += np.log(p)
+    #     else:
+    #         L += -np.inf
+    #         break
+    # return L 
 
 
 def simulated(R,N,g,ip,step=200):
     """Return simulated number of mutants"""
-    generation = lambda M,s,N: np.random.binomial(N,((M/N)*s)/(1+(M/N)*(s-1)))
+    generation = lambda M,s,N: np.random.binomial(N, (M*s)/(N+M*(s-1)) )
     out = np.zeros((step,R))
     svalues = np.linspace(0,2,num=step)
     for i,s in enumerate(svalues):
         for r in range(R):
             M = int(ip*N)
             for _ in range(10):
-                p = generation(M,s,N)
-            out[i,r] = p
+                M = generation(M,s,N)
+            out[i,r] = M 
     return out,svalues
 
 
@@ -106,6 +122,8 @@ def threshold_dicho(model,param,s_cache=None):
         (float) z*_approx
     """
     required_param = [("kmax","Number of step for the dichotomic threshold measure.")]
+    param["kmax"] = int(np.log(1/param["dz"])/np.log(2))+1
+    print "kmax set to {}".format(param["kmax"])
     for p in required_param:
         if p[0] not in param:
             raise ValueError("Missing parameter: {0[0]} ({0[1]})".format(p))
@@ -116,10 +134,10 @@ def threshold_dicho(model,param,s_cache=None):
         param["r"] = 0.5*(zright+zleft)
         param["m"] = param["r"]+param["dz"]
         ftnss = mp_invasion_fitness(model,param,s_cache)
-        print(("({:2.2}-{:2.2}) Resident: {:2.2}, Mutants: {:2.2}. "
-               "  Fitness: {:2.3}").format(zleft, zright, param["r"],
+        print(("({:02.3f}-{:02.3f}) Resident: {:2.3f}, Mutants: {:2.2f}. "
+               "  Fitness: {: 2.5f}").format(zleft, zright, param["r"],
                                            param["m"],  ftnss))
-        if ftnss>=1:
+        if ftnss>1:
             zright = param["r"]
         else:
             zleft = param["r"]
@@ -143,15 +161,17 @@ def threshold(model=ToyContinuous,param={}):
 
         for b in param["b_range"]:
             param["b"] = b
-
-            ## Display
-            i += 1
-            print("{:0.2%} | T: {}, b: {}".format(i/imax,T,b))
-            ##
             
             args = itertools.repeat((model,param.copy(),s_cache),param["thres_r"])
             zstar = [threshold_dicho(*a) for a in args]
             zstar = np.mean(zstar)
+
+            ## Display
+            i += 1
+            print("{:0.2%} | T: {}, b: {} - Threshold {} (analytical: {})".format(i/imax,T,b,zstar,2*param["c"]/(param["b"])))
+            ##
+
+
             data[T].append((zstar,b))
 
     del param["T"]

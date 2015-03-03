@@ -33,7 +33,7 @@ param =  {"n": 5000, # Number of patches
           
           # Specific to threshold 
           "T_range": [20,100],
-          "b_range": [2,3,4,5,6,7,8,9,10,15,20,25,30,35,40],
+          "b_range": [3,4,5,6,7,8,9,10,15,20,25,30,35,40],
           "kmax":10,
           "thres_r":1,
 

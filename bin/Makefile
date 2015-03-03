@@ -29,7 +29,7 @@ trajectoires:
 	ipython figures.py trajectoires
 	ipython figures.py trajectoires dz=-0.1
 
-quick :=n=100ANDT=100ANDreplica=2ANDlk_R=500
+quick :=n=100ANDT=100ANDreplica=2
 
 pip_SIG_quick:
 	ipython figures.py pip precision=0.1AND$(quick) SIG
@@ -40,8 +40,11 @@ pip_quick:
 threshold:
 	ipython figures.py threshold 
 
+threshold_small:
+	ipython figures.py threshold b_range=[3,10,20,40]ANDreplica=30
+
 threshold_quick:
-	ipython figures.py threshold kmax=5AND$(quick)ANDb_range=[2,10,20]
+	ipython figures.py threshold kmax=5AND$(quick)ANDb_range=[3,10,20]
 
 sizedistr.eps:
 	ipython distr.py
