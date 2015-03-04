@@ -20,7 +20,6 @@ pip_GST:
 pip_NLC:
 	ipython figures.py pip mdl=0 NLC
 
-
 pip_SIG:
 	ipython figures.py pip mdl=0 SIG
 
@@ -38,7 +37,7 @@ pip_quick:
 	ipython figures.py pip precision=0.1AND$(quick)ANDlk_R=100
 
 threshold:
-	ipython figures.py threshold 
+	ipython figures.py threshold replica=50
 
 threshold_small:
 	ipython figures.py threshold b_range=[3,10,20,40]ANDreplica=30

@@ -24,7 +24,7 @@ param =  {"n": 5000, # Number of patches
           "c":1,    # Cost coefficient
           "g":100,   # Number of generations
           "dz":0.01, 
-          "replica": 5, #4
+          "replica": 25, 
           "time": time.asctime(),
           "host": "|".join(platform.uname()),
           "precision":0.01,
