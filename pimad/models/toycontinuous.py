@@ -43,12 +43,6 @@ class ToyContinuous(Model):
         self.dispersion()
         self.aggregation()
         payoffs = self.payoff()
-
-        #mutants =  self.population.mutants.sum()/len(self.population.mutants.flat)
-        #residents =  self.population.residents.sum()/len(self.population.mutants.flat)
-        #loners =  self.population.loners.sum()/len(self.population.mutants.flat)
-        #lonersmutants =  self.population.loner_mutants.sum()/len(self.population.mutants.flat)
- 
         self.demographic(payoffs)
         
 
@@ -94,9 +88,13 @@ class ToyContinuous(Model):
             number = loners.sum(0)
             proba = np.sqrt(z * attch_proba_recruiter)
 
-            # Number of individual aggregated by patch... 
-            attached = np.array([np.random.binomial(n,p) for n,p in zip(number,proba)])
-
+            # Number of individual aggregated by patch...
+            try:
+                attached = np.array([np.random.binomial(n,p) for n,p in zip(number,proba)])
+            except ValueError as e:
+                print("Error in attachment phase.")
+                print(number,proba)
+                raise ValueError(e)
             # in each column, attach the n first of this phenotype
             for i,n in enumerate(attached):
                 x = np.nonzero(loners[:,i])[0]
@@ -130,9 +128,13 @@ class ToyContinuous(Model):
                             payoff["aggregated"]["mutant"],
                             payoff["loner"]["resident"],
                             payoff["loner"]["mutant"]])
-        #print fitness.shape
-        fitness -= np.min(fitness.flat)
-        fitness /= np.max(fitness.flat)
+        
+
+        if np.min(fitness.flat) != np.max(fitness.flat):
+            fitness -= np.min(fitness.flat)
+            fitness /= np.max(fitness.flat)
+        else:
+            fitness.flat[:] = .5 
 
         ## Count the number of individual in each fitness category.
         number = np.array([self.population.aggregated_residents.sum(0),
@@ -142,17 +144,29 @@ class ToyContinuous(Model):
 
 
         ## Each individual is allowed to try to reproduce once.
-        offspring = np.array([np.random.binomial(n,p) for n,p in zip(number.flat,
-                                                                     fitness.flat)],
-        ).reshape(number.shape)
+        try:
+            offspring = np.array([np.random.binomial(n,p) for n,p in zip(number.flat,
+                                                                         fitness.flat)],
+                             ).reshape(number.shape)
+        except ValueError as e:
+                print("Error in demographic phase: offspring.")
+                print("Payoff: {}".format(payoff))
+                print("Number \t Fitness \n"+"\n".join(["{}\t{}".format(n,p)
+                                                         for n,p in zip(number.flat, fitness.flat)]))
+                raise ValueError(e)
         offspring = offspring.sum(1)        
         offspring_residents = offspring[0] + offspring[2] #No of new Aggregated & loners residents.
         offspring = offspring.sum() #total offspring        
         
 
         # Mutations
-        offspring_residents += (np.random.binomial(offspring - offspring_residents,self.p["mu"]) #reverse mutation
-                                - np.random.binomial(offspring_residents,self.p["mu"])) #forward mutation
+        try:
+            offspring_residents += (np.random.binomial(offspring - offspring_residents,self.p["mu"]) #reverse mutation
+                                    - np.random.binomial(offspring_residents,self.p["mu"])) #forward mutation
+        except ValueError as e:
+                print("Error in demographic phase: mutation. (mu = {})".format(self.p["mu"]))
+                print(offspring,offspring_residents)
+                raise ValueError(e)
 
         
         ## Death process : newborn are inserted in random position

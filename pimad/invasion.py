@@ -57,6 +57,7 @@ def likelihood(observed,sim):
 
 def simulated(R,N,g,ip,step=200):
     """Return simulated number of mutants"""
+    print("Computing likelihood cache for generation {}. (N:{:1.2e}, R:{}, ip:{}, step:{})...").format(g,N,R,ip,step) 
     generation = lambda M,s,N: np.random.binomial(N, (M*s)/(N+M*(s-1)) )
     out = np.zeros((step,R))
     svalues = np.linspace(0,2,num=step)
@@ -155,7 +156,7 @@ def threshold(model=ToyContinuous,param={}):
     for T in param["T_range"]:
         data[T] = []
         param["T"] = T
-        print("Computing likelihood cache (T={})...").format(T) 
+
         s_cache = simulated(param["lk_R"],param["n"]*param["T"],
                             param["invfitness_g"],param["ip"])
 

@@ -2,7 +2,7 @@
 
 from __future__ import division
 from pimad.models.toycontinuous import ToyContinuous
-from pimad.invasion import invasion_fitness
+import pimad.invasion as invasion
 import numpy as np
 import cPickle as pickle
 import multiprocessing as mp
@@ -10,29 +10,12 @@ import itertools
 import os
 
 def mp_pip(model=ToyContinuous,param={},precision=0.1):
-    param["model_name"] = str(model)
-    param["pip_step"] = precision
-
-    args = itertools.repeat((model,param.copy()),param["replica"])
-
-    pool = mp.Pool()
-    pips = pool.map(pip,args)
-
-    #Average over the different replicas 
-    output = np.sum(pips,axis=0)/len(pips)
-
-    del param["r"]
-    del param["m"]
-
-    return output,param
- 
-def pip(args):
     """
     Compute the pairwise invasibility plot by successives runs
     of a model.
     """
-    model = args[0]
-    param = args[1]
+    param["model_name"] = str(model)
+    param["pip_step"] = precision
     
     z_range = np.arange(0,1+param["pip_step"],param["pip_step"]) 
     pip = np.zeros((len(z_range),len(z_range)))
@@ -41,6 +24,9 @@ def pip(args):
     i = 0
     imax = float(len(z_range)**2)
     #---
+
+    s_cache  = invasion.simulated(param["lk_R"],param["n"]*param["T"],
+                                 param["invfitness_g"],param["ip"])
 
     for y,hatz in enumerate(z_range):
         param["r"] = hatz
@@ -53,7 +39,9 @@ def pip(args):
             #--- 
     
             param["m"] = z
-            pip[x,y] = invasion_fitness((model,param))[0]
+            pip[x,y] = invasion.mp_invasion_fitness(model,param,s_cache)
+    del param["r"]
+    del param["m"]
          
-    return pip
+    return pip,param
  
