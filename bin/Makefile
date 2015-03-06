@@ -5,7 +5,7 @@ all_pip_quick: pip_quick pip_GST_quick pip_NLC_quick
 pip: pip_TOY pip_GST pip_NLC
 
 pip_TOY:
-	ipython figures.py pip
+	ipython figures.py pip replica=100
 
 heatmap:
 	ipython figures.py heatmap r=0.22ANDg=500
@@ -14,14 +14,10 @@ altruism:
 	ipython figures.py altruism
 
 pip_GST:
-	ipython figures.py pip mdl=0 GST
+	ipython figures.py pip replica=100 GST
 
 pip_NLC:
-	ipython figures.py pip mdl=0 NLC
-
-pip_SIG:
-	ipython figures.py pip mdl=0 SIG
-
+	ipython figures.py pip replica=100 NLC
 
 trajectoires:
 	ipython figures.py trajectoires

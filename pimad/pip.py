@@ -67,7 +67,7 @@ def mp_pip(model=ToyContinuous,param={},precision=0.1):
             # - Display 
             j+=1
             if j%(int(n/10)) == 0:
-                print "{:02.0%}".format(j/n),
+                print "{:02.0%}".format(j/n)
             # - end Display
             
         pip,to_compute = increase_precision(pip)
