@@ -54,7 +54,7 @@ def mp_pip(model=ToyContinuous,param={},precision=0.1):
     step = z_range[1]
     to_compute = np.zeros((len(z_range),len(z_range))) + 1
     param["computed"].append(to_compute.copy())
-    while step > param["pip_step"]/2:
+    while step > param["pip_step"]:
         n = int(to_compute.sum())
         print("\nPrecision: {}, {} invasion fitness to compute.".format(step,n))
         j = 0 
