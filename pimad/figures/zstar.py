@@ -1,4 +1,4 @@
-""" pip.py - Pairwise invasibility plot functions """
+""" threshold.py """
 
 from __future__ import division
 from pimad.models.toycontinuous import ToyContinuous
@@ -6,7 +6,38 @@ import numpy as np
 import cPickle as pickle
 import matplotlib.pyplot as plt
 
-def agent_based_zstar(model=ToyContinuous,param={}):
+
+def threshold_dicho(model,param,kmax=10):
+    """ Dichotomic computation of the invasion threshold
+
+    Args: 
+        model (pimad.model.Model): Model.
+        param (dict): Model parameters.
+        kmax (int): number of steps.
+    """
+  
+    zright = 1
+    zleft = 0
+    for k in np.linspace(1,kmax,kmax):
+
+        param["r"] = 0.5*(zright+zleft)
+        param["m"] = param["r"]+param["dz"]
+
+        m = model(param,[])
+
+        pmutants = np.sum(m.population.phenotype)/float(len(m.population.phenotype.flat))      
+        m.play(param["g"])
+        pmutants = np.sum(m.population.phenotype)/float(len(m.population.phenotype.flat))
+        
+        if pmutants > param["ip"]:
+            zright = param["r"]
+        else:
+            zleft = param["r"]
+    
+    return 0.5*(zright+zleft)
+
+
+def threshold_figure(model=ToyContinuous,param={}):
     # Set the parameters.
     default = {
         "n":100,
@@ -37,32 +68,10 @@ def agent_based_zstar(model=ToyContinuous,param={}):
         i +=1
         print("{:0.2%}: b/c = {}, predicted: {}".format(i/imax,b,2/b))
         #--- 
-    
         param["b"] = b
-        
-        z_range = np.arange(max(0.01,(2.0/b)-0.2), min(1-0.01,(2.0/b)+0.2),0.05)
-        ess = 0
-        j = 0
-        test_zone[1].append(z_range[0])
-        test_zone[2].append(z_range[1])
-        test_zone[0].append(b)
-        while ess != 1 and j<len(z_range):
-            param["r"] = z_range[j]
-            param["m"] = z_range[j]+param["dz"]
+        zstar = threshold_dicho(model,param)
+        out.append((zstar,b))
 
-            m = ToyContinuous(param,[])
-
-            pmutants = np.sum(m.population.phenotype)/float(len(m.population.phenotype.flat))
-            
-            m.play(param["g"])
-
-            pmutants = np.sum(m.population.phenotype)/float(len(m.population.phenotype.flat))
-            print("Testing z={}. {}/{}".format(z_range[j],pmutants,param["ip"]))
-            if pmutants>param["ip"]:
-                ess = 1
-                out.append((z_range[j],b))
-                print "point !"
-            j += 1
     return out
 
 
@@ -71,7 +80,6 @@ if __name__ == "__main__":
     import sys
 
 
-    
     points = {}
     for T in [10,100,1000,10000]:
         points[T] =  agent_based_zstar(param={"T":T})

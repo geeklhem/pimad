@@ -4,3 +4,26 @@ pimad
  PIMAD : Pimad is modeling adaptive dynamics 
 
 Pimad is a modeling tool for studying adaptive evolution of grouping by adhesion.
+
+Example:
+
+```python
+# Compute a pip
+from pimad.models.toycontinuous import ToyContinuous
+from pimad.pip import mp_pip
+from pimad.export.draw import pip as pip_draw
+
+param = ToyContinuous.EXAMPLE_PARAMETERS
+param["pip_step"] = .01
+param["lk_R"] = 1000
+param["invfitness_g"] = 10
+param["replica"] = 25
+param["ip"] = 0.01
+
+p = mp_pip(ToyContinuous,param)
+pip_d(p[0])
+plt.show()
+```
+
+
+You can compute the figures from the article by using the Makefile in the `/bin` folder.

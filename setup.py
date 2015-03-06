@@ -9,7 +9,6 @@ setup(name='pimad',
       author_email='guilhem.doulcier@ens.fr',
       license='GPLv3',
       packages=['pimad'],
-      #     scripts=['bin/vcontact','bin/vcontact-pcs'],
       install_requires=[
         'numpy',
         'scipy',
