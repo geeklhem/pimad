@@ -86,10 +86,10 @@ if __name__ == "__main__":
     if DO == "pip" or DO == "ALL":
         print "{:-^80}".format(" PIP ")
         
-        pip_file = "pip{}_T{}_n{}_step{}_repl_{}_b{}_ip{}".format(MODEL_CODE, param["T"],
-                                                                  param["n"], param["precision"],
-                                                                  param["replica"], param["b"],
-                                                                  param["ip"])
+        pip_file = "pip{}_T{}_n{}_step{}adaptive_repl_{}_b{}_ip{}".format(MODEL_CODE, param["T"],
+                                                                          param["n"], param["precision"],
+                                                                          param["replica"], param["b"],
+                                                                          param["ip"])
         print pip_file
         if not os.path.exists(pip_file+".pkle"):
             pip_data,pip_param = pip.mp_pip(MODEL,param.copy(),param["precision"])

@@ -2,7 +2,6 @@ all: pip heatmap threshold altruism pip_GST pip_NLC trajectoires sizedistr.eps
 quick: pip_quick heatmap_quick threshold_quick altruism_quick pip_GST_quick pip_NLC_quick trajectoires_quick
 all_pip_quick: pip_quick pip_GST_quick pip_NLC_quick 
 
-
 pip: pip_TOY pip_GST pip_NLC
 
 pip_TOY:
