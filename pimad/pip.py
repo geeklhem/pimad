@@ -59,8 +59,8 @@ def mp_pip(model=ToyContinuous,param={},precision=0.1):
         print("\nPrecision: {}, {} invasion fitness to compute.".format(step,n))
         j = 0 
         for x,y in zip(*np.nonzero(to_compute)):
-            param["r"] = z_range[x]
-            param["m"] = z_range[y]
+            param["r"] = z_range[y]
+            param["m"] = z_range[x]
             pip[x,y] = invasion.mp_invasion_fitness(model,param,s_cache)
 
             #print "fitness({},{}) = {}".format(z_range[x], z_range[y], pip[x,y])
