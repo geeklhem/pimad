@@ -240,8 +240,8 @@ class ToyContinuousNLC(ToyContinuous):
 
         def cost(z):
             """ Non linear cost """
-            return - self.p["c"]* z * np.exp( (1-z)**(-1.0/self.p["chi"]) ) 
-            
+            return - self.p["c"]* z * np.exp( (1-z)**(-1.0/self.p["chi"]) - 1 ) 
+                                 
         return {"aggregated":{"resident":group_benefits+cost(self.p["r"]),
                               "mutant":group_benefits+cost(self.p["m"])},
                   "loner":{"resident":[cost(self.p["r"])]*self.p["n"],
