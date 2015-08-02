@@ -21,7 +21,7 @@ class ToyContinuous(Model):
                            "c":1,    # Cost coefficient
                            "g":100,   # Number of generations
                        }
-    model_name = "Continuous Toy Model [Doulcier, Garcia & De Monte 2014]"
+    model_name = "Continuous Toy Model [Garcia, Doulcier & De Monte 2015]"
 
     def __init__(self,param,tracked_values=()):
         """Constructor"""
@@ -183,7 +183,7 @@ model_class = ToyContinuous
 
 class ToyContinuousGST(ToyContinuous):
     """Toy continuous with a group size threshold"""
-    model_name = "Continuous Toy Model with group-size threshold [Doulcier, Garcia & De Monte 2014]"
+    model_name = "Continuous Toy Model with group-size threshold [Garcia, Doulcier & De Monte 2015]"
     EXAMPLE_PARAMETERS = ToyContinuous.EXAMPLE_PARAMETERS
     EXAMPLE_PARAMETERS["alpha"] = 0.75
         
@@ -216,7 +216,7 @@ class ToyContinuousGST(ToyContinuous):
 
 class ToyContinuousNLC(ToyContinuous):
     """Toy continuous with a non linear cost function"""
-    model_name = "Continuous Toy Model with a non linear cost function [Doulcier, Garcia & De Monte 2014]"
+    model_name = "Continuous Toy Model with a non linear cost function [Garcia, Doulcier & De Monte 2015]"
     EXAMPLE_PARAMETERS = ToyContinuous.EXAMPLE_PARAMETERS
     EXAMPLE_PARAMETERS["chi"] = 2
 
