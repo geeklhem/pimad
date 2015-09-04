@@ -165,15 +165,15 @@ def threshold(model=ToyContinuous,param={}):
             
             args = itertools.repeat((model,param.copy(),s_cache),param["thres_r"])
             zstar = [threshold_dicho(*a) for a in args]
-            zstar = np.mean(zstar)
+         
 
             ## Display
             i += 1
             print("{:0.2%} | T: {}, b: {} - Threshold {} (analytical: {})".format(i/imax,T,b,zstar,2*param["c"]/(param["b"])))
             ##
 
-
-            data[T].append((zstar,b))
+            for zz in zstar:
+                data[T].append((zz,b))
 
     del param["T"]
     del param["b"]
