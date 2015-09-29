@@ -27,3 +27,4 @@ plt.show()
 
 
 You can compute the figures from the article by using the Makefile in the `/bin` folder.
+The generated figures and data are in the '/notebook' folder.
