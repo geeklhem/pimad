@@ -1,7 +1,5 @@
-pimad
+Pimad: Pimad Is Modeling Adaptive Dynamics
 =====
-
- PIMAD : Pimad is modeling adaptive dynamics 
 
 Pimad is a modeling tool for studying adaptive evolution of grouping by adhesion.
 
@@ -42,5 +40,5 @@ class) and overwrite the relevant methods (e.g `dispersion`,
   careful some of them are very long to compute. The script produce
   some pickled files containing data and parameters.
 
-- Finally the '/notebook' folder contains small boilerplate code to
+- Finally the `notebook/` folder contains small boilerplate code to
   produce visual representation of those results, i.e. the figures of the publication.
