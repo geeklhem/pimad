@@ -5,26 +5,42 @@ pimad
 
 Pimad is a modeling tool for studying adaptive evolution of grouping by adhesion.
 
-Example:
+## Quick start:
+
+Here is an example to compute a PIP (pairwise invasibility plot) using the toy model.
 
 ```python
 # Compute a pip
 from pimad.models.toycontinuous import ToyContinuous
 from pimad.pip import mp_pip
-from pimad.export.draw import pip as pip_draw
+from pimad.export.draw import pip as pip_draw 
 
 param = ToyContinuous.EXAMPLE_PARAMETERS
-param["pip_step"] = .01
-param["lk_R"] = 1000
-param["invfitness_g"] = 10
-param["replica"] = 25
-param["ip"] = 0.01
+param["pip_step"] = .01 # The trait step 
+param["lk_R"] = 1000 # Nuber of trajectories for the MLE of the invasion fitness
+param["invfitness_g"] = 10 # Length of trajectories for the MLE of the invasion fitness
+param["replica"] = 25 # Average on this number of replications.
+param["ip"] = 0.01 # Initial proportion of mutants.
 
 p = mp_pip(ToyContinuous,param)
 pip_d(p[0])
 plt.show()
 ```
 
+Note that if you want to implement a new model, you just have to write
+a class inheriting from another model (or the most general `Model`
+class) and overwrite the relevant methods (e.g `dispersion`,
+`aggregation`, `payoff` or `demographics`).
 
-You can compute the figures from the article by using the Makefile in the `/bin` folder.
-The generated figures and data are in the '/notebook' folder.
+## Folder organization
+
+- The `pimad/` folder contains the library files (the simulation
+  engine but also some predefined models in `pimad/models/`)
+
+- The `bin/` folder contains the script used to produce the published results,
+  it is best executed using `make` and the `Makefile` provided. Be
+  careful some of them are very long to compute. The script produce
+  some pickled files containing data and parameters.
+
+- Finally the '/notebook' folder contains small boilerplate code to
+  produce visual representation of those results, i.e. the figures of the publication.
