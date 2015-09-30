@@ -1,23 +1,31 @@
-""" Graphical functions for pairwise invasibility plots"""
+"""Some graphical functions for quick result visualization."""
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.ticker import FuncFormatter
 import numpy as np
 plt.rc('font', size=12) 
 
-def pip(array,show=True):
+def pip(array,show=True,contour_lines=False):
     """
-    Use matplotlib to draw a pairwise_invasibility plot.
+    Use matplotlib to draw a pairwise invasibility plot.
+    
 
     Args:
         array (np.array): a matrix giving the i_nvasion fitness for different
         values of the resident and mutant traits.
-    
+        show: call plt.show in the end.
+        contour_lines: if false draw only a black and white pip.
     """
     
     cmap = mcolors.ListedColormap([(1, 1, 1), 
                                    (0.2, 0.2, 0.2)])
     plt.contourf(array, cmap=cmap, levels=[-1000,1,1000])
+
+    if contour_lines:
+        cfin = plt.contour(array,np.arange(np.amin(array), np.amax(array)+0.1, 0.1),colors="0.1")
+        cfin.set_alpha(.2)
+        c = plt.contour(array,colors="k")
+        plt.clabel(c)
 
     def fraction_tick(y, pos=0):
         return '{:0.1f}'.format(float(y)/(len(array)-1))
@@ -84,3 +92,18 @@ def trajectories(data,param):
     plt.xlabel("Initial proportion of mutants")
     plt.xticks(range(len(param["range_ip"])),param["range_ip"])
     plt.tight_layout()
+
+
+def draw_array_of_pips(arrays,blist,Tlist,disp=False):
+    xmax = len(set(blist))
+    ymax = len(set(Tlist))
+    n = 0
+    for i, a in enumerate(arrays):
+        n += 1
+        plt.subplot(xmax,ymax,i+1)
+        ax = plt.gca()
+        draw_pip(a,False)
+        ax.set_title("PIP b = {0}, T =  {1}".format(blist[i],Tlist[i]))
+    if disp:
+        plt.show()
+

@@ -11,7 +11,7 @@ Here is an example to compute a PIP (pairwise invasibility plot) using the toy m
 # Compute a pip
 from pimad.models.toycontinuous import ToyContinuous
 from pimad.pip import mp_pip
-from pimad.export.draw import pip as pip_draw 
+from pimad.draw import pip as pip_draw 
 
 param = ToyContinuous.EXAMPLE_PARAMETERS
 param["pip_step"] = .01 # The trait step 

@@ -10,7 +10,7 @@ import time
 
 from pimad import pip 
 from pimad import invasion
-import pimad.export.draw as draw 
+from pimad import draw
 from pimad.models.toycontinuous import ToyContinuous, ToyContinuousNLC, ToyContinuousGST, ToyContinuousSigB
 MODEL = ToyContinuous
 MODEL_CODE = "TOY"
